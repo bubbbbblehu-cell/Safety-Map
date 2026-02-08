@@ -373,6 +373,7 @@
             min-height: 400px;
             z-index: 1;
             position: relative;
+            pointer-events: auto;
         }
 
         .map-placeholder {
@@ -1645,23 +1646,52 @@
                     </div>
                 `;
                 
+                // 保存酒店数据到marker对象，方便访问
+                marker.hotelData = hotel;
+                
+                // 绑定popup（用于悬停显示）
                 marker.bindPopup(popupContent, {
                     maxWidth: 200,
                     className: 'hotel-popup',
                     closeButton: true,
                     autoClose: true,
-                    closeOnClick: true
+                    closeOnClick: false
                 });
                 
                 // 点击事件 - 直接打开详情弹窗
                 marker.on('click', function(e) {
-                    console.log('点击酒店标记:', hotel.name, hotel);
+                    console.log('点击酒店标记:', this.hotelData ? this.hotelData.name : '未知');
                     // 阻止事件冒泡到地图
                     if (e.originalEvent) {
                         e.originalEvent.stopPropagation();
                     }
-                    // 立即打开详情弹窗，不等待popup关闭
-                    openHotelModal(hotel);
+                    // 使用保存的酒店数据
+                    const hotelData = this.hotelData || hotel;
+                    console.log('准备打开弹窗，酒店数据:', hotelData);
+                    // 立即打开详情弹窗
+                    setTimeout(() => {
+                        openHotelModal(hotelData);
+                    }, 10);
+                });
+                
+                // 在popup中也添加点击事件（点击popup内容也打开详情）
+                marker.on('popupopen', function() {
+                    const popup = this.getPopup();
+                    if (popup) {
+                        const popupElement = popup.getElement();
+                        if (popupElement) {
+                            popupElement.style.cursor = 'pointer';
+                            // 移除旧的事件监听器（如果有）
+                            const newPopupElement = popupElement.cloneNode(true);
+                            popupElement.parentNode.replaceChild(newPopupElement, popupElement);
+                            // 添加点击事件
+                            newPopupElement.addEventListener('click', function(e) {
+                                e.stopPropagation();
+                                const hotelData = marker.hotelData || hotel;
+                                openHotelModal(hotelData);
+                            });
+                        }
+                    }
                 });
                 
                 // 鼠标悬停时显示popup和改变样式
@@ -1731,6 +1761,7 @@
         };
 
         function openHotelModal(hotel) {
+            console.log('openHotelModal 被调用，酒店:', hotel);
             if (!hotel) {
                 console.error('酒店数据无效');
                 return;
@@ -1741,9 +1772,19 @@
             const hotelScoreEl = document.getElementById('hotelScore');
             const hotelReviewsEl = document.getElementById('hotelReviews');
             
-            if (hotelNameEl) hotelNameEl.textContent = hotel.name;
-            if (hotelScoreEl) hotelScoreEl.textContent = hotel.score + '/5.0';
-            if (hotelReviewsEl) hotelReviewsEl.textContent = hotel.reviews + ' 条';
+            if (hotelNameEl) {
+                hotelNameEl.textContent = hotel.name;
+                console.log('设置酒店名称:', hotel.name);
+            } else {
+                console.error('hotelName 元素不存在');
+            }
+            
+            if (hotelScoreEl) {
+                hotelScoreEl.textContent = hotel.score + '/5.0';
+            }
+            if (hotelReviewsEl) {
+                hotelReviewsEl.textContent = hotel.reviews + ' 条';
+            }
             
             const isFavorite = currentCity && favorites.some(f => f.id === hotel.id && f.cityId === currentCity.id);
             const favoriteBtn = document.getElementById('favoriteButton');
@@ -1754,6 +1795,7 @@
             
             const hotelModal = document.getElementById('hotelModal');
             if (hotelModal) {
+                console.log('显示酒店弹窗');
                 hotelModal.classList.add('active');
             } else {
                 console.error('酒店详情弹窗元素不存在');
