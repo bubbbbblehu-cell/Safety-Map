@@ -1595,13 +1595,14 @@
                         // 确保地图大小正确
                         setTimeout(() => {
                             map.invalidateSize();
+                            if (placeholder) {
+                                placeholder.classList.add('hidden');
+                            }
+                            console.log('开始添加标记，酒店数量:', hotels.length);
+                            updateMapMarkers(hotels);
+                            updateStats();
+                            console.log('标记添加完成，标记数量:', markers.length);
                         }, 100);
-                        
-                        if (placeholder) {
-                            placeholder.classList.add('hidden');
-                        }
-                        updateMapMarkers(hotels);
-                        updateStats();
                     });
                     
                     // 监听地图加载错误
@@ -1641,17 +1642,23 @@
             
             const filteredHotels = hotels.filter(h => h.score >= minRating);
             
-            filteredHotels.forEach(hotel => {
+            console.log('准备创建标记，酒店数量:', filteredHotels.length);
+            
+            filteredHotels.forEach((hotel, index) => {
                 const markerColor = getMarkerColor(hotel.score);
                 // 使用更大的标记，增加点击区域
                 const marker = L.circleMarker([hotel.lat, hotel.lng], {
-                    radius: 12,
+                    radius: 15,  // 增大半径，更容易点击
                     fillColor: markerColor,
                     color: '#fff',
                     weight: 3,
                     opacity: 1,
-                    fillOpacity: 0.9
+                    fillOpacity: 0.95,
+                    interactive: true,  // 确保可交互
+                    bubblingMouseEvents: false  // 阻止事件冒泡
                 }).addTo(map);
+                
+                console.log(`创建标记 ${index + 1}:`, hotel.name, '位置:', hotel.lat, hotel.lng);
                 
                 // 添加标题，方便识别
                 marker.bindTooltip(hotel.name, {
@@ -1684,18 +1691,25 @@
                 
                 // 点击事件 - 直接打开详情弹窗
                 marker.on('click', function(e) {
-                    console.log('点击酒店标记:', this.hotelData ? this.hotelData.name : '未知');
+                    console.log('✅ 点击酒店标记事件触发:', this.hotelData ? this.hotelData.name : '未知');
                     // 阻止事件冒泡到地图
                     if (e.originalEvent) {
                         e.originalEvent.stopPropagation();
+                        e.originalEvent.preventDefault();
                     }
                     // 使用保存的酒店数据
                     const hotelData = this.hotelData || hotel;
-                    console.log('准备打开弹窗，酒店数据:', hotelData);
+                    console.log('✅ 准备打开弹窗，酒店数据:', hotelData);
                     // 立即打开详情弹窗
-                    setTimeout(() => {
-                        openHotelModal(hotelData);
-                    }, 10);
+                    openHotelModal(hotelData);
+                });
+                
+                // 添加鼠标按下事件作为备用
+                marker.on('mousedown', function(e) {
+                    console.log('🖱️ 鼠标按下标记:', this.hotelData ? this.hotelData.name : '未知');
+                    if (e.originalEvent) {
+                        e.originalEvent.stopPropagation();
+                    }
                 });
                 
                 // 在popup中也添加点击事件（点击popup内容也打开详情）
@@ -1744,8 +1758,16 @@
                                   heatColor === 'heat-yellow' ? '#fbbf24' : '#f87171',
                         color: 'transparent',
                         fillOpacity: 0.3,
-                        weight: 0
+                        weight: 0,
+                        interactive: false,  // 关键：热力图不拦截点击事件
+                        bubblingMouseEvents: false
                     }).addTo(map);
+                    
+                    // 确保热力图在标记下方（通过CSS）
+                    const heatElement = heatCircle.getElement();
+                    if (heatElement) {
+                        heatElement.style.pointerEvents = 'none';  // 不拦截鼠标事件
+                    }
                     
                     heatmapCircles.push(heatCircle);
                 }
