@@ -1022,13 +1022,19 @@
 
         // 页面切换功能
         function switchPage(pageId) {
+            console.log('切换到页面:', pageId, '当前城市:', currentCity);
+            
             // 隐藏所有页面
             document.querySelectorAll('.page').forEach(page => {
                 page.classList.remove('active');
+                page.style.display = 'none';
             });
             
             // 隐藏城市选择页面
-            document.getElementById('citySelection').style.display = 'none';
+            const citySelection = document.getElementById('citySelection');
+            if (citySelection) {
+                citySelection.style.display = 'none';
+            }
             
             // 显示选中的页面
             const targetPage = document.getElementById(pageId);
@@ -1037,6 +1043,8 @@
                 return;
             }
             
+            // 确保目标页面可见
+            targetPage.style.display = 'block';
             targetPage.classList.add('active');
             
             // 更新导航栏状态
@@ -1046,6 +1054,8 @@
             const navItem = document.querySelector(`[data-page="${pageId}"]`);
             if (navItem) {
                 navItem.classList.add('active');
+            } else {
+                console.error('导航项不存在:', pageId);
             }
             
             currentPage = pageId;
@@ -1054,13 +1064,29 @@
             if (pageId === 'mapPage') {
                 // 如果没有选择城市，显示城市选择页面
                 if (!currentCity) {
-                    document.getElementById('citySelection').style.display = 'block';
-                    document.getElementById('cityModal').classList.add('active');
+                    if (citySelection) {
+                        citySelection.style.display = 'block';
+                    }
+                    const cityModal = document.getElementById('cityModal');
+                    if (cityModal) {
+                        cityModal.classList.add('active');
+                    }
                 } else {
+                    // 确保地图容器可见
+                    const mapPageElement = document.getElementById('mapPage');
+                    if (mapPageElement) {
+                        mapPageElement.style.display = 'block';
+                        mapPageElement.classList.add('active');
+                    }
                     // 延迟初始化地图，确保DOM已渲染
                     setTimeout(() => {
-                        initMap(currentCity.id);
-                    }, 100);
+                        if (currentCity && currentCity.id) {
+                            console.log('初始化地图，城市ID:', currentCity.id);
+                            initMap(currentCity.id);
+                        } else {
+                            console.error('城市数据无效:', currentCity);
+                        }
+                    }, 200);
                 }
             }
             
@@ -1069,6 +1095,15 @@
                 setTimeout(() => {
                     updateFavoritesList();
                 }, 100);
+            }
+            
+            // 如果切换到拍照检测页面
+            if (pageId === 'photoPage') {
+                const photoPage = document.getElementById('photoPage');
+                if (photoPage) {
+                    photoPage.style.display = 'block';
+                    photoPage.classList.add('active');
+                }
             }
         }
 
@@ -1084,25 +1119,49 @@
             });
         });
 
-        // 城市选择
-        document.querySelectorAll('.city-button').forEach(button => {
-            button.addEventListener('click', function() {
-                const cityData = JSON.parse(this.getAttribute('data-city'));
-                selectCity(cityData);
-            });
+        // 城市选择 - 使用事件委托处理所有城市按钮（包括模态框中的）
+        document.addEventListener('click', function(e) {
+            const cityButton = e.target.closest('.city-button');
+            if (cityButton) {
+                e.preventDefault();
+                e.stopPropagation();
+                const cityDataStr = cityButton.getAttribute('data-city');
+                if (cityDataStr) {
+                    try {
+                        const cityData = JSON.parse(cityDataStr);
+                        selectCity(cityData);
+                    } catch (error) {
+                        console.error('解析城市数据失败:', error);
+                    }
+                }
+            }
         });
 
         function selectCity(city) {
+            if (!city || !city.id) {
+                console.error('无效的城市数据:', city);
+                return;
+            }
+            
+            console.log('选择城市:', city);
             currentCity = city;
+            
+            // 关闭城市选择页面和模态框
             const citySelection = document.getElementById('citySelection');
             if (citySelection) {
                 citySelection.style.display = 'none';
             }
+            
             const cityModal = document.getElementById('cityModal');
             if (cityModal) {
                 cityModal.classList.remove('active');
             }
-            switchPage('mapPage');
+            
+            // 强制切换到地图页面，使用稍长的延迟确保模态框已关闭
+            setTimeout(() => {
+                console.log('切换到地图页面，当前城市:', currentCity);
+                switchPage('mapPage');
+            }, 100);
         }
 
         function initMap(cityId) {
@@ -1441,9 +1500,11 @@
         });
 
         document.getElementById('cityModal').addEventListener('click', function(e) {
+            // 如果点击的是模态框背景（不是内容区域），关闭模态框
             if (e.target === this) {
                 this.classList.remove('active');
             }
+            // 城市按钮的点击事件由事件委托处理，不需要在这里处理
         });
 
         document.getElementById('filterModal').addEventListener('click', function(e) {
