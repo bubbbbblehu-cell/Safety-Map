@@ -4,6 +4,8 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 const sharp = require('sharp');
+const axios = require('axios');
+const FormData = require('form-data');
 require('dotenv').config();
 
 const app = express();
@@ -136,8 +138,8 @@ app.post('/api/analyze-photo', upload.single('photo'), async (req, res) => {
             .jpeg({ quality: 85 })
             .toFile(processedPath);
 
-        // 模拟AI分析（实际应用中应该调用真实的AI服务）
-        const analysisResult = await simulateAIAnalysis(req.file.path, detectionType);
+        // 调用Coze API进行AI分析（如果配置了API Key），否则使用模拟分析
+        const analysisResult = await callCozeAPI(req.file.path, detectionType);
 
         // 保存分析结果
         const resultData = {
@@ -189,7 +191,7 @@ app.post('/api/analyze-photos', upload.array('photos', 10), async (req, res) => 
         for (const file of req.files) {
             try {
                 const detectionType = req.body.detectionTypes?.[req.files.indexOf(file)] || '通用';
-                const analysisResult = await simulateAIAnalysis(file.path, detectionType);
+                const analysisResult = await callCozeAPI(file.path, detectionType);
                 
                 results.push({
                     filename: file.filename,
@@ -235,7 +237,190 @@ app.get('/api/analysis/:id', (req, res) => {
     }
 });
 
-// 模拟AI分析函数
+// Coze API配置
+const COZE_CONFIG = {
+    apiUrl: process.env.COZE_API_URL || 'https://api.coze.cn/open_api/v2/chat',
+    apiKey: process.env.COZE_API_KEY || '',
+    botId: process.env.COZE_BOT_ID || '7588350694353649679',
+    spaceId: process.env.COZE_SPACE_ID || '7383534396151693331'
+};
+
+// 调用Coze API进行AI分析
+async function callCozeAPI(imagePath, detectionType) {
+    try {
+        if (!COZE_CONFIG.apiKey) {
+            console.warn('Coze API Key未配置，使用模拟分析');
+            return await simulateAIAnalysis(imagePath, detectionType);
+        }
+
+        // 读取图片并转换为base64
+        const imageBuffer = fs.readFileSync(imagePath);
+        const imageBase64 = imageBuffer.toString('base64');
+        const imageMimeType = path.extname(imagePath).toLowerCase() === '.png' ? 'image/png' : 'image/jpeg';
+
+        // 构建请求数据（根据Coze API文档格式）
+        const requestData = {
+            conversation_id: `detection_${Date.now()}`,
+            bot_id: COZE_CONFIG.botId,
+            user: 'safety-map-user',
+            query: `请分析这张${detectionType}的照片，检测是否存在安全隐患。重点关注：${detectionTypes[detectionType]?.risk || '安全风险'}。请严格按照以下JSON格式返回分析结果：
+{
+  "hasRisk": true/false,
+  "riskLevel": "high/medium/low",
+  "confidence": 0.0-1.0,
+  "detectedItems": ["具体问题1", "具体问题2"],
+  "recommendations": ["建议1", "建议2", "建议3"],
+  "safetyScore": 0.0-5.0
+}`,
+            stream: false,
+            chat_history: []
+        };
+
+        // Coze API可能需要使用form-data格式上传图片
+        // 或者使用base64编码的图片URL
+        // 根据Coze实际API格式调整
+        const formData = new FormData();
+        formData.append('conversation_id', requestData.conversation_id);
+        formData.append('bot_id', requestData.bot_id);
+        formData.append('user', requestData.user);
+        formData.append('query', requestData.query);
+        formData.append('stream', 'false');
+        
+        // 添加图片（根据Coze API实际要求）
+        // 方式1: 直接上传文件
+        formData.append('image', fs.createReadStream(imagePath), {
+            filename: path.basename(imagePath),
+            contentType: imageMimeType
+        });
+
+        // 调用Coze API
+        let response;
+        try {
+            // 尝试使用form-data格式
+            response = await axios.post(COZE_CONFIG.apiUrl, formData, {
+                headers: {
+                    'Authorization': `Bearer ${COZE_CONFIG.apiKey}`,
+                    ...formData.getHeaders()
+                },
+                timeout: 30000
+            });
+        } catch (formDataError) {
+            // 如果form-data失败，尝试使用JSON格式（如果Coze支持base64）
+            console.log('Form-data格式失败，尝试JSON格式');
+            requestData.attachments = [{
+                type: 'image',
+                content: imageBase64,
+                content_type: imageMimeType
+            }];
+            
+            response = await axios.post(COZE_CONFIG.apiUrl, requestData, {
+                headers: {
+                    'Authorization': `Bearer ${COZE_CONFIG.apiKey}`,
+                    'Content-Type': 'application/json'
+                },
+                timeout: 30000
+            });
+        }
+
+        // 解析Coze返回的结果
+        console.log('Coze API响应:', JSON.stringify(response.data, null, 2));
+        
+        if (response.data) {
+            let cozeResponse = response.data;
+            
+            // 处理不同的响应格式
+            if (cozeResponse.data) {
+                cozeResponse = cozeResponse.data;
+            }
+            
+            // 尝试从回复中提取JSON
+            let analysisResult;
+            try {
+                // Coze可能返回文本格式的JSON，需要解析
+                const textResponse = cozeResponse.content || cozeResponse.answer || cozeResponse.message || JSON.stringify(cozeResponse);
+                console.log('Coze返回的文本:', textResponse);
+                
+                // 尝试提取JSON
+                const jsonMatch = textResponse.match(/\{[\s\S]*\}/);
+                if (jsonMatch) {
+                    try {
+                        analysisResult = JSON.parse(jsonMatch[0]);
+                        console.log('成功解析JSON结果:', analysisResult);
+                    } catch (jsonError) {
+                        console.warn('JSON解析失败:', jsonError);
+                        analysisResult = parseTextResponse(textResponse, detectionType);
+                    }
+                } else {
+                    // 如果没有JSON，尝试解析文本回复
+                    console.log('未找到JSON格式，使用文本解析');
+                    analysisResult = parseTextResponse(textResponse, detectionType);
+                }
+            } catch (parseError) {
+                console.warn('解析Coze响应失败，使用文本解析:', parseError);
+                const textResponse = cozeResponse.content || cozeResponse.answer || cozeResponse.message || '';
+                analysisResult = parseTextResponse(textResponse, detectionType);
+            }
+
+            return analysisResult;
+        } else {
+            throw new Error('Coze API返回格式异常: ' + JSON.stringify(response.data));
+        }
+
+    } catch (error) {
+        console.error('调用Coze API失败:', error.message);
+        if (error.response) {
+            console.error('API响应状态:', error.response.status);
+            console.error('API响应数据:', error.response.data);
+        }
+        if (error.request) {
+            console.error('请求详情:', error.request);
+        }
+        // 如果API调用失败，回退到模拟分析
+        console.log('回退到模拟分析');
+        return await simulateAIAnalysis(imagePath, detectionType);
+    }
+}
+
+// 解析文本格式的回复
+function parseTextResponse(text, detectionType) {
+    const typeInfo = detectionTypes[detectionType] || {};
+    const keywords = typeInfo.keywords || [];
+    
+    // 简单的文本分析
+    const hasRiskKeywords = ['风险', '危险', '异常', '不安全', '隐患', '问题', '可疑'];
+    const hasRisk = hasRiskKeywords.some(keyword => text.includes(keyword));
+    
+    let riskLevel = 'low';
+    if (text.includes('高风险') || text.includes('严重')) {
+        riskLevel = 'high';
+    } else if (text.includes('中等') || text.includes('中等风险')) {
+        riskLevel = 'medium';
+    } else if (hasRisk) {
+        riskLevel = 'medium';
+    }
+
+    const detectedItems = keywords.filter(keyword => text.includes(keyword));
+    
+    return {
+        hasRisk: hasRisk,
+        riskLevel: riskLevel,
+        confidence: 0.75,
+        detectedItems: detectedItems,
+        recommendations: hasRisk ? [
+            '建议立即联系酒店前台',
+            '记录详细位置信息',
+            '考虑更换房间'
+        ] : [
+            '未发现明显安全隐患',
+            '建议保持警惕',
+            '如有异常及时反馈'
+        ],
+        safetyScore: hasRisk ? (riskLevel === 'high' ? 2.0 : 3.5) : 4.5,
+        aiResponse: text // 保存原始AI回复
+    };
+}
+
+// 模拟AI分析函数（作为备用）
 async function simulateAIAnalysis(imagePath, detectionType) {
     // 模拟AI分析延迟
     await new Promise(resolve => setTimeout(resolve, 1000));
@@ -261,7 +446,8 @@ async function simulateAIAnalysis(imagePath, detectionType) {
             '建议保持警惕',
             '如有异常及时反馈'
         ],
-        safetyScore: hasRisk ? (riskLevel === 'high' ? 2.0 : 3.5) : 4.5
+        safetyScore: hasRisk ? (riskLevel === 'high' ? 2.0 : 3.5) : 4.5,
+        isSimulated: true // 标记为模拟结果
     };
 
     return analysis;

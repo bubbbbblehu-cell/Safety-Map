@@ -319,6 +319,28 @@
             display: block;
         }
 
+        /* 酒店标记popup样式 */
+        .hotel-popup {
+            text-align: center;
+        }
+
+        .hotel-popup button {
+            margin-top: 8px;
+            padding: 6px 12px;
+            background: #6366f1;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.3s;
+        }
+
+        .hotel-popup button:hover {
+            background: #4f46e5;
+            transform: scale(1.05);
+        }
+
         /* 地图页面 */
         .map-page {
             height: calc(100vh - 70px);
@@ -426,6 +448,12 @@
             color: #333;
             transition: all 0.3s;
             white-space: nowrap;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        .control-button:active {
+            transform: scale(0.95);
         }
 
         .control-button:hover {
@@ -975,6 +1003,7 @@
 
             <!-- 右上角：控制按钮 -->
             <div class="top-controls">
+                <div class="control-button" id="switchCityButton">切换城市</div>
                 <div class="control-button active" id="toggleHeatmap">热力图</div>
                 <div class="control-button" id="filterButton">筛选</div>
             </div>
@@ -1454,25 +1483,73 @@
             
             filteredHotels.forEach(hotel => {
                 const markerColor = getMarkerColor(hotel.score);
+                // 使用更大的标记，增加点击区域
                 const marker = L.circleMarker([hotel.lat, hotel.lng], {
-                    radius: 10,
+                    radius: 12,
                     fillColor: markerColor,
                     color: '#fff',
                     weight: 3,
                     opacity: 1,
-                    fillOpacity: 0.8
+                    fillOpacity: 0.9
                 }).addTo(map);
                 
-                marker.bindPopup(`
-                    <div style="text-align: center;">
-                        <strong>${hotel.name}</strong><br>
-                        安全评分: ${hotel.score}/5.0<br>
-                        评价数: ${hotel.reviews}
-                    </div>
-                `);
+                // 添加标题，方便识别
+                marker.bindTooltip(hotel.name, {
+                    permanent: false,
+                    direction: 'top',
+                    offset: [0, -10]
+                });
                 
-                marker.on('click', function() {
-                    openHotelModal(hotel);
+                // 绑定弹出窗口（鼠标悬停时显示）
+                const popupContent = `
+                    <div style="text-align: center; min-width: 150px; padding: 8px;">
+                        <strong style="font-size: 14px; display: block; margin-bottom: 6px;">${hotel.name}</strong>
+                        <span style="font-size: 12px; color: #666; display: block; margin-bottom: 4px;">安全评分: ${hotel.score}/5.0</span>
+                        <span style="font-size: 12px; color: #666; display: block; margin-bottom: 8px;">评价数: ${hotel.reviews}</span>
+                        <div style="font-size: 11px; color: #999; margin-top: 8px;">点击标记查看详情</div>
+                    </div>
+                `;
+                
+                marker.bindPopup(popupContent, {
+                    maxWidth: 200,
+                    className: 'hotel-popup',
+                    closeButton: false,
+                    autoClose: true,
+                    closeOnClick: true
+                });
+                
+                // 点击事件 - 直接打开详情弹窗
+                marker.on('click', function(e) {
+                    if (e.originalEvent) {
+                        e.originalEvent.stopPropagation();
+                        e.originalEvent.preventDefault();
+                    }
+                    console.log('点击酒店标记:', hotel.name);
+                    // 关闭popup（如果打开了）
+                    if (this.isPopupOpen && this.isPopupOpen()) {
+                        this.closePopup();
+                    }
+                    // 打开详情弹窗
+                    setTimeout(() => {
+                        openHotelModal(hotel);
+                    }, 100);
+                });
+                
+                // 鼠标悬停时显示popup和改变样式
+                marker.on('mouseover', function() {
+                    this.setStyle({
+                        radius: 14,
+                        fillOpacity: 1
+                    });
+                    this.openPopup();
+                });
+                
+                marker.on('mouseout', function() {
+                    this.setStyle({
+                        radius: 12,
+                        fillOpacity: 0.9
+                    });
+                    // 不自动关闭popup，让用户有时间点击
                 });
                 
                 markers.push(marker);
@@ -1515,18 +1592,44 @@
             document.getElementById('ratedHotels').textContent = ratedHotels;
         }
 
+        // 全局函数，供popup中的按钮调用
+        window.openHotelModalFromMap = function(hotelId) {
+            if (!currentCity) return;
+            const hotels = mockHotels[currentCity.id] || [];
+            const hotel = hotels.find(h => h.id === hotelId);
+            if (hotel) {
+                openHotelModal(hotel);
+            }
+        };
+
         function openHotelModal(hotel) {
+            if (!hotel) {
+                console.error('酒店数据无效');
+                return;
+            }
+            
             currentHotel = hotel;
-            document.getElementById('hotelName').textContent = hotel.name;
-            document.getElementById('hotelScore').textContent = hotel.score + '/5.0';
-            document.getElementById('hotelReviews').textContent = hotel.reviews + ' 条';
+            const hotelNameEl = document.getElementById('hotelName');
+            const hotelScoreEl = document.getElementById('hotelScore');
+            const hotelReviewsEl = document.getElementById('hotelReviews');
             
-            const isFavorite = favorites.some(f => f.id === hotel.id && f.cityId === currentCity.id);
+            if (hotelNameEl) hotelNameEl.textContent = hotel.name;
+            if (hotelScoreEl) hotelScoreEl.textContent = hotel.score + '/5.0';
+            if (hotelReviewsEl) hotelReviewsEl.textContent = hotel.reviews + ' 条';
+            
+            const isFavorite = currentCity && favorites.some(f => f.id === hotel.id && f.cityId === currentCity.id);
             const favoriteBtn = document.getElementById('favoriteButton');
-            favoriteBtn.classList.toggle('active', isFavorite);
-            favoriteBtn.textContent = isFavorite ? '★ 已收藏' : '☆ 收藏';
+            if (favoriteBtn) {
+                favoriteBtn.classList.toggle('active', isFavorite);
+                favoriteBtn.textContent = isFavorite ? '★ 已收藏' : '☆ 收藏';
+            }
             
-            document.getElementById('hotelModal').classList.add('active');
+            const hotelModal = document.getElementById('hotelModal');
+            if (hotelModal) {
+                hotelModal.classList.add('active');
+            } else {
+                console.error('酒店详情弹窗元素不存在');
+            }
         }
 
         function updateFavoritesList() {
@@ -1740,6 +1843,20 @@
                 this.classList.remove('active');
             }
         });
+
+        // 切换城市按钮事件
+        const switchCityButton = document.getElementById('switchCityButton');
+        if (switchCityButton) {
+            switchCityButton.addEventListener('click', () => {
+                console.log('点击切换城市按钮');
+                const cityModal = document.getElementById('cityModal');
+                if (cityModal) {
+                    cityModal.classList.add('active');
+                } else {
+                    console.error('城市选择模态框不存在');
+                }
+            });
+        }
 
         document.getElementById('toggleHeatmap').addEventListener('click', function() {
             showHeatmap = !showHeatmap;
