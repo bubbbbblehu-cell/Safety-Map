@@ -934,7 +934,7 @@
 <body>
     <!-- 开屏页 -->
     <div id="splash-screen">
-        <img src="splash.png" alt="启动画面" onerror="this.style.display='none'; document.getElementById('splash-screen').style.background='linear-gradient(135deg, #667eea 0%, #764ba2 100%)';">
+        <img src="splash.png" alt="启动画面" onerror="handleSplashError(this);">
     </div>
 
 <div class="container">
@@ -2036,6 +2036,16 @@
             }
         });
 
+        // 开屏页图片加载失败处理函数
+        function handleSplashError(img) {
+            console.log('开屏页图片加载失败，使用渐变背景');
+            img.style.display = 'none';
+            const splash = document.getElementById('splash-screen');
+            if (splash) {
+                splash.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+            }
+        }
+
         // 开屏页处理
         window.addEventListener('load', () => {
             setTimeout(() => {
@@ -2054,9 +2064,6 @@
                 }
             }, 2500); // 2.5秒后开始消失
         });
-
-        // 图片加载失败时的处理（已在img标签的onerror中处理）
-        // 如果图片不存在，会显示渐变背景
 
         // 初始化：显示拍照检测页面（如果开屏页已处理则不会执行）
         // 等待DOM完全加载后再初始化
