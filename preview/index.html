@@ -1441,14 +1441,8 @@
             // 强制切换到地图页面，使用稍长的延迟确保模态框已关闭
             setTimeout(() => {
                 console.log('切换到地图页面，当前城市:', currentCity);
+                // 只调用 switchPage，它会自动调用 initMap
                 switchPage('mapPage');
-                // 确保地图和统计数据更新
-                setTimeout(() => {
-                    if (currentCity && currentCity.id) {
-                        initMap(currentCity.id);
-                        updateStats();
-                    }
-                }, 300);
             }, 100);
         }
 
@@ -1462,6 +1456,8 @@
                 }
                 return;
             }
+            
+            console.log('initMap 被调用，城市ID:', cityId);
             
             const coords = cityCoordinates[cityId];
             const hotels = mockHotels[cityId] || [];
@@ -1491,20 +1487,29 @@
             }
             heatmapCircles = [];
             
-            // 移除旧地图
+            // 完全移除旧地图
             if (map) {
                 try {
+                    // 移除所有图层
+                    map.eachLayer(function(layer) {
+                        map.removeLayer(layer);
+                    });
+                    // 移除地图实例
                     map.remove();
+                    map.off(); // 移除所有事件监听器
                 } catch (e) {
-                    console.log('移除旧地图时出错（可忽略）:', e);
+                    console.log('移除旧地图时出错:', e);
                 }
                 map = null;
             }
             
-            // 清空地图容器
+            // 清空地图容器 - 这是关键，必须完全清空
             const mapContainer = document.getElementById('map');
             if (mapContainer) {
+                // 完全清空容器，包括所有子元素和事件监听器
                 mapContainer.innerHTML = '';
+                // 移除可能存在的 Leaflet 类
+                mapContainer.className = '';
             }
             
             // 延迟初始化，确保DOM已准备好
@@ -1514,6 +1519,24 @@
                     if (!mapElement) {
                         console.error('地图容器不存在');
                         return;
+                    }
+                    
+                    // 检查地图容器是否已经被初始化
+                    if (mapElement._leaflet_id) {
+                        console.warn('地图容器已被初始化，先清除:', mapElement._leaflet_id);
+                        // 如果容器已经有 Leaflet ID，说明之前初始化过，需要先清除
+                        try {
+                            if (map) {
+                                map.remove();
+                            }
+                        } catch (e) {
+                            console.log('清除旧地图实例时出错:', e);
+                        }
+                        // 完全清空容器
+                        mapElement.innerHTML = '';
+                        mapElement.className = '';
+                        delete mapElement._leaflet_id;
+                        map = null;
                     }
                     
                     // 确保地图容器有高度
@@ -1538,6 +1561,7 @@
                         return;
                     }
                     
+                    console.log('创建新的地图实例');
                     map = L.map('map', {
                         zoomControl: true,
                         attributionControl: true
