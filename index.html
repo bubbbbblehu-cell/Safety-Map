@@ -119,6 +119,7 @@
             align-items: center;
             justify-content: center;
             padding: 40px 20px;
+            overflow-y: auto;
         }
 
         .photo-icon-large {
@@ -149,6 +150,7 @@
             cursor: pointer;
             transition: all 0.3s;
             box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            border: none;
         }
 
         .photo-button-large:hover {
@@ -176,6 +178,145 @@
         .photo-feature-icon {
             font-size: 24px;
             margin-right: 12px;
+        }
+
+        /* 检测部位选择模态框 */
+        .detection-modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(8px);
+            z-index: 2000;
+            align-items: flex-end;
+        }
+
+        .detection-modal.active {
+            display: flex;
+        }
+
+        .detection-modal-content {
+            background: white;
+            width: 100%;
+            padding: 30px 20px calc(20px + env(safe-area-inset-bottom));
+            border-radius: 28px 28px 0 0;
+            box-sizing: border-box;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .option-box {
+            padding: 16px;
+            border: 1px solid rgba(163, 201, 226, 0.2);
+            background: white;
+            margin-bottom: 10px;
+            cursor: pointer;
+            border-radius: 12px;
+            transition: all 0.3s;
+        }
+
+        .option-box:hover {
+            border-color: #6366f1;
+            background: #f0f7ff;
+        }
+
+        .option-box.selected {
+            border-color: #6366f1;
+            background: #f0f7ff;
+        }
+
+        /* 自查引导页面 */
+        .qa-page {
+            background: #f5f5f5;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .qa-card {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255,255,255,0.4);
+            padding: 20px;
+            margin-bottom: 15px;
+            border-radius: 24px;
+            box-shadow: 0 10px 30px rgba(163, 201, 226, 0.2);
+        }
+
+        .risk-area {
+            background: #FFF5F5;
+            border: 1px dashed #FC8181;
+            padding: 12px;
+            margin: 12px 0;
+            border-radius: 8px;
+        }
+
+        .risk-tag {
+            color: #E53E3E;
+            font-weight: bold;
+            font-size: 13px;
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .risk-desc {
+            color: #C53030;
+            font-size: 12px;
+            line-height: 1.5;
+        }
+
+        .qa-btn {
+            flex: 1;
+            padding: 14px;
+            border: 1px solid #E2E8F0;
+            background: white;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .qa-btn:hover {
+            border-color: #6366f1;
+        }
+
+        .qa-btn.focused {
+            background: #6366f1 !important;
+            color: white !important;
+            font-weight: bold;
+        }
+
+        /* 照片上传页面 */
+        .upload-page {
+            background: #f5f5f5;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .upload-slot {
+            border: 2px dashed #6366f1;
+            padding: 25px;
+            margin-bottom: 15px;
+            text-align: center;
+            border-radius: 16px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .upload-slot:hover {
+            border-color: #4f46e5;
+            background: #f0f7ff;
+        }
+
+        .upload-preview {
+            width: 100%;
+            margin-top: 10px;
+            border-radius: 12px;
+            display: none;
+        }
+
+        .upload-preview.show {
+            display: block;
         }
 
         /* 地图页面 */
@@ -769,12 +910,12 @@
             </div>
         </div>
 
-        <!-- 拍照检测页面 -->
+        <!-- 拍照检测首页 -->
         <div class="page photo-page" id="photoPage">
             <div class="photo-icon-large">📷</div>
             <div class="photo-title">拍照检测</div>
             <div class="photo-subtitle">使用AI技术检测酒店安全环境</div>
-            <div class="photo-button-large" id="photoButtonLarge">开始拍照</div>
+            <div class="photo-button-large" id="photoButtonLarge">开启守护</div>
             
             <div class="photo-features">
                 <div class="photo-feature-item">
@@ -789,6 +930,23 @@
                     <span class="photo-feature-icon">✅</span>
                     <span>快速评估酒店环境</span>
                 </div>
+            </div>
+        </div>
+
+        <!-- 自查引导页面 -->
+        <div class="page qa-page" id="qaPage" style="display: none;">
+            <div class="scroll-content" id="qa-render"></div>
+            <div class="fixed-bottom-bar">
+                <button class="btn-blue" id="goToUploadBtn">完成自查，去拍摄照片</button>
+            </div>
+        </div>
+
+        <!-- 照片上传页面 -->
+        <div class="page upload-page" id="uploadPage" style="display: none;">
+            <h2 style="font-weight:300; margin: 20px 0;">影像取证上传</h2>
+            <div class="scroll-content" id="upload-render"></div>
+            <div class="fixed-bottom-bar">
+                <button class="btn-blue" id="submitAnalysisBtn">提交 AI 专家深度分析</button>
             </div>
         </div>
 
@@ -955,6 +1113,20 @@
         </div>
     </div>
 
+    <!-- 检测部位选择模态框 -->
+    <div class="detection-modal" id="detectionModal">
+        <div class="detection-modal-content">
+            <h3 style="margin:0 0 20px 0; font-weight:400; text-align:center;">请选择检测部位</h3>
+            <div class="option-box" onclick="toggleSelect(this, '门锁')">门锁安全检查</div>
+            <div class="option-box" onclick="toggleSelect(this, '窗户')">窗户外部检查</div>
+            <div class="option-box" onclick="toggleSelect(this, '镜子')">双面镜检测</div>
+            <div class="option-box" onclick="toggleSelect(this, '浴室')">浴室通风口检查</div>
+            <div class="option-box" onclick="toggleSelect(this, '插座')">插座与面板检查</div>
+            <div class="option-box" onclick="toggleSelect(this, '路由器')">路由器与信号检查</div>
+            <button class="btn-blue" style="margin-top:10px;" onclick="startQA()">确认并开始自查</button>
+        </div>
+    </div>
+
     <!-- 筛选弹窗 -->
     <div class="modal-overlay" id="filterModal">
         <div class="modal-content">
@@ -1101,8 +1273,26 @@
             if (pageId === 'photoPage') {
                 const photoPage = document.getElementById('photoPage');
                 if (photoPage) {
-                    photoPage.style.display = 'block';
+                    photoPage.style.display = 'flex';
                     photoPage.classList.add('active');
+                }
+            }
+
+            // 如果切换到自查引导页面
+            if (pageId === 'qaPage') {
+                const qaPage = document.getElementById('qaPage');
+                if (qaPage) {
+                    qaPage.style.display = 'block';
+                    qaPage.classList.add('active');
+                }
+            }
+
+            // 如果切换到上传页面
+            if (pageId === 'uploadPage') {
+                const uploadPage = document.getElementById('uploadPage');
+                if (uploadPage) {
+                    uploadPage.style.display = 'block';
+                    uploadPage.classList.add('active');
                 }
             }
         }
@@ -1377,9 +1567,178 @@
             }
         }
 
+        // 拍照检测相关变量
+        let detectionSelections = [];
+        const qaData = {
+            '门锁': { q: '握住门把手摇晃，是否感觉到明显松动或听到零件撞击声？', r: '门锁松动极可能是被撬动的痕迹，或内部反锁机构已失效。' },
+            '窗户': { q: '观察窗外 1 米内是否有空调外机、水管或邻居阳台？', r: '这类外部结构是天然的攀爬踏板，极易发生入室风险。' },
+            '镜子': { q: '用手指关节敲击镜面，声音是闷响还是空心的脆响？', r: '脆响意味着镜后有空腔，极大概率是"双面镜"偷拍。' },
+            '浴室': { q: '观察排气扇格栅内部是否有黑色圆孔或红点红光？', r: '通风口是隐藏摄像头的重灾区，红点通常是设备工作灯。' },
+            '插座': { q: '检查正对床铺的插座孔位，是否有反光点或异常缝隙？', r: '改装插座可提供长久电源给针孔设备。' },
+            '路由器': { q: '路由器背面除了网线，是否有不明的微小孔洞或多余接线？', r: '路由器常被植入网络嗅探或无线传输型偷拍模组。' }
+        };
+        let uploadedPhotos = [];
+
         // 事件监听
         document.getElementById('photoButtonLarge').addEventListener('click', () => {
-            alert('拍照检测功能正在开发中...\n\n此功能将允许您：\n- 拍摄酒店照片\n- AI智能识别安全隐患\n- 生成安全评分报告');
+            openDetectionSelector();
+        });
+
+        function openDetectionSelector() {
+            document.getElementById('detectionModal').classList.add('active');
+        }
+
+        function toggleSelect(el, val) {
+            el.classList.toggle('selected');
+            if (el.classList.contains('selected')) {
+                if (!detectionSelections.includes(val)) {
+                    detectionSelections.push(val);
+                }
+            } else {
+                detectionSelections = detectionSelections.filter(s => s !== val);
+            }
+        }
+
+        function handleFocus(btn) {
+            btn.parentElement.querySelectorAll('.qa-btn').forEach(b => b.classList.remove('focused'));
+            btn.classList.add('focused');
+        }
+
+        function startQA() {
+            if (detectionSelections.length === 0) {
+                alert('请选择检测部位');
+                return;
+            }
+            document.getElementById('detectionModal').classList.remove('active');
+            const container = document.getElementById('qa-render');
+            container.innerHTML = `<h2 style="font-weight:300; margin-top:10px;">安全自查引导</h2>` + 
+                detectionSelections.map(s => `
+                <div class="qa-card">
+                    <strong>🔍 ${s}检测引导：</strong>
+                    <p style="font-size:14px; margin: 10px 0;">${qaData[s].q}</p>
+                    <div class="risk-area">
+                        <span class="risk-tag">⚠️ 潜在风险点</span>
+                        <p class="risk-desc">${qaData[s].r}</p>
+                    </div>
+                    <div style="display:flex; gap:10px; margin-top: 12px;">
+                        <button class="qa-btn" onclick="handleFocus(this)">有异常</button>
+                        <button class="qa-btn" onclick="handleFocus(this)">正常</button>
+                    </div>
+                </div>
+            `).join('');
+            switchPage('qaPage');
+        }
+
+        function renderUploads() {
+            const container = document.getElementById('upload-render');
+            container.innerHTML = detectionSelections.map((s, i) => `
+                <div class="upload-slot" onclick="document.getElementById('f-${i}').click()">
+                    <div style="font-size:15px; font-weight:bold; color:#6366f1;">📸 拍摄【${s}】实拍</div>
+                    <input type="file" id="f-${i}" accept="image/*" hidden onchange="showPreview(this, ${i})">
+                    <img class="upload-preview" id="preview-${i}" style="width:100%; margin-top:10px; border-radius:12px;">
+                </div>
+            `).join('');
+            switchPage('uploadPage');
+        }
+
+        function showPreview(input, index) {
+            if (input.files && input.files[0]) {
+                const img = document.getElementById(`preview-${index}`);
+                img.src = URL.createObjectURL(input.files[0]);
+                img.classList.add('show');
+                uploadedPhotos[index] = input.files[0];
+            }
+        }
+
+        // API配置 - 可以根据环境修改
+        const API_CONFIG = {
+            // 开发环境
+            development: 'http://localhost:3001',
+            // 生产环境（部署后修改为实际API地址）
+            production: 'https://your-api-domain.com',
+            // 当前使用的环境
+            current: 'http://localhost:3001'
+        };
+
+        async function finalProcess() {
+            const validPhotos = uploadedPhotos.filter(p => p !== null && p !== undefined);
+            if (validPhotos.length === 0) {
+                alert('请至少上传一张照片');
+                return;
+            }
+
+            const submitBtn = document.getElementById('submitAnalysisBtn');
+            const originalText = submitBtn.textContent;
+            submitBtn.disabled = true;
+            submitBtn.textContent = '正在分析...';
+
+            try {
+                const formData = new FormData();
+                validPhotos.forEach((photo, index) => {
+                    if (photo) {
+                        formData.append('photos', photo);
+                        const detectionType = detectionSelections[index] || '通用';
+                        formData.append('detectionTypes[]', detectionType);
+                    }
+                });
+
+                // 调用后端API
+                const API_URL = API_CONFIG.current;
+                console.log('提交到API:', API_URL);
+                
+                const response = await fetch(`${API_URL}/api/analyze-photos`, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP错误: ${response.status}`);
+                }
+
+                const result = await response.json();
+                
+                if (result.success) {
+                    // 显示分析结果
+                    let resultMessage = '✅ 分析完成！\n\n';
+                    result.data.forEach((item, index) => {
+                        if (item.analysis) {
+                            resultMessage += `【${detectionSelections[index] || '通用'}】\n`;
+                            resultMessage += `风险等级: ${item.analysis.riskLevel === 'high' ? '高' : item.analysis.riskLevel === 'medium' ? '中' : '低'}\n`;
+                            resultMessage += `安全评分: ${item.analysis.safetyScore}/5.0\n\n`;
+                        }
+                    });
+                    resultMessage += '详细报告已生成。';
+                    
+                    alert(resultMessage);
+                    console.log('分析结果:', result.data);
+                    
+                    // 可以跳转到结果页面或显示结果详情
+                    // 这里可以添加结果展示逻辑
+                } else {
+                    alert('分析失败：' + (result.message || '未知错误'));
+                }
+            } catch (error) {
+                console.error('提交错误:', error);
+                if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
+                    alert('无法连接到服务器\n\n请确保：\n1. 后端服务器正在运行\n2. API地址配置正确\n3. 网络连接正常\n\n当前API地址: ' + API_CONFIG.current);
+                } else {
+                    alert('提交失败：' + error.message);
+                }
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = originalText;
+            }
+        }
+
+        // 绑定按钮事件
+        document.getElementById('goToUploadBtn').addEventListener('click', renderUploads);
+        document.getElementById('submitAnalysisBtn').addEventListener('click', finalProcess);
+
+        // 关闭检测模态框
+        document.getElementById('detectionModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                this.classList.remove('active');
+            }
         });
 
         document.getElementById('toggleHeatmap').addEventListener('click', function() {
