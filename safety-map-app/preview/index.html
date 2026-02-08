@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>女性安全地图 - 预览</title>
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+            background: #f5f5f5;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 414px;
+            margin: 0 auto;
+            background: white;
+            min-height: 100vh;
+            position: relative;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+
+        /* 城市选择页面样式 */
+        .city-selection {
+            padding: 24px;
+        }
+
+        .header {
+            margin-bottom: 24px;
+        }
+
+        .title {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            font-size: 16px;
+            color: #666;
+        }
+
+        .country-section {
+            margin-bottom: 24px;
+        }
+
+        .country-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #6366f1;
+            margin-bottom: 12px;
+            padding-left: 4px;
+        }
+
+        .cities-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .city-button {
+            background: #fff;
+            padding: 16px 24px;
+            border-radius: 12px;
+            min-width: 120px;
+            text-align: center;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+
+        .city-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+            border-color: #6366f1;
+        }
+
+        .city-button:active {
+            transform: translateY(0);
+        }
+
+        .city-button-text {
+            font-size: 16px;
+            font-weight: 500;
+            color: #333;
+        }
+
+        /* 地图页面样式 */
+        .map-screen {
+            display: none;
+            height: 100vh;
+            position: relative;
+        }
+
+        .map-screen.active {
+            display: block;
+        }
+
+        .map-header {
+            background: #6366f1;
+            color: white;
+            padding: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            z-index: 10;
+        }
+
+        .map-title {
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .switch-city-btn {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.3s;
+        }
+
+        .switch-city-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .map-container {
+            height: calc(100vh - 60px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        #map {
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        .map-placeholder {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-align: center;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 0;
+        }
+
+        .map-placeholder.hidden {
+            display: none;
+        }
+
+        .map-icon {
+            font-size: 64px;
+            margin-bottom: 16px;
+        }
+
+        .map-text {
+            font-size: 18px;
+            margin-bottom: 8px;
+        }
+
+        .map-subtext {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        /* 热力图模拟 */
+        .heatmap-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .heat-circle {
+            position: absolute;
+            border-radius: 50%;
+            opacity: 0.5;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+                opacity: 0.5;
+            }
+            50% {
+                transform: scale(1.1);
+                opacity: 0.7;
+            }
+        }
+
+        .heat-green {
+            background: rgba(74, 222, 128, 0.6);
+        }
+
+        .heat-yellow {
+            background: rgba(251, 191, 36, 0.6);
+        }
+
+        .heat-red {
+            background: rgba(248, 113, 113, 0.6);
+        }
+
+        /* 酒店标记 */
+        .hotel-marker {
+            position: absolute;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            border: 3px solid white;
+            cursor: pointer;
+            transform: translate(-50%, -50%);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+            transition: transform 0.2s;
+        }
+
+        .hotel-marker:hover {
+            transform: translate(-50%, -50%) scale(1.2);
+            z-index: 5;
+        }
+
+        .marker-green {
+            background: #4ade80;
+        }
+
+        .marker-yellow {
+            background: #fbbf24;
+        }
+
+        .marker-red {
+            background: #f87171;
+        }
+
+        /* 控制按钮 */
+        .controls {
+            position: absolute;
+            top: 80px;
+            right: 16px;
+            z-index: 10;
+        }
+
+        .control-button {
+            background: white;
+            padding: 10px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+            font-size: 14px;
+            font-weight: 500;
+            color: #333;
+            transition: all 0.3s;
+        }
+
+        .control-button:hover {
+            background: #f0f0f0;
+        }
+
+        .control-button.active {
+            background: #6366f1;
+            color: white;
+        }
+
+        /* 图例 */
+        .legend {
+            position: absolute;
+            bottom: 16px;
+            left: 16px;
+            right: 16px;
+            background: white;
+            padding: 12px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+            z-index: 10;
+        }
+
+        .legend-title {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #333;
+        }
+
+        .legend-items {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin-right: 12px;
+        }
+
+        .legend-color {
+            width: 16px;
+            height: 16px;
+            border-radius: 8px;
+            margin-right: 6px;
+        }
+
+        .legend-text {
+            font-size: 12px;
+            color: #666;
+        }
+
+        /* 模态框 */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: flex-end;
+            align-items: flex-end;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-top-left-radius: 20px;
+            border-top-right-radius: 20px;
+            max-height: 80%;
+            width: 100%;
+            max-width: 414px;
+            margin: 0 auto;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .modal-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .close-button {
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 24px;
+            color: #666;
+        }
+
+        .close-button:hover {
+            color: #333;
+        }
+
+        /* 加载动画 */
+        .loading {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background: #f5f5f5;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #e0e0e0;
+            border-top-color: #6366f1;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            margin-top: 12px;
+            font-size: 16px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 城市选择页面 -->
+        <div class="city-selection" id="citySelection">
+            <div class="header">
+                <div class="title">欢迎使用女性安全地图</div>
+                <div class="subtitle">请选择您要查看的城市</div>
+            </div>
+
+            <div class="country-section">
+                <div class="country-title">中国</div>
+                <div class="cities-container">
+                    <div class="city-button" data-city='{"id":"xishuangbanna","name":"西双版纳","country":"中国"}'>
+                        <div class="city-button-text">西双版纳</div>
+                    </div>
+                    <div class="city-button" data-city='{"id":"guiyang","name":"贵阳","country":"中国"}'>
+                        <div class="city-button-text">贵阳</div>
+                    </div>
+                    <div class="city-button" data-city='{"id":"shanghai","name":"上海","country":"中国"}'>
+                        <div class="city-button-text">上海</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="country-section">
+                <div class="country-title">泰国</div>
+                <div class="cities-container">
+                    <div class="city-button" data-city='{"id":"bangkok","name":"曼谷","country":"泰国"}'>
+                        <div class="city-button-text">曼谷</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="country-section">
+                <div class="country-title">意大利</div>
+                <div class="cities-container">
+                    <div class="city-button" data-city='{"id":"naples","name":"那不勒斯","country":"意大利"}'>
+                        <div class="city-button-text">那不勒斯</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 地图页面 -->
+        <div class="map-screen" id="mapScreen">
+            <div class="map-header">
+                <div class="map-title" id="mapTitle">安全地图</div>
+                <div class="switch-city-btn" id="switchCityBtn">切换城市</div>
+            </div>
+            <div class="map-container" id="mapContainer">
+                <div id="map"></div>
+                <div class="map-placeholder" id="mapPlaceholder">
+                    <div class="map-icon">🗺️</div>
+                    <div class="map-text" id="cityNameDisplay">选择城市查看地图</div>
+                    <div class="map-subtext">正在加载地图...</div>
+                </div>
+            </div>
+            <div class="controls">
+                <div class="control-button active" id="toggleHeatmap">隐藏热力图</div>
+            </div>
+            <div class="legend">
+                <div class="legend-title">安全评分图例</div>
+                <div class="legend-items">
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: #4ade80;"></div>
+                        <div class="legend-text">4.5-5.0 (很安全)</div>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: #fbbf24;"></div>
+                        <div class="legend-text">4.0-4.5 (较安全)</div>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: #f87171;"></div>
+                        <div class="legend-text">3.5-4.0 (一般)</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 城市切换模态框 -->
+    <div class="modal-overlay" id="cityModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">选择城市</div>
+                <div class="close-button" id="closeModal">✕</div>
+            </div>
+            <div class="city-selection" style="padding: 16px;">
+                <div class="country-section">
+                    <div class="country-title">中国</div>
+                    <div class="cities-container">
+                        <div class="city-button" data-city='{"id":"xishuangbanna","name":"西双版纳","country":"中国"}'>
+                            <div class="city-button-text">西双版纳</div>
+                        </div>
+                        <div class="city-button" data-city='{"id":"guiyang","name":"贵阳","country":"中国"}'>
+                            <div class="city-button-text">贵阳</div>
+                        </div>
+                        <div class="city-button" data-city='{"id":"shanghai","name":"上海","country":"中国"}'>
+                            <div class="city-button-text">上海</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="country-section">
+                    <div class="country-title">泰国</div>
+                    <div class="cities-container">
+                        <div class="city-button" data-city='{"id":"bangkok","name":"曼谷","country":"泰国"}'>
+                            <div class="city-button-text">曼谷</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="country-section">
+                    <div class="country-title">意大利</div>
+                    <div class="cities-container">
+                        <div class="city-button" data-city='{"id":"naples","name":"那不勒斯","country":"意大利"}'>
+                            <div class="city-button-text">那不勒斯</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 城市坐标数据
+        const cityCoordinates = {
+            xishuangbanna: { lat: 22.0084, lng: 100.7979, zoom: 13 },
+            guiyang: { lat: 26.6470, lng: 106.6302, zoom: 13 },
+            bangkok: { lat: 13.7563, lng: 100.5018, zoom: 13 },
+            shanghai: { lat: 31.2304, lng: 121.4737, zoom: 13 },
+            naples: { lat: 40.8518, lng: 14.2681, zoom: 13 },
+        };
+
+        // 模拟酒店数据（使用真实坐标）
+        const mockHotels = {
+            xishuangbanna: [
+                { name: '西双版纳万达文华酒店', score: 4.5, lat: 22.0084, lng: 100.7979 },
+                { name: '景洪大酒店', score: 4.2, lat: 22.0150, lng: 100.8100 },
+                { name: '西双版纳洲际酒店', score: 4.8, lat: 22.0000, lng: 100.7900 },
+            ],
+            guiyang: [
+                { name: '贵阳喜来登酒店', score: 4.3, lat: 26.6470, lng: 106.6302 },
+                { name: '贵阳凯宾斯基酒店', score: 4.6, lat: 26.6550, lng: 106.6400 },
+                { name: '贵阳万丽酒店', score: 4.4, lat: 26.6400, lng: 106.6200 },
+            ],
+            bangkok: [
+                { name: '曼谷文华东方酒店', score: 4.7, lat: 13.7563, lng: 100.5018 },
+                { name: '曼谷半岛酒店', score: 4.5, lat: 13.7500, lng: 100.5100 },
+                { name: '曼谷素可泰酒店', score: 4.3, lat: 13.7600, lng: 100.4950 },
+            ],
+            shanghai: [
+                { name: '上海外滩茂悦大酒店', score: 4.6, lat: 31.2304, lng: 121.4737 },
+                { name: '上海和平饭店', score: 4.8, lat: 31.2350, lng: 121.4800 },
+                { name: '上海半岛酒店', score: 4.7, lat: 31.2250, lng: 121.4700 },
+            ],
+            naples: [
+                { name: '那不勒斯大饭店', score: 4.2, lat: 40.8518, lng: 14.2681 },
+                { name: '那不勒斯皇家酒店', score: 4.4, lat: 40.8550, lng: 14.2700 },
+                { name: '那不勒斯地中海酒店', score: 4.1, lat: 40.8480, lng: 14.2650 },
+            ],
+        };
+
+        let currentCity = null;
+        let showHeatmap = true;
+        let map = null;
+        let markers = [];
+        let heatmapCircles = [];
+
+        // 城市选择
+        document.querySelectorAll('.city-button').forEach(button => {
+            button.addEventListener('click', function() {
+                const cityData = JSON.parse(this.getAttribute('data-city'));
+                selectCity(cityData);
+            });
+        });
+
+        function selectCity(city) {
+            currentCity = city;
+            
+            // 隐藏城市选择页面，显示地图页面
+            document.getElementById('citySelection').style.display = 'none';
+            document.getElementById('mapScreen').classList.add('active');
+            
+            // 更新标题
+            document.getElementById('mapTitle').textContent = city.name;
+            
+            // 初始化或更新地图
+            initMap(city.id);
+        }
+
+        function initMap(cityId) {
+            const coords = cityCoordinates[cityId];
+            const hotels = mockHotels[cityId] || [];
+            
+            // 显示加载提示
+            document.getElementById('mapPlaceholder').classList.remove('hidden');
+            
+            // 清除所有标记和热力图
+            markers.forEach(marker => {
+                if (map) map.removeLayer(marker);
+            });
+            markers = [];
+            
+            heatmapCircles.forEach(circle => {
+                if (map) map.removeLayer(circle);
+            });
+            heatmapCircles = [];
+            
+            // 如果地图已存在，先移除再创建新的
+            if (map) {
+                map.remove();
+                map = null;
+            }
+            
+            // 清空地图容器（确保完全清除）
+            const mapContainer = document.getElementById('map');
+            if (mapContainer) {
+                mapContainer.innerHTML = '';
+            }
+            
+            // 创建新地图
+            setTimeout(() => {
+                try {
+                    map = L.map('map').setView([coords.lat, coords.lng], coords.zoom);
+                    
+                    // 添加 OpenStreetMap 图层
+                    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                        attribution: '© OpenStreetMap contributors',
+                        maxZoom: 19
+                    }).addTo(map);
+                    
+                    // 等待地图加载完成
+                    map.whenReady(() => {
+                        // 隐藏加载提示
+                        document.getElementById('mapPlaceholder').classList.add('hidden');
+                        
+                        // 添加酒店标记和热力图
+                        updateMapMarkers(hotels);
+                    });
+                } catch (error) {
+                    console.error('地图初始化错误:', error);
+                    document.getElementById('mapPlaceholder').classList.remove('hidden');
+                    document.getElementById('cityNameDisplay').textContent = '地图加载失败，请刷新页面重试';
+                }
+            }, 200);
+        }
+
+        function updateMapMarkers(hotels) {
+            // 确保地图已初始化
+            if (!map) {
+                console.error('地图未初始化');
+                return;
+            }
+            
+            // 清除旧标记
+            markers.forEach(marker => {
+                if (map.hasLayer(marker)) {
+                    map.removeLayer(marker);
+                }
+            });
+            markers = [];
+            
+            // 清除旧热力图
+            heatmapCircles.forEach(circle => {
+                if (map.hasLayer(circle)) {
+                    map.removeLayer(circle);
+                }
+            });
+            heatmapCircles = [];
+            
+            hotels.forEach(hotel => {
+                // 创建标记
+                const markerColor = getMarkerColor(hotel.score);
+                const marker = L.circleMarker([hotel.lat, hotel.lng], {
+                    radius: 10,
+                    fillColor: markerColor,
+                    color: '#fff',
+                    weight: 3,
+                    opacity: 1,
+                    fillOpacity: 0.8
+                }).addTo(map);
+                
+                // 添加弹出窗口
+                marker.bindPopup(`
+                    <div style="text-align: center;">
+                        <strong>${hotel.name}</strong><br>
+                        安全评分: ${hotel.score}/5.0<br>
+                        评价数: ${Math.floor(Math.random() * 200 + 50)}
+                    </div>
+                `);
+                
+                // 点击事件
+                marker.on('click', function() {
+                    alert(`${hotel.name}\n安全评分: ${hotel.score}/5.0\n评价数: ${Math.floor(Math.random() * 200 + 50)}`);
+                });
+                
+                markers.push(marker);
+                
+                // 添加热力图圆圈
+                if (showHeatmap) {
+                    const heatColor = getHeatColor(hotel.score);
+                    const heatCircle = L.circle([hotel.lat, hotel.lng], {
+                        radius: 500 + hotel.score * 200,
+                        fillColor: heatColor === 'heat-green' ? '#4ade80' : 
+                                  heatColor === 'heat-yellow' ? '#fbbf24' : '#f87171',
+                        color: 'transparent',
+                        fillOpacity: 0.3,
+                        weight: 0
+                    }).addTo(map);
+                    
+                    heatmapCircles.push(heatCircle);
+                }
+            });
+        }
+
+        function getHeatColor(score) {
+            if (score >= 4.5) return 'heat-green';
+            if (score >= 4.0) return 'heat-yellow';
+            return 'heat-red';
+        }
+
+        function getMarkerColor(score) {
+            if (score >= 4.5) return '#4ade80';
+            if (score >= 4.0) return '#fbbf24';
+            return '#f87171';
+        }
+
+        // 切换热力图
+        document.getElementById('toggleHeatmap').addEventListener('click', function() {
+            showHeatmap = !showHeatmap;
+            this.textContent = showHeatmap ? '隐藏热力图' : '显示热力图';
+            this.classList.toggle('active', showHeatmap);
+            
+            if (currentCity && map) {
+                const hotels = mockHotels[currentCity.id] || [];
+                updateMapMarkers(hotels);
+            }
+        });
+
+        // 切换城市按钮
+        document.getElementById('switchCityBtn').addEventListener('click', () => {
+            document.getElementById('cityModal').classList.add('active');
+        });
+
+        // 关闭模态框
+        document.getElementById('closeModal').addEventListener('click', () => {
+            document.getElementById('cityModal').classList.remove('active');
+        });
+
+        // 点击模态框背景关闭
+        document.getElementById('cityModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                this.classList.remove('active');
+            }
+        });
+
+        // 模态框中的城市选择 - 使用事件委托确保动态内容也能响应
+        document.getElementById('cityModal').addEventListener('click', function(e) {
+            const cityButton = e.target.closest('.city-button');
+            if (cityButton) {
+                const cityData = JSON.parse(cityButton.getAttribute('data-city'));
+                // 关闭模态框
+                document.getElementById('cityModal').classList.remove('active');
+                // 切换城市
+                selectCity(cityData);
+            }
+        });
+    </script>
+</body>
+</html>
