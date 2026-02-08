@@ -26,8 +26,8 @@
             background: #FFFFFF; /* 强制背景为白，防止黑色闪现 */
             overflow-x: hidden;
             padding-bottom: 70px;
-            position: fixed; /* 锁定位置防止滚动露出黑底 */
-            height: 100vh;
+            position: relative; /* 允许页面滚动 */
+            min-height: 100vh;
             width: 100vw;
         }
 
@@ -352,8 +352,9 @@
 
         /* 地图页面 */
         .map-page {
-            height: calc(100vh - 70px);
+            min-height: calc(100vh - 70px);
             position: relative;
+            overflow-y: auto;
         }
 
         .map-container {
@@ -1325,6 +1326,8 @@
                         if (currentCity && currentCity.id) {
                             console.log('初始化地图，城市ID:', currentCity.id);
                             initMap(currentCity.id);
+                            // 确保统计数据也更新
+                            updateStats();
                         } else {
                             console.error('城市数据无效:', currentCity);
                         }
@@ -1421,6 +1424,13 @@
             setTimeout(() => {
                 console.log('切换到地图页面，当前城市:', currentCity);
                 switchPage('mapPage');
+                // 确保地图和统计数据更新
+                setTimeout(() => {
+                    if (currentCity && currentCity.id) {
+                        initMap(currentCity.id);
+                        updateStats();
+                    }
+                }, 300);
             }, 100);
         }
 
@@ -1444,20 +1454,32 @@
             }
             
             // 清除旧标记
-            markers.forEach(marker => {
-                if (map) map.removeLayer(marker);
-            });
+            if (markers && markers.length > 0) {
+                markers.forEach(marker => {
+                    if (map && map.hasLayer(marker)) {
+                        map.removeLayer(marker);
+                    }
+                });
+            }
             markers = [];
             
             // 清除旧热力图
-            heatmapCircles.forEach(circle => {
-                if (map) map.removeLayer(circle);
-            });
+            if (heatmapCircles && heatmapCircles.length > 0) {
+                heatmapCircles.forEach(circle => {
+                    if (map && map.hasLayer(circle)) {
+                        map.removeLayer(circle);
+                    }
+                });
+            }
             heatmapCircles = [];
             
             // 移除旧地图
             if (map) {
-                map.remove();
+                try {
+                    map.remove();
+                } catch (e) {
+                    console.log('移除旧地图时出错（可忽略）:', e);
+                }
                 map = null;
             }
             
@@ -1555,17 +1577,17 @@
                     maxWidth: 200,
                     className: 'hotel-popup',
                     closeButton: false,
-                    autoClose: true,
-                    closeOnClick: true
+                    autoClose: false,
+                    closeOnClick: false
                 });
                 
                 // 点击事件 - 直接打开详情弹窗
                 marker.on('click', function(e) {
+                    console.log('点击酒店标记:', hotel.name, hotel);
+                    // 阻止事件冒泡到地图
                     if (e.originalEvent) {
                         e.originalEvent.stopPropagation();
-                        e.originalEvent.preventDefault();
                     }
-                    console.log('点击酒店标记:', hotel.name);
                     // 关闭popup（如果打开了）
                     if (this.isPopupOpen && this.isPopupOpen()) {
                         this.closePopup();
@@ -1573,7 +1595,7 @@
                     // 打开详情弹窗
                     setTimeout(() => {
                         openHotelModal(hotel);
-                    }, 100);
+                    }, 50);
                 });
                 
                 // 鼠标悬停时显示popup和改变样式
