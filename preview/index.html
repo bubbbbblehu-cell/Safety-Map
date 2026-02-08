@@ -97,48 +97,65 @@
             color: #333;
         }
 
-        /* 地图页面样式 */
+        /* 地图页面样式 - 三栏布局 */
         .map-screen {
             display: none;
             height: 100vh;
             position: relative;
+            flex-direction: row;
         }
 
         .map-screen.active {
-            display: block;
+            display: flex;
         }
 
-        .map-header {
-            background: #6366f1;
-            color: white;
-            padding: 16px;
+        /* 左侧：拍照检测面板 */
+        .photo-panel {
+            width: 70px;
+            background: rgba(255, 255, 255, 0.95);
+            border-right: 1px solid #e0e0e0;
             display: flex;
-            justify-content: space-between;
+            flex-direction: column;
             align-items: center;
-            position: relative;
+            padding-top: 16px;
             z-index: 10;
         }
 
-        .map-title {
-            font-size: 18px;
-            font-weight: bold;
-        }
-
-        .switch-city-btn {
-            background: rgba(255, 255, 255, 0.2);
-            padding: 6px 12px;
-            border-radius: 6px;
+        .photo-button {
+            width: 56px;
+            padding: 10px;
+            background: #6366f1;
+            border-radius: 10px;
+            text-align: center;
             cursor: pointer;
-            font-size: 14px;
-            transition: background 0.3s;
+            transition: all 0.3s;
         }
 
-        .switch-city-btn:hover {
-            background: rgba(255, 255, 255, 0.3);
+        .photo-button:hover {
+            background: #4f46e5;
+            transform: scale(1.05);
+        }
+
+        .photo-icon {
+            font-size: 22px;
+            margin-bottom: 4px;
+        }
+
+        .photo-text {
+            color: #fff;
+            font-size: 11px;
+            font-weight: 500;
+        }
+
+        /* 中间：地图区域 */
+        .map-container-wrapper {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
         }
 
         .map-container {
-            height: calc(100vh - 60px);
+            height: 100%;
             position: relative;
             overflow: hidden;
         }
@@ -185,82 +202,46 @@
             opacity: 0.8;
         }
 
-        /* 热力图模拟 */
-        .heatmap-overlay {
+        /* 左上角：统计信息 */
+        .stats-container {
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
+            top: 16px;
+            left: 16px;
+            z-index: 10;
+            display: flex;
+            gap: 8px;
         }
 
-        .heat-circle {
+        .stats-card {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 12px;
+            border-radius: 8px;
+            min-width: 80px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+        }
+
+        .stats-label {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 4px;
+        }
+
+        .stats-value {
+            font-size: 20px;
+            font-weight: bold;
+            color: #6366f1;
+        }
+
+        /* 右上角：控制按钮 */
+        .top-controls {
             position: absolute;
-            border-radius: 50%;
-            opacity: 0.5;
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% {
-                transform: scale(1);
-                opacity: 0.5;
-            }
-            50% {
-                transform: scale(1.1);
-                opacity: 0.7;
-            }
-        }
-
-        .heat-green {
-            background: rgba(74, 222, 128, 0.6);
-        }
-
-        .heat-yellow {
-            background: rgba(251, 191, 36, 0.6);
-        }
-
-        .heat-red {
-            background: rgba(248, 113, 113, 0.6);
-        }
-
-        /* 酒店标记 */
-        .hotel-marker {
-            position: absolute;
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
-            border: 3px solid white;
-            cursor: pointer;
-            transform: translate(-50%, -50%);
-            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-            transition: transform 0.2s;
-        }
-
-        .hotel-marker:hover {
-            transform: translate(-50%, -50%) scale(1.2);
-            z-index: 5;
-        }
-
-        .marker-green {
-            background: #4ade80;
-        }
-
-        .marker-yellow {
-            background: #fbbf24;
-        }
-
-        .marker-red {
-            background: #f87171;
-        }
-
-        /* 控制按钮 */
-        .controls {
-            position: absolute;
-            top: 80px;
+            top: 16px;
             right: 16px;
             z-index: 10;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
         }
 
         .control-button {
@@ -273,6 +254,7 @@
             font-weight: 500;
             color: #333;
             transition: all 0.3s;
+            white-space: nowrap;
         }
 
         .control-button:hover {
@@ -284,7 +266,95 @@
             color: white;
         }
 
-        /* 图例 */
+        /* 右侧：个人中心面板 */
+        .profile-panel {
+            width: 260px;
+            background: #fff;
+            border-left: 1px solid #e0e0e0;
+            display: none;
+            flex-direction: column;
+            z-index: 10;
+        }
+
+        .profile-panel.active {
+            display: flex;
+        }
+
+        .profile-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .profile-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .profile-close {
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 20px;
+            color: #666;
+        }
+
+        .profile-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px;
+        }
+
+        .profile-section {
+            margin-bottom: 24px;
+        }
+
+        .profile-section-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 12px;
+        }
+
+        .favorite-item {
+            background: #f5f5f5;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .favorite-item:hover {
+            background: #e5e5e5;
+        }
+
+        .favorite-name {
+            font-size: 14px;
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 4px;
+        }
+
+        .favorite-score {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .empty-text {
+            font-size: 14px;
+            color: #999;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        /* 底部图例 */
         .legend {
             position: absolute;
             bottom: 16px;
@@ -338,8 +408,8 @@
             height: 100%;
             background: rgba(0, 0, 0, 0.5);
             z-index: 1000;
-            justify-content: flex-end;
-            align-items: flex-end;
+            justify-content: center;
+            align-items: center;
         }
 
         .modal-overlay.active {
@@ -348,13 +418,12 @@
 
         .modal-content {
             background: white;
-            border-top-left-radius: 20px;
-            border-top-right-radius: 20px;
+            border-radius: 12px;
             max-height: 80%;
-            width: 100%;
-            max-width: 414px;
-            margin: 0 auto;
+            width: 90%;
+            max-width: 400px;
             overflow-y: auto;
+            position: relative;
         }
 
         .modal-header {
@@ -386,33 +455,198 @@
             color: #333;
         }
 
-        /* 加载动画 */
-        .loading {
+        /* 酒店详情弹窗 */
+        .hotel-modal-content {
+            padding: 20px;
+        }
+
+        .hotel-info-section {
             display: flex;
-            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .info-label {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .info-value {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .hotel-actions {
+            display: flex;
+            gap: 12px;
+            margin: 16px 0 24px;
+        }
+
+        .action-button {
+            flex: 1;
+            padding: 12px 16px;
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .action-button.favorite {
+            background: #f5f5f5;
+            color: #333;
+        }
+
+        .action-button.favorite.active {
+            background: #fbbf24;
+            color: #fff;
+        }
+
+        .action-button.platform {
+            background: #6366f1;
+            color: #fff;
+        }
+
+        .action-button:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+
+        .review-section {
+            margin-top: 24px;
+        }
+
+        .review-section-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 16px;
+        }
+
+        .rating-section {
+            display: flex;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .rating-label {
+            font-size: 14px;
+            color: #666;
+            margin-right: 12px;
+        }
+
+        .rating-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .star-button {
+            width: 36px;
+            height: 36px;
+            display: flex;
             align-items: center;
             justify-content: center;
-            height: 100vh;
+            border-radius: 8px;
             background: #f5f5f5;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 20px;
+            color: #ccc;
         }
 
-        .spinner {
-            width: 40px;
-            height: 40px;
-            border: 4px solid #e0e0e0;
-            border-top-color: #6366f1;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
+        .star-button.active {
+            background: #fbbf24;
+            color: #fff;
         }
 
-        @keyframes spin {
-            to { transform: rotate(360deg); }
+        .comment-input {
+            width: 100%;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 12px;
+            font-size: 14px;
+            min-height: 100px;
+            margin-bottom: 16px;
+            font-family: inherit;
+            resize: vertical;
         }
 
-        .loading-text {
-            margin-top: 12px;
+        .submit-button {
+            width: 100%;
+            background: #6366f1;
+            color: #fff;
+            padding: 14px;
+            border-radius: 8px;
+            text-align: center;
             font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .submit-button:hover {
+            background: #4f46e5;
+        }
+
+        /* 筛选弹窗 */
+        .filter-modal-content {
+            padding: 24px;
+        }
+
+        .filter-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 16px;
+        }
+
+        .filter-label {
+            font-size: 14px;
             color: #666;
+            margin-bottom: 8px;
+        }
+
+        .filter-input {
+            width: 100%;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 12px;
+            font-size: 16px;
+            margin-bottom: 16px;
+        }
+
+        .filter-buttons {
+            display: flex;
+            gap: 12px;
+        }
+
+        .filter-button {
+            flex: 1;
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .filter-button.cancel {
+            background: #f5f5f5;
+            color: #333;
+        }
+
+        .filter-button.apply {
+            background: #6366f1;
+            color: #fff;
+        }
+
+        .filter-button:hover {
+            opacity: 0.9;
         }
     </style>
 </head>
@@ -461,35 +695,76 @@
 
         <!-- 地图页面 -->
         <div class="map-screen" id="mapScreen">
-            <div class="map-header">
-                <div class="map-title" id="mapTitle">安全地图</div>
-                <div class="switch-city-btn" id="switchCityBtn">切换城市</div>
-            </div>
-            <div class="map-container" id="mapContainer">
-                <div id="map"></div>
-                <div class="map-placeholder" id="mapPlaceholder">
-                    <div class="map-icon">🗺️</div>
-                    <div class="map-text" id="cityNameDisplay">选择城市查看地图</div>
-                    <div class="map-subtext">正在加载地图...</div>
+            <!-- 左侧：拍照检测面板 -->
+            <div class="photo-panel">
+                <div class="photo-button" id="photoButton">
+                    <div class="photo-icon">📷</div>
+                    <div class="photo-text">拍照检测</div>
                 </div>
             </div>
-            <div class="controls">
-                <div class="control-button active" id="toggleHeatmap">隐藏热力图</div>
+
+            <!-- 中间：地图区域 -->
+            <div class="map-container-wrapper">
+                <div class="map-container" id="mapContainer">
+                    <div id="map"></div>
+                    <div class="map-placeholder" id="mapPlaceholder">
+                        <div class="map-icon">🗺️</div>
+                        <div class="map-text" id="cityNameDisplay">选择城市查看地图</div>
+                        <div class="map-subtext">正在加载地图...</div>
+                    </div>
+                </div>
+
+                <!-- 左上角：统计信息 -->
+                <div class="stats-container">
+                    <div class="stats-card">
+                        <div class="stats-label">酒店总数</div>
+                        <div class="stats-value" id="totalHotels">0</div>
+                    </div>
+                    <div class="stats-card">
+                        <div class="stats-label">已评分</div>
+                        <div class="stats-value" id="ratedHotels">0</div>
+                    </div>
+                </div>
+
+                <!-- 右上角：控制按钮 -->
+                <div class="top-controls">
+                    <div class="control-button active" id="toggleHeatmap">热力图</div>
+                    <div class="control-button" id="filterButton">筛选</div>
+                    <div class="control-button" id="profileButton">个人</div>
+                </div>
+
+                <!-- 底部图例 -->
+                <div class="legend">
+                    <div class="legend-title">安全评分图例</div>
+                    <div class="legend-items">
+                        <div class="legend-item">
+                            <div class="legend-color" style="background-color: #4ade80;"></div>
+                            <div class="legend-text">4.5-5.0</div>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background-color: #fbbf24;"></div>
+                            <div class="legend-text">4.0-4.5</div>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background-color: #f87171;"></div>
+                            <div class="legend-text">3.5-4.0</div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="legend">
-                <div class="legend-title">安全评分图例</div>
-                <div class="legend-items">
-                    <div class="legend-item">
-                        <div class="legend-color" style="background-color: #4ade80;"></div>
-                        <div class="legend-text">4.5-5.0 (很安全)</div>
-                    </div>
-                    <div class="legend-item">
-                        <div class="legend-color" style="background-color: #fbbf24;"></div>
-                        <div class="legend-text">4.0-4.5 (较安全)</div>
-                    </div>
-                    <div class="legend-item">
-                        <div class="legend-color" style="background-color: #f87171;"></div>
-                        <div class="legend-text">3.5-4.0 (一般)</div>
+
+            <!-- 右侧：个人中心面板 -->
+            <div class="profile-panel" id="profilePanel">
+                <div class="profile-header">
+                    <div class="profile-title">个人中心</div>
+                    <div class="profile-close" id="closeProfile">✕</div>
+                </div>
+                <div class="profile-content">
+                    <div class="profile-section">
+                        <div class="profile-section-title">我的收藏</div>
+                        <div id="favoritesList">
+                            <div class="empty-text">暂无收藏的酒店</div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -501,7 +776,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <div class="modal-title">选择城市</div>
-                <div class="close-button" id="closeModal">✕</div>
+                <div class="close-button" id="closeCityModal">✕</div>
             </div>
             <div class="city-selection" style="padding: 16px;">
                 <div class="country-section">
@@ -538,6 +813,60 @@
         </div>
     </div>
 
+    <!-- 酒店详情弹窗 -->
+    <div class="modal-overlay" id="hotelModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title" id="hotelName">酒店名称</div>
+                <div class="close-button" id="closeHotelModal">✕</div>
+            </div>
+            <div class="hotel-modal-content">
+                <div class="hotel-info-section">
+                    <div class="info-label">安全评分</div>
+                    <div class="info-value" id="hotelScore">0/5.0</div>
+                </div>
+                <div class="hotel-info-section">
+                    <div class="info-label">评价数量</div>
+                    <div class="info-value" id="hotelReviews">0 条</div>
+                </div>
+                <div class="hotel-actions">
+                    <div class="action-button favorite" id="favoriteButton">☆ 收藏</div>
+                    <div class="action-button platform" id="platformButton">查看在线平台</div>
+                </div>
+                <div class="review-section">
+                    <div class="review-section-title">添加评价</div>
+                    <div class="rating-section">
+                        <div class="rating-label">评分：</div>
+                        <div class="rating-buttons" id="ratingButtons">
+                            <div class="star-button" data-rating="1">★</div>
+                            <div class="star-button" data-rating="2">★</div>
+                            <div class="star-button" data-rating="3">★</div>
+                            <div class="star-button" data-rating="4">★</div>
+                            <div class="star-button active" data-rating="5">★</div>
+                        </div>
+                    </div>
+                    <textarea class="comment-input" id="commentInput" placeholder="请输入您的评价..."></textarea>
+                    <div class="submit-button" id="submitReview">提交评价</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 筛选弹窗 -->
+    <div class="modal-overlay" id="filterModal">
+        <div class="modal-content">
+            <div class="filter-modal-content">
+                <div class="filter-title">筛选酒店</div>
+                <div class="filter-label">最低安全评分：</div>
+                <input type="number" class="filter-input" id="filterInput" placeholder="例如: 4.0" step="0.1" min="0" max="5">
+                <div class="filter-buttons">
+                    <div class="filter-button cancel" id="clearFilter">清除</div>
+                    <div class="filter-button apply" id="applyFilter">应用</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
         // 城市坐标数据
         const cityCoordinates = {
@@ -548,32 +877,32 @@
             naples: { lat: 40.8518, lng: 14.2681, zoom: 13 },
         };
 
-        // 模拟酒店数据（使用真实坐标）
+        // 模拟酒店数据
         const mockHotels = {
             xishuangbanna: [
-                { name: '西双版纳万达文华酒店', score: 4.5, lat: 22.0084, lng: 100.7979 },
-                { name: '景洪大酒店', score: 4.2, lat: 22.0150, lng: 100.8100 },
-                { name: '西双版纳洲际酒店', score: 4.8, lat: 22.0000, lng: 100.7900 },
+                { id: 1, name: '西双版纳万达文华酒店', score: 4.5, lat: 22.0084, lng: 100.7979, reviews: 128 },
+                { id: 2, name: '景洪大酒店', score: 4.2, lat: 22.0150, lng: 100.8100, reviews: 95 },
+                { id: 3, name: '西双版纳洲际酒店', score: 4.8, lat: 22.0000, lng: 100.7900, reviews: 156 },
             ],
             guiyang: [
-                { name: '贵阳喜来登酒店', score: 4.3, lat: 26.6470, lng: 106.6302 },
-                { name: '贵阳凯宾斯基酒店', score: 4.6, lat: 26.6550, lng: 106.6400 },
-                { name: '贵阳万丽酒店', score: 4.4, lat: 26.6400, lng: 106.6200 },
+                { id: 1, name: '贵阳喜来登酒店', score: 4.3, lat: 26.6470, lng: 106.6302, reviews: 112 },
+                { id: 2, name: '贵阳凯宾斯基酒店', score: 4.6, lat: 26.6550, lng: 106.6400, reviews: 89 },
+                { id: 3, name: '贵阳万丽酒店', score: 4.4, lat: 26.6400, lng: 106.6200, reviews: 76 },
             ],
             bangkok: [
-                { name: '曼谷文华东方酒店', score: 4.7, lat: 13.7563, lng: 100.5018 },
-                { name: '曼谷半岛酒店', score: 4.5, lat: 13.7500, lng: 100.5100 },
-                { name: '曼谷素可泰酒店', score: 4.3, lat: 13.7600, lng: 100.4950 },
+                { id: 1, name: '曼谷文华东方酒店', score: 4.7, lat: 13.7563, lng: 100.5018, reviews: 234 },
+                { id: 2, name: '曼谷半岛酒店', score: 4.5, lat: 13.7500, lng: 100.5100, reviews: 198 },
+                { id: 3, name: '曼谷素可泰酒店', score: 4.3, lat: 13.7600, lng: 100.4950, reviews: 167 },
             ],
             shanghai: [
-                { name: '上海外滩茂悦大酒店', score: 4.6, lat: 31.2304, lng: 121.4737 },
-                { name: '上海和平饭店', score: 4.8, lat: 31.2350, lng: 121.4800 },
-                { name: '上海半岛酒店', score: 4.7, lat: 31.2250, lng: 121.4700 },
+                { id: 1, name: '上海外滩茂悦大酒店', score: 4.6, lat: 31.2304, lng: 121.4737, reviews: 312 },
+                { id: 2, name: '上海和平饭店', score: 4.8, lat: 31.2350, lng: 121.4800, reviews: 289 },
+                { id: 3, name: '上海半岛酒店', score: 4.7, lat: 31.2250, lng: 121.4700, reviews: 256 },
             ],
             naples: [
-                { name: '那不勒斯大饭店', score: 4.2, lat: 40.8518, lng: 14.2681 },
-                { name: '那不勒斯皇家酒店', score: 4.4, lat: 40.8550, lng: 14.2700 },
-                { name: '那不勒斯地中海酒店', score: 4.1, lat: 40.8480, lng: 14.2650 },
+                { id: 1, name: '那不勒斯大饭店', score: 4.2, lat: 40.8518, lng: 14.2681, reviews: 145 },
+                { id: 2, name: '那不勒斯皇家酒店', score: 4.4, lat: 40.8550, lng: 14.2700, reviews: 132 },
+                { id: 3, name: '那不勒斯地中海酒店', score: 4.1, lat: 40.8480, lng: 14.2650, reviews: 98 },
             ],
         };
 
@@ -582,6 +911,10 @@
         let map = null;
         let markers = [];
         let heatmapCircles = [];
+        let minRating = 0;
+        let favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
+        let currentHotel = null;
+        let currentRating = 5;
 
         // 城市选择
         document.querySelectorAll('.city-button').forEach(button => {
@@ -593,26 +926,18 @@
 
         function selectCity(city) {
             currentCity = city;
-            
-            // 隐藏城市选择页面，显示地图页面
             document.getElementById('citySelection').style.display = 'none';
             document.getElementById('mapScreen').classList.add('active');
-            
-            // 更新标题
-            document.getElementById('mapTitle').textContent = city.name;
-            
-            // 初始化或更新地图
             initMap(city.id);
+            updateStats();
         }
 
         function initMap(cityId) {
             const coords = cityCoordinates[cityId];
             const hotels = mockHotels[cityId] || [];
             
-            // 显示加载提示
             document.getElementById('mapPlaceholder').classList.remove('hidden');
             
-            // 清除所有标记和热力图
             markers.forEach(marker => {
                 if (map) map.removeLayer(marker);
             });
@@ -623,53 +948,39 @@
             });
             heatmapCircles = [];
             
-            // 如果地图已存在，先移除再创建新的
             if (map) {
                 map.remove();
                 map = null;
             }
             
-            // 清空地图容器（确保完全清除）
             const mapContainer = document.getElementById('map');
             if (mapContainer) {
                 mapContainer.innerHTML = '';
             }
             
-            // 创建新地图
             setTimeout(() => {
                 try {
                     map = L.map('map').setView([coords.lat, coords.lng], coords.zoom);
                     
-                    // 添加 OpenStreetMap 图层
                     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                         attribution: '© OpenStreetMap contributors',
                         maxZoom: 19
                     }).addTo(map);
                     
-                    // 等待地图加载完成
                     map.whenReady(() => {
-                        // 隐藏加载提示
                         document.getElementById('mapPlaceholder').classList.add('hidden');
-                        
-                        // 添加酒店标记和热力图
                         updateMapMarkers(hotels);
                     });
                 } catch (error) {
                     console.error('地图初始化错误:', error);
                     document.getElementById('mapPlaceholder').classList.remove('hidden');
-                    document.getElementById('cityNameDisplay').textContent = '地图加载失败，请刷新页面重试';
                 }
             }, 200);
         }
 
         function updateMapMarkers(hotels) {
-            // 确保地图已初始化
-            if (!map) {
-                console.error('地图未初始化');
-                return;
-            }
+            if (!map) return;
             
-            // 清除旧标记
             markers.forEach(marker => {
                 if (map.hasLayer(marker)) {
                     map.removeLayer(marker);
@@ -677,7 +988,6 @@
             });
             markers = [];
             
-            // 清除旧热力图
             heatmapCircles.forEach(circle => {
                 if (map.hasLayer(circle)) {
                     map.removeLayer(circle);
@@ -685,8 +995,9 @@
             });
             heatmapCircles = [];
             
-            hotels.forEach(hotel => {
-                // 创建标记
+            const filteredHotels = hotels.filter(h => h.score >= minRating);
+            
+            filteredHotels.forEach(hotel => {
                 const markerColor = getMarkerColor(hotel.score);
                 const marker = L.circleMarker([hotel.lat, hotel.lng], {
                     radius: 10,
@@ -697,23 +1008,20 @@
                     fillOpacity: 0.8
                 }).addTo(map);
                 
-                // 添加弹出窗口
                 marker.bindPopup(`
                     <div style="text-align: center;">
                         <strong>${hotel.name}</strong><br>
                         安全评分: ${hotel.score}/5.0<br>
-                        评价数: ${Math.floor(Math.random() * 200 + 50)}
+                        评价数: ${hotel.reviews}
                     </div>
                 `);
                 
-                // 点击事件
                 marker.on('click', function() {
-                    alert(`${hotel.name}\n安全评分: ${hotel.score}/5.0\n评价数: ${Math.floor(Math.random() * 200 + 50)}`);
+                    openHotelModal(hotel);
                 });
                 
                 markers.push(marker);
                 
-                // 添加热力图圆圈
                 if (showHeatmap) {
                     const heatColor = getHeatColor(hotel.score);
                     const heatCircle = L.circle([hotel.lat, hotel.lng], {
@@ -742,10 +1050,73 @@
             return '#f87171';
         }
 
-        // 切换热力图
+        function updateStats() {
+            if (!currentCity) return;
+            const hotels = mockHotels[currentCity.id] || [];
+            const totalHotels = hotels.length;
+            const ratedHotels = hotels.filter(h => h.score > 0).length;
+            
+            document.getElementById('totalHotels').textContent = totalHotels;
+            document.getElementById('ratedHotels').textContent = ratedHotels;
+        }
+
+        function openHotelModal(hotel) {
+            currentHotel = hotel;
+            document.getElementById('hotelName').textContent = hotel.name;
+            document.getElementById('hotelScore').textContent = hotel.score + '/5.0';
+            document.getElementById('hotelReviews').textContent = hotel.reviews + ' 条';
+            
+            const isFavorite = favorites.some(f => f.id === hotel.id && f.cityId === currentCity.id);
+            const favoriteBtn = document.getElementById('favoriteButton');
+            favoriteBtn.classList.toggle('active', isFavorite);
+            favoriteBtn.textContent = isFavorite ? '★ 已收藏' : '☆ 收藏';
+            
+            document.getElementById('hotelModal').classList.add('active');
+        }
+
+        function updateFavoritesList() {
+            const favoritesList = document.getElementById('favoritesList');
+            if (favorites.length === 0) {
+                favoritesList.innerHTML = '<div class="empty-text">暂无收藏的酒店</div>';
+                return;
+            }
+            
+            favoritesList.innerHTML = favorites.map(fav => `
+                <div class="favorite-item" onclick="openHotelFromFavorite('${fav.cityId}', ${fav.id})">
+                    <div class="favorite-name">${fav.name}</div>
+                    <div class="favorite-score">评分: ${fav.score}/5.0</div>
+                </div>
+            `).join('');
+        }
+
+        function openHotelFromFavorite(cityId, hotelId) {
+            if (currentCity && currentCity.id === cityId) {
+                const hotel = mockHotels[cityId].find(h => h.id === hotelId);
+                if (hotel) {
+                    openHotelModal(hotel);
+                    document.getElementById('profilePanel').classList.remove('active');
+                }
+            } else {
+                const city = { id: cityId, name: '城市' };
+                selectCity(city);
+                setTimeout(() => {
+                    const hotel = mockHotels[cityId].find(h => h.id === hotelId);
+                    if (hotel) {
+                        openHotelModal(hotel);
+                        document.getElementById('profilePanel').classList.remove('active');
+                    }
+                }, 500);
+            }
+        }
+
+        // 事件监听
+        document.getElementById('photoButton').addEventListener('click', () => {
+            alert('拍照检测功能正在开发中...');
+        });
+
         document.getElementById('toggleHeatmap').addEventListener('click', function() {
             showHeatmap = !showHeatmap;
-            this.textContent = showHeatmap ? '隐藏热力图' : '显示热力图';
+            this.textContent = showHeatmap ? '热力图' : '热力图';
             this.classList.toggle('active', showHeatmap);
             
             if (currentCity && map) {
@@ -754,34 +1125,143 @@
             }
         });
 
-        // 切换城市按钮
-        document.getElementById('switchCityBtn').addEventListener('click', () => {
-            document.getElementById('cityModal').classList.add('active');
+        document.getElementById('filterButton').addEventListener('click', () => {
+            document.getElementById('filterModal').classList.add('active');
+            document.getElementById('filterInput').value = minRating > 0 ? minRating : '';
         });
 
-        // 关闭模态框
-        document.getElementById('closeModal').addEventListener('click', () => {
+        document.getElementById('applyFilter').addEventListener('click', () => {
+            const rating = parseFloat(document.getElementById('filterInput').value) || 0;
+            minRating = rating;
+            document.getElementById('filterModal').classList.remove('active');
+            
+            if (currentCity && map) {
+                const hotels = mockHotels[currentCity.id] || [];
+                updateMapMarkers(hotels);
+            }
+        });
+
+        document.getElementById('clearFilter').addEventListener('click', () => {
+            minRating = 0;
+            document.getElementById('filterInput').value = '';
+            document.getElementById('filterModal').classList.remove('active');
+            
+            if (currentCity && map) {
+                const hotels = mockHotels[currentCity.id] || [];
+                updateMapMarkers(hotels);
+            }
+        });
+
+        document.getElementById('profileButton').addEventListener('click', () => {
+            document.getElementById('profilePanel').classList.toggle('active');
+            updateFavoritesList();
+        });
+
+        document.getElementById('closeProfile').addEventListener('click', () => {
+            document.getElementById('profilePanel').classList.remove('active');
+        });
+
+        document.getElementById('favoriteButton').addEventListener('click', () => {
+            if (!currentHotel) return;
+            
+            const index = favorites.findIndex(f => f.id === currentHotel.id && f.cityId === currentCity.id);
+            if (index > -1) {
+                favorites.splice(index, 1);
+            } else {
+                favorites.push({
+                    ...currentHotel,
+                    cityId: currentCity.id
+                });
+            }
+            
+            localStorage.setItem('favorites', JSON.stringify(favorites));
+            updateFavoritesList();
+            
+            const favoriteBtn = document.getElementById('favoriteButton');
+            const isFavorite = favorites.some(f => f.id === currentHotel.id && f.cityId === currentCity.id);
+            favoriteBtn.classList.toggle('active', isFavorite);
+            favoriteBtn.textContent = isFavorite ? '★ 已收藏' : '☆ 收藏';
+        });
+
+        document.getElementById('platformButton').addEventListener('click', () => {
+            if (!currentHotel) return;
+            const url = `https://www.booking.com/searchresults.html?ss=${encodeURIComponent(currentHotel.name)}`;
+            window.open(url, '_blank');
+        });
+
+        document.getElementById('ratingButtons').addEventListener('click', (e) => {
+            if (e.target.classList.contains('star-button')) {
+                currentRating = parseInt(e.target.getAttribute('data-rating'));
+                document.querySelectorAll('.star-button').forEach((btn, index) => {
+                    btn.classList.toggle('active', index < currentRating);
+                });
+            }
+        });
+
+        document.getElementById('submitReview').addEventListener('click', () => {
+            const comment = document.getElementById('commentInput').value.trim();
+            if (!comment) {
+                alert('请输入评价内容');
+                return;
+            }
+            
+            if (!currentHotel) return;
+            
+            // 更新酒店评价数
+            const cityHotels = mockHotels[currentCity.id];
+            const hotel = cityHotels.find(h => h.id === currentHotel.id);
+            if (hotel) {
+                hotel.reviews = (hotel.reviews || 0) + 1;
+                // 简单更新评分
+                hotel.score = ((hotel.score * (hotel.reviews - 1)) + currentRating) / hotel.reviews;
+                hotel.score = Math.round(hotel.score * 10) / 10;
+            }
+            
+            alert('评价已提交！');
+            document.getElementById('commentInput').value = '';
+            currentRating = 5;
+            document.querySelectorAll('.star-button').forEach((btn, index) => {
+                btn.classList.toggle('active', index < 5);
+            });
+            
+            if (map) {
+                const hotels = mockHotels[currentCity.id] || [];
+                updateMapMarkers(hotels);
+            }
+            
+            if (currentHotel) {
+                openHotelModal(hotel || currentHotel);
+            }
+        });
+
+        document.getElementById('closeHotelModal').addEventListener('click', () => {
+            document.getElementById('hotelModal').classList.remove('active');
+        });
+
+        document.getElementById('closeCityModal').addEventListener('click', () => {
             document.getElementById('cityModal').classList.remove('active');
         });
 
-        // 点击模态框背景关闭
         document.getElementById('cityModal').addEventListener('click', function(e) {
             if (e.target === this) {
                 this.classList.remove('active');
             }
         });
 
-        // 模态框中的城市选择 - 使用事件委托确保动态内容也能响应
-        document.getElementById('cityModal').addEventListener('click', function(e) {
-            const cityButton = e.target.closest('.city-button');
-            if (cityButton) {
-                const cityData = JSON.parse(cityButton.getAttribute('data-city'));
-                // 关闭模态框
-                document.getElementById('cityModal').classList.remove('active');
-                // 切换城市
-                selectCity(cityData);
+        document.getElementById('filterModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                this.classList.remove('active');
             }
         });
+
+        document.getElementById('hotelModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                this.classList.remove('active');
+            }
+        });
+
+        // 初始化收藏列表
+        updateFavoritesList();
     </script>
 </body>
 </html>
