@@ -2055,30 +2055,30 @@
                     setTimeout(() => {
                         splash.remove();
                         document.body.style.overflow = 'auto'; // 恢复页面滚动
-                        // 开屏页消失后初始化页面
-                        switchPage('photoPage');
+                        // 开屏页消失后跳转到地图页面
+                        switchPage('mapPage');
                     }, 800);
                 } else {
-                    // 如果没有开屏页，直接初始化
-                    switchPage('photoPage');
+                    // 如果没有开屏页，直接跳转到地图页面
+                    switchPage('mapPage');
                 }
             }, 2500); // 2.5秒后开始消失
         });
 
-        // 初始化：显示拍照检测页面（如果开屏页已处理则不会执行）
+        // 初始化：显示地图页面（如果开屏页已处理则不会执行）
         // 等待DOM完全加载后再初始化
         if (document.readyState === 'loading') {
             document.addEventListener('DOMContentLoaded', function() {
                 // 检查开屏页是否还在
                 const splash = document.getElementById('splash-screen');
                 if (!splash) {
-                    switchPage('photoPage');
+                    switchPage('mapPage');
                 }
             });
         } else {
             const splash = document.getElementById('splash-screen');
             if (!splash) {
-                switchPage('photoPage');
+                switchPage('mapPage');
             }
         }
     </script>
