@@ -5,28 +5,46 @@ import {
   ActivityIndicator,
   Text,
   TouchableOpacity,
+  Modal,
+  TextInput,
+  Alert,
 } from 'react-native';
 import MapView, { Marker, Circle, PROVIDER_GOOGLE } from 'react-native-maps';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { generateMockHotelData, generateHeatmapData } from '../data/mockHotelData';
 import { CITIES } from '../constants/cities';
+import PhotoDetectionPanel from '../components/PhotoDetectionPanel';
+import ProfilePanel from '../components/ProfilePanel';
+import HotelDetailModal from '../components/HotelDetailModal';
 
 const MapScreen = ({ route, navigation }) => {
   const [city, setCity] = useState(route.params?.city || null);
-  const [hotels, setHotels] = useState([]);
+  const [allHotels, setAllHotels] = useState([]); // 所有酒店数据
+  const [hotels, setHotels] = useState([]); // 筛选后的酒店
   const [heatmapData, setHeatmapData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showHeatmap, setShowHeatmap] = useState(true);
+  const [showProfile, setShowProfile] = useState(false);
+  const [selectedHotel, setSelectedHotel] = useState(null);
+  const [minRating, setMinRating] = useState(0); // 最低评分筛选
+  const [favorites, setFavorites] = useState([]); // 收藏列表
+  const [showFilterModal, setShowFilterModal] = useState(false);
+  const [filterRating, setFilterRating] = useState('0');
 
   useEffect(() => {
     loadCityData();
+    loadFavorites();
   }, [city]);
+
+  useEffect(() => {
+    // 当筛选条件或所有酒店数据变化时，更新显示的酒店
+    filterHotels();
+  }, [minRating, allHotels]);
 
   const loadCityData = async () => {
     try {
       setLoading(true);
       
-      // 如果没有传入城市参数，尝试从存储中读取
       let currentCity = city;
       if (!currentCity) {
         const savedCity = await AsyncStorage.getItem('selectedCity');
@@ -34,17 +52,14 @@ const MapScreen = ({ route, navigation }) => {
           currentCity = JSON.parse(savedCity);
           setCity(currentCity);
         } else {
-          // 如果没有保存的城市，默认使用第一个城市
           currentCity = CITIES[0];
           setCity(currentCity);
         }
       }
 
-      // 生成模拟数据
       const hotelData = generateMockHotelData(currentCity.id);
-      setHotels(hotelData);
+      setAllHotels(hotelData);
       
-      // 生成热力图数据
       const heatmap = generateHeatmapData(hotelData);
       setHeatmapData(heatmap);
       
@@ -55,10 +70,90 @@ const MapScreen = ({ route, navigation }) => {
     }
   };
 
-  const handleMarkerPress = (hotel) => {
-    // 可以显示酒店详情
-    alert(`${hotel.name}\n安全评分: ${hotel.safetyScore}/5.0\n评价数: ${hotel.reviewCount}`);
+  const loadFavorites = async () => {
+    try {
+      const savedFavorites = await AsyncStorage.getItem('favorites');
+      if (savedFavorites) {
+        setFavorites(JSON.parse(savedFavorites));
+      }
+    } catch (error) {
+      console.error('Error loading favorites:', error);
+    }
   };
+
+  const filterHotels = () => {
+    const filtered = allHotels.filter(hotel => hotel.safetyScore >= minRating);
+    setHotels(filtered);
+    
+    // 更新热力图数据
+    const heatmap = generateHeatmapData(filtered);
+    setHeatmapData(heatmap);
+  };
+
+  const handleMarkerPress = (hotel) => {
+    setSelectedHotel(hotel);
+  };
+
+  const handleAddReview = async (review) => {
+    try {
+      // 更新酒店的评价数据（在实际应用中应该调用API）
+      const updatedHotels = allHotels.map(hotel => {
+        if (hotel.id === review.hotelId) {
+          const newReviewCount = (hotel.reviewCount || 0) + 1;
+          // 简单计算新评分（实际应该更复杂）
+          const newScore = ((hotel.safetyScore * hotel.reviewCount) + review.rating) / newReviewCount;
+          return {
+            ...hotel,
+            reviewCount: newReviewCount,
+            safetyScore: Math.round(newScore * 10) / 10,
+          };
+        }
+        return hotel;
+      });
+      setAllHotels(updatedHotels);
+      
+      // 保存评价到本地存储
+      const reviews = await AsyncStorage.getItem('reviews');
+      const reviewsList = reviews ? JSON.parse(reviews) : [];
+      reviewsList.push(review);
+      await AsyncStorage.setItem('reviews', JSON.stringify(reviewsList));
+    } catch (error) {
+      console.error('Error adding review:', error);
+    }
+  };
+
+  const handleToggleFavorite = async (hotel) => {
+    try {
+      const isFavorite = favorites.some(f => f.id === hotel.id);
+      let newFavorites;
+      
+      if (isFavorite) {
+        newFavorites = favorites.filter(f => f.id !== hotel.id);
+      } else {
+        newFavorites = [...favorites, hotel];
+      }
+      
+      setFavorites(newFavorites);
+      await AsyncStorage.setItem('favorites', JSON.stringify(newFavorites));
+    } catch (error) {
+      console.error('Error toggling favorite:', error);
+    }
+  };
+
+  const handlePhotoDetection = () => {
+    Alert.alert('拍照检测', '此功能正在开发中...');
+  };
+
+  const handleApplyFilter = () => {
+    const rating = parseFloat(filterRating) || 0;
+    setMinRating(rating);
+    setShowFilterModal(false);
+  };
+
+  // 计算统计数据
+  const totalHotels = allHotels.length;
+  const hotelsWithRating = allHotels.filter(h => h.safetyScore > 0).length;
+  const isFavorite = selectedHotel ? favorites.some(f => f.id === selectedHotel.id) : false;
 
   if (loading || !city) {
     return (
@@ -71,86 +166,182 @@ const MapScreen = ({ route, navigation }) => {
 
   return (
     <View style={styles.container}>
-      <MapView
-        provider={PROVIDER_GOOGLE}
-        style={styles.map}
-        initialRegion={city.region}
-        showsUserLocation={true}
-        showsMyLocationButton={true}
-      >
-        {showHeatmap && heatmapData.length > 0 && heatmapData.map((point, index) => {
-          const intensity = point.weight || 0.5;
-          const radius = 200 + intensity * 300; // 根据强度调整半径
-          const opacity = 0.3 + intensity * 0.4; // 根据强度调整透明度
-          
-          // 根据强度选择颜色
-          let fillColor = '#4ade80'; // 绿色 - 高安全
-          if (intensity < 0.6) {
-            fillColor = '#fbbf24'; // 黄色 - 中等安全
-          }
-          if (intensity < 0.4) {
-            fillColor = '#f87171'; // 红色 - 低安全
-          }
-          
-          return (
-            <Circle
-              key={`heatmap-${index}`}
-              center={{
-                latitude: point.latitude,
-                longitude: point.longitude,
-              }}
-              radius={radius}
-              fillColor={fillColor}
-              strokeColor={fillColor}
-              strokeWidth={0}
-              opacity={opacity}
-            />
-          );
-        })}
-        
-        {hotels.map((hotel) => (
-          <Marker
-            key={hotel.id}
-            coordinate={{
-              latitude: hotel.latitude,
-              longitude: hotel.longitude,
-            }}
-            title={hotel.name}
-            description={`安全评分: ${hotel.safetyScore}/5.0`}
-            onPress={() => handleMarkerPress(hotel)}
-            pinColor={getMarkerColor(hotel.safetyScore)}
-          />
-        ))}
-      </MapView>
+      {/* 左侧：拍照检测面板 */}
+      <PhotoDetectionPanel onPress={handlePhotoDetection} />
 
-      <View style={styles.controls}>
-        <TouchableOpacity
-          style={[styles.controlButton, showHeatmap && styles.controlButtonActive]}
-          onPress={() => setShowHeatmap(!showHeatmap)}
+      {/* 中间：地图区域 */}
+      <View style={styles.mapContainer}>
+        <MapView
+          provider={PROVIDER_GOOGLE}
+          style={styles.map}
+          initialRegion={city.region}
+          showsUserLocation={true}
+          showsMyLocationButton={true}
         >
-          <Text style={[styles.controlButtonText, showHeatmap && styles.controlButtonActiveText]}>
-            {showHeatmap ? '隐藏热力图' : '显示热力图'}
-          </Text>
-        </TouchableOpacity>
-      </View>
+          {showHeatmap && heatmapData.length > 0 && heatmapData.map((point, index) => {
+            const intensity = point.weight || 0.5;
+            const radius = 200 + intensity * 300;
+            const opacity = 0.3 + intensity * 0.4;
+            
+            let fillColor = '#4ade80';
+            if (intensity < 0.6) {
+              fillColor = '#fbbf24';
+            }
+            if (intensity < 0.4) {
+              fillColor = '#f87171';
+            }
+            
+            return (
+              <Circle
+                key={`heatmap-${index}`}
+                center={{
+                  latitude: point.latitude,
+                  longitude: point.longitude,
+                }}
+                radius={radius}
+                fillColor={fillColor}
+                strokeColor={fillColor}
+                strokeWidth={0}
+                opacity={opacity}
+              />
+            );
+          })}
+          
+          {hotels.map((hotel) => (
+            <Marker
+              key={hotel.id}
+              coordinate={{
+                latitude: hotel.latitude,
+                longitude: hotel.longitude,
+              }}
+              title={hotel.name}
+              description={`安全评分: ${hotel.safetyScore}/5.0`}
+              onPress={() => handleMarkerPress(hotel)}
+              pinColor={getMarkerColor(hotel.safetyScore)}
+            />
+          ))}
+        </MapView>
 
-      <View style={styles.legend}>
-        <Text style={styles.legendTitle}>安全评分图例</Text>
-        <View style={styles.legendItems}>
-          <View style={styles.legendItem}>
-            <View style={[styles.legendColor, { backgroundColor: '#4ade80' }]} />
-            <Text style={styles.legendText}>4.5-5.0 (很安全)</Text>
+        {/* 左上角：酒店统计信息 */}
+        <View style={styles.statsContainer}>
+          <View style={styles.statsCard}>
+            <Text style={styles.statsLabel}>酒店总数</Text>
+            <Text style={styles.statsValue}>{totalHotels}</Text>
           </View>
-          <View style={styles.legendItem}>
-            <View style={[styles.legendColor, { backgroundColor: '#fbbf24' }]} />
-            <Text style={styles.legendText}>4.0-4.5 (较安全)</Text>
+          <View style={styles.statsCard}>
+            <Text style={styles.statsLabel}>已评分</Text>
+            <Text style={styles.statsValue}>{hotelsWithRating}</Text>
           </View>
-          <View style={styles.legendItem}>
-            <View style={[styles.legendColor, { backgroundColor: '#f87171' }]} />
-            <Text style={styles.legendText}>3.5-4.0 (一般)</Text>
+        </View>
+
+        {/* 右上角：控制按钮 */}
+        <View style={styles.topControls}>
+          <TouchableOpacity
+            style={[styles.controlButton, showHeatmap && styles.controlButtonActive]}
+            onPress={() => setShowHeatmap(!showHeatmap)}
+          >
+            <Text style={[styles.controlButtonText, showHeatmap && styles.controlButtonActiveText]}>
+              热力图
+            </Text>
+          </TouchableOpacity>
+          
+          <TouchableOpacity
+            style={styles.controlButton}
+            onPress={() => setShowFilterModal(true)}
+          >
+            <Text style={styles.controlButtonText}>
+              筛选 {minRating > 0 ? `≥${minRating}` : ''}
+            </Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.controlButton}
+            onPress={() => setShowProfile(true)}
+          >
+            <Text style={styles.controlButtonText}>个人</Text>
+          </TouchableOpacity>
+        </View>
+
+        {/* 底部图例 */}
+        <View style={styles.legend}>
+          <Text style={styles.legendTitle}>安全评分图例</Text>
+          <View style={styles.legendItems}>
+            <View style={styles.legendItem}>
+              <View style={[styles.legendColor, { backgroundColor: '#4ade80' }]} />
+              <Text style={styles.legendText}>4.5-5.0</Text>
+            </View>
+            <View style={styles.legendItem}>
+              <View style={[styles.legendColor, { backgroundColor: '#fbbf24' }]} />
+              <Text style={styles.legendText}>4.0-4.5</Text>
+            </View>
+            <View style={styles.legendItem}>
+              <View style={[styles.legendColor, { backgroundColor: '#f87171' }]} />
+              <Text style={styles.legendText}>3.5-4.0</Text>
+            </View>
           </View>
         </View>
       </View>
+
+      {/* 右侧：个人中心面板 */}
+      {showProfile && (
+        <ProfilePanel
+          favorites={favorites}
+          onFavoritePress={(hotel) => {
+            setSelectedHotel(hotel);
+            setShowProfile(false);
+          }}
+          onClose={() => setShowProfile(false)}
+        />
+      )}
+
+      {/* 酒店详情/评价弹窗 */}
+      <HotelDetailModal
+        visible={!!selectedHotel}
+        hotel={selectedHotel}
+        onClose={() => setSelectedHotel(null)}
+        onAddReview={handleAddReview}
+        onToggleFavorite={() => selectedHotel && handleToggleFavorite(selectedHotel)}
+        isFavorite={isFavorite}
+      />
+
+      {/* 筛选弹窗 */}
+      <Modal
+        visible={showFilterModal}
+        transparent={true}
+        animationType="fade"
+        onRequestClose={() => setShowFilterModal(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.filterModal}>
+            <Text style={styles.filterTitle}>筛选酒店</Text>
+            <Text style={styles.filterLabel}>最低安全评分：</Text>
+            <TextInput
+              style={styles.filterInput}
+              placeholder="例如: 4.0"
+              keyboardType="numeric"
+              value={filterRating}
+              onChangeText={setFilterRating}
+            />
+            <View style={styles.filterButtons}>
+              <TouchableOpacity
+                style={[styles.filterButton, styles.filterButtonCancel]}
+                onPress={() => {
+                  setFilterRating('0');
+                  setShowFilterModal(false);
+                }}
+              >
+                <Text style={styles.filterButtonText}>清除</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.filterButton, styles.filterButtonApply]}
+                onPress={handleApplyFilter}
+              >
+                <Text style={[styles.filterButtonText, styles.filterButtonTextApply]}>应用</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 };
@@ -163,6 +354,10 @@ const getMarkerColor = (safetyScore) => {
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
+    flexDirection: 'row',
+  },
+  mapContainer: {
     flex: 1,
   },
   map: {
@@ -179,11 +374,46 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#666',
   },
-  controls: {
+  statsContainer: {
+    position: 'absolute',
+    top: 16,
+    left: 16,
+    zIndex: 1,
+    flexDirection: 'row',
+    gap: 8,
+  },
+  statsCard: {
+    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+    padding: 12,
+    borderRadius: 8,
+    minWidth: 80,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  statsLabel: {
+    fontSize: 12,
+    color: '#666',
+    marginBottom: 4,
+  },
+  statsValue: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#6366f1',
+  },
+  topControls: {
     position: 'absolute',
     top: 16,
     right: 16,
     zIndex: 1,
+    flexDirection: 'column',
+    gap: 8,
   },
   controlButton: {
     backgroundColor: '#fff',
@@ -209,8 +439,6 @@ const styles = StyleSheet.create({
   },
   controlButtonActiveText: {
     color: '#fff',
-    fontWeight: '500',
-    fontSize: 14,
   },
   legend: {
     position: 'absolute',
@@ -254,6 +482,62 @@ const styles = StyleSheet.create({
   legendText: {
     fontSize: 12,
     color: '#666',
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  filterModal: {
+    backgroundColor: '#fff',
+    padding: 24,
+    borderRadius: 12,
+    width: '80%',
+    maxWidth: 300,
+  },
+  filterTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#333',
+    marginBottom: 16,
+  },
+  filterLabel: {
+    fontSize: 14,
+    color: '#666',
+    marginBottom: 8,
+  },
+  filterInput: {
+    borderWidth: 1,
+    borderColor: '#e0e0e0',
+    borderRadius: 8,
+    padding: 12,
+    fontSize: 16,
+    marginBottom: 16,
+  },
+  filterButtons: {
+    flexDirection: 'row',
+    gap: 12,
+  },
+  filterButton: {
+    flex: 1,
+    paddingVertical: 12,
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  filterButtonCancel: {
+    backgroundColor: '#f5f5f5',
+  },
+  filterButtonApply: {
+    backgroundColor: '#6366f1',
+  },
+  filterButtonText: {
+    fontSize: 16,
+    fontWeight: '500',
+    color: '#333',
+  },
+  filterButtonTextApply: {
+    color: '#fff',
   },
 });
 
