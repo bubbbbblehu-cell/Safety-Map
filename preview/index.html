@@ -1648,9 +1648,9 @@
                 marker.bindPopup(popupContent, {
                     maxWidth: 200,
                     className: 'hotel-popup',
-                    closeButton: false,
-                    autoClose: false,
-                    closeOnClick: false
+                    closeButton: true,
+                    autoClose: true,
+                    closeOnClick: true
                 });
                 
                 // 点击事件 - 直接打开详情弹窗
@@ -1660,14 +1660,8 @@
                     if (e.originalEvent) {
                         e.originalEvent.stopPropagation();
                     }
-                    // 关闭popup（如果打开了）
-                    if (this.isPopupOpen && this.isPopupOpen()) {
-                        this.closePopup();
-                    }
-                    // 打开详情弹窗
-                    setTimeout(() => {
-                        openHotelModal(hotel);
-                    }, 50);
+                    // 立即打开详情弹窗，不等待popup关闭
+                    openHotelModal(hotel);
                 });
                 
                 // 鼠标悬停时显示popup和改变样式
@@ -1684,7 +1678,6 @@
                         radius: 12,
                         fillOpacity: 0.9
                     });
-                    // 不自动关闭popup，让用户有时间点击
                 });
                 
                 markers.push(marker);
