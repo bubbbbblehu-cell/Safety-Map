@@ -1032,28 +1032,43 @@
             
             // 显示选中的页面
             const targetPage = document.getElementById(pageId);
-            if (targetPage) {
-                targetPage.classList.add('active');
+            if (!targetPage) {
+                console.error('页面不存在:', pageId);
+                return;
             }
+            
+            targetPage.classList.add('active');
             
             // 更新导航栏状态
             document.querySelectorAll('.nav-item').forEach(item => {
                 item.classList.remove('active');
             });
-            document.querySelector(`[data-page="${pageId}"]`).classList.add('active');
+            const navItem = document.querySelector(`[data-page="${pageId}"]`);
+            if (navItem) {
+                navItem.classList.add('active');
+            }
             
             currentPage = pageId;
             
-            // 如果切换到地图页面且已选择城市，初始化地图
-            if (pageId === 'mapPage' && currentCity) {
-                setTimeout(() => {
-                    initMap(currentCity.id);
-                }, 100);
+            // 如果切换到地图页面
+            if (pageId === 'mapPage') {
+                // 如果没有选择城市，显示城市选择页面
+                if (!currentCity) {
+                    document.getElementById('citySelection').style.display = 'block';
+                    document.getElementById('cityModal').classList.add('active');
+                } else {
+                    // 延迟初始化地图，确保DOM已渲染
+                    setTimeout(() => {
+                        initMap(currentCity.id);
+                    }, 100);
+                }
             }
             
-            // 如果切换到个人中心，更新收藏列表
+            // 如果切换到个人中心，延迟更新收藏列表
             if (pageId === 'profilePage') {
-                updateFavoritesList();
+                setTimeout(() => {
+                    updateFavoritesList();
+                }, 100);
             }
         }
 
@@ -1061,7 +1076,11 @@
         document.querySelectorAll('.nav-item').forEach(item => {
             item.addEventListener('click', function() {
                 const pageId = this.getAttribute('data-page');
-                switchPage(pageId);
+                if (pageId) {
+                    switchPage(pageId);
+                } else {
+                    console.error('导航项缺少 data-page 属性');
+                }
             });
         });
 
@@ -1075,38 +1094,69 @@
 
         function selectCity(city) {
             currentCity = city;
-            document.getElementById('citySelection').style.display = 'none';
+            const citySelection = document.getElementById('citySelection');
+            if (citySelection) {
+                citySelection.style.display = 'none';
+            }
+            const cityModal = document.getElementById('cityModal');
+            if (cityModal) {
+                cityModal.classList.remove('active');
+            }
             switchPage('mapPage');
         }
 
         function initMap(cityId) {
+            if (!cityId || !cityCoordinates[cityId]) {
+                console.error('无效的城市ID:', cityId);
+                const placeholder = document.getElementById('mapPlaceholder');
+                if (placeholder) {
+                    placeholder.classList.remove('hidden');
+                    document.getElementById('cityNameDisplay').textContent = '请先选择城市';
+                }
+                return;
+            }
+            
             const coords = cityCoordinates[cityId];
             const hotels = mockHotels[cityId] || [];
             
-            document.getElementById('mapPlaceholder').classList.remove('hidden');
+            const placeholder = document.getElementById('mapPlaceholder');
+            if (placeholder) {
+                placeholder.classList.remove('hidden');
+            }
             
+            // 清除旧标记
             markers.forEach(marker => {
                 if (map) map.removeLayer(marker);
             });
             markers = [];
             
+            // 清除旧热力图
             heatmapCircles.forEach(circle => {
                 if (map) map.removeLayer(circle);
             });
             heatmapCircles = [];
             
+            // 移除旧地图
             if (map) {
                 map.remove();
                 map = null;
             }
             
+            // 清空地图容器
             const mapContainer = document.getElementById('map');
             if (mapContainer) {
                 mapContainer.innerHTML = '';
             }
             
+            // 延迟初始化，确保DOM已准备好
             setTimeout(() => {
                 try {
+                    const mapElement = document.getElementById('map');
+                    if (!mapElement) {
+                        console.error('地图容器不存在');
+                        return;
+                    }
+                    
                     map = L.map('map').setView([coords.lat, coords.lng], coords.zoom);
                     
                     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -1115,15 +1165,23 @@
                     }).addTo(map);
                     
                     map.whenReady(() => {
-                        document.getElementById('mapPlaceholder').classList.add('hidden');
+                        if (placeholder) {
+                            placeholder.classList.add('hidden');
+                        }
                         updateMapMarkers(hotels);
                         updateStats();
                     });
                 } catch (error) {
                     console.error('地图初始化错误:', error);
-                    document.getElementById('mapPlaceholder').classList.remove('hidden');
+                    if (placeholder) {
+                        placeholder.classList.remove('hidden');
+                        const cityNameDisplay = document.getElementById('cityNameDisplay');
+                        if (cityNameDisplay) {
+                            cityNameDisplay.textContent = '地图加载失败，请刷新重试';
+                        }
+                    }
                 }
-            }, 200);
+            }, 300);
         }
 
         function updateMapMarkers(hotels) {
@@ -1224,6 +1282,11 @@
 
         function updateFavoritesList() {
             const favoritesList = document.getElementById('favoritesList');
+            if (!favoritesList) {
+                console.error('favoritesList 元素不存在');
+                return;
+            }
+            
             if (favorites.length === 0) {
                 favoritesList.innerHTML = '<div class="empty-text">暂无收藏的酒店</div>';
                 return;
@@ -1396,8 +1459,14 @@
         });
 
         // 初始化：显示拍照检测页面
-        switchPage('photoPage');
-        updateFavoritesList();
+        // 等待DOM完全加载后再初始化
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', function() {
+                switchPage('photoPage');
+            });
+        } else {
+            switchPage('photoPage');
+        }
     </script>
 </body>
 </html>
