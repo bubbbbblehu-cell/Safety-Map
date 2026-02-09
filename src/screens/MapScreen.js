@@ -69,46 +69,37 @@ const MapScreen = ({ route, navigation }) => {
 
       // 尝试从数据库加载酒店数据
       try {
+        console.log('========================================');
         console.log('正在从数据库加载酒店数据...');
-        console.log('当前城市:', currentCity.name, '城市ID:', currentCity.id);
+        console.log('当前城市:', currentCity.name);
+        console.log('========================================');
         
-        // 先尝试获取所有酒店（不按城市筛选）
-        console.log('尝试获取所有酒店数据...');
-        const allDbHotels = await getAllHotels({});
-        console.log(`数据库中共有 ${allDbHotels ? allDbHotels.length : 0} 个酒店`);
+        // 直接获取所有酒店数据（不筛选城市）
+        const dbHotels = await getAllHotels({});
         
-        // 然后尝试按城市代码筛选
-        let dbHotels = allDbHotels;
-        if (allDbHotels && allDbHotels.length > 0) {
-          // 尝试通过城市代码匹配
-          const cityCode = currentCity.code || currentCity.id;
-          console.log('尝试按城市代码筛选:', cityCode);
-          
-          const filteredByCode = allDbHotels.filter(hotel => 
-            hotel.city && (hotel.city.code === cityCode || hotel.city.id === cityCode)
-          );
-          
-          if (filteredByCode.length > 0) {
-            console.log(`找到 ${filteredByCode.length} 个匹配城市代码的酒店`);
-            dbHotels = filteredByCode;
-          } else {
-            console.log('没有找到匹配城市代码的酒店，显示所有酒店');
-          }
-        }
+        console.log(`数据库查询结果: ${dbHotels ? dbHotels.length : 0} 个酒店`);
         
         if (dbHotels && dbHotels.length > 0) {
-          console.log(`✅ 成功从数据库加载 ${dbHotels.length} 个酒店`);
+          console.log('✅ 成功从数据库加载酒店数据！');
+          console.log('前3个酒店示例:');
+          dbHotels.slice(0, 3).forEach((hotel, i) => {
+            console.log(`  ${i+1}. ${hotel.name} - 评分: ${hotel.safety_score}`);
+          });
+          
           const transformedHotels = transformHotelsData(dbHotels);
+          console.log(`转换后的酒店数据: ${transformedHotels.length} 个`);
+          
           setAllHotels(transformedHotels);
           
           const heatmap = generateHeatmapData(transformedHotels);
+          console.log(`生成热力图数据点: ${heatmap.length} 个`);
           setHeatmapData(heatmap);
           
-          // 显示成功提示
-          console.log('酒店数据已加载到地图');
+          console.log('========================================');
+          console.log('✅ 数据库酒店数据已成功加载到地图！');
+          console.log('========================================');
         } else {
-          console.log('⚠️ 数据库中没有酒店数据，使用模拟数据');
-          // 如果数据库中没有数据，使用模拟数据
+          console.log('⚠️ 数据库返回空数组，使用模拟数据');
           const hotelData = generateMockHotelData(currentCity.id);
           setAllHotels(hotelData);
           
@@ -117,13 +108,17 @@ const MapScreen = ({ route, navigation }) => {
           
           Alert.alert(
             '提示',
-            '数据库中暂无酒店数据，正在使用演示数据。\n\n请在 Supabase Dashboard 中导入酒店安全评分数据。',
+            '数据库查询返回空结果。\n\n可能原因:\n1. 数据的 is_active 字段为 false\n2. RLS 策略阻止访问\n\n正在使用演示数据。',
             [{ text: '确定' }]
           );
         }
       } catch (dbError) {
-        console.error('❌ 从数据库加载失败，使用模拟数据:', dbError);
-        console.error('错误详情:', dbError.message);
+        console.error('========================================');
+        console.error('❌ 数据库加载失败');
+        console.error('错误类型:', dbError.name);
+        console.error('错误信息:', dbError.message);
+        console.error('完整错误:', dbError);
+        console.error('========================================');
         
         // 如果数据库加载失败，回退到模拟数据
         const hotelData = generateMockHotelData(currentCity.id);
@@ -135,7 +130,7 @@ const MapScreen = ({ route, navigation }) => {
         // 显示提示信息
         Alert.alert(
           '数据库连接失败',
-          `无法连接到数据库，正在使用本地演示数据。\n\n错误信息: ${dbError.message}\n\n请检查:\n1. 网络连接\n2. Supabase API 密钥配置\n3. 数据库表是否已创建`,
+          `无法从数据库加载数据，正在使用演示数据。\n\n错误: ${dbError.message}\n\n请检查:\n1. 网络连接\n2. Supabase API 密钥\n3. RLS 策略设置`,
           [{ text: '确定' }]
         );
       }
