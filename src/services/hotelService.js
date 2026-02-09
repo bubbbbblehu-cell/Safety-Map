@@ -32,6 +32,7 @@ export const getCities = async () => {
  */
 export const getHotelsByCityId = async (cityId) => {
   try {
+    console.log('查询酒店，城市ID:', cityId);
     const { data, error } = await supabase
       .from('hotels')
       .select(`
@@ -42,7 +43,11 @@ export const getHotelsByCityId = async (cityId) => {
       .eq('is_active', true)
       .order('safety_score', { ascending: false });
 
-    if (error) throw error;
+    if (error) {
+      console.error('Supabase 查询错误:', error);
+      throw error;
+    }
+    console.log('查询结果:', data ? `找到 ${data.length} 个酒店` : '没有数据');
     return data || [];
   } catch (error) {
     console.error('获取酒店列表失败:', error);
@@ -85,6 +90,8 @@ export const getHotelsByCityCode = async (cityCode) => {
  */
 export const getAllHotels = async (filters = {}) => {
   try {
+    console.log('getAllHotels 调用，筛选条件:', filters);
+    
     let query = supabase
       .from('hotels')
       .select(`
@@ -95,10 +102,12 @@ export const getAllHotels = async (filters = {}) => {
 
     // 应用筛选条件
     if (filters.cityId) {
+      console.log('按城市ID筛选:', filters.cityId);
       query = query.eq('city_id', filters.cityId);
     }
 
     if (filters.minRating !== undefined && filters.minRating > 0) {
+      console.log('按最低评分筛选:', filters.minRating);
       query = query.gte('safety_score', filters.minRating);
     }
 
@@ -106,10 +115,20 @@ export const getAllHotels = async (filters = {}) => {
 
     const { data, error } = await query;
 
-    if (error) throw error;
+    if (error) {
+      console.error('Supabase 查询错误详情:', error);
+      throw error;
+    }
+    
+    console.log('查询成功，返回数据:', data ? `${data.length} 个酒店` : '空数组');
+    if (data && data.length > 0) {
+      console.log('第一个酒店示例:', data[0]);
+    }
+    
     return data || [];
   } catch (error) {
     console.error('获取酒店列表失败:', error);
+    console.error('错误详情:', error.message);
     throw error;
   }
 };
