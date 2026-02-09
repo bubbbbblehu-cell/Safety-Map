@@ -39,9 +39,11 @@
 - **Sharp** - 图片处理和优化
 - **CORS** - 跨域支持
 
-### 数据库（可选）
-- **Supabase (PostgreSQL)** - 数据库存储
+### 数据库
+- **Supabase (PostgreSQL)** - 云数据库存储
 - 完整的表结构设计（见 `supabase/` 目录）
+- 自动从数据库加载酒店安全评分数据
+- 支持离线回退到本地模拟数据
 
 ## 📁 项目结构
 
@@ -58,15 +60,23 @@ Safety-Map/
 │   ├── screens/         # 页面组件
 │   ├── components/      # 通用组件
 │   ├── constants/       # 常量配置
-│   └── data/            # 数据文件
+│   ├── data/            # 数据文件
+│   ├── config/          # 配置文件
+│   │   └── supabase.js  # Supabase数据库配置
+│   └── services/        # 服务层
+│       └── hotelService.js  # 酒店数据服务
 ├── supabase/            # 数据库表结构
 │   ├── schema.sql       # 数据库表结构
 │   ├── rls_policies.sql # 安全策略
-│   └── seed_data.sql    # 初始数据
+│   ├── seed_data.sql    # 初始数据
+│   └── README.md        # 数据库文档
 ├── App.js               # React Native应用入口
 ├── index.js             # 应用注册入口
 ├── index.html           # Web版本入口（用于Vercel部署）
 ├── package.json         # 项目配置
+├── env.example          # 环境变量配置示例
+├── SUPABASE_SETUP.md    # Supabase配置指南
+├── DATABASE_INTEGRATION.md  # 数据库集成文档
 └── README.md           # 本文档
 ```
 
@@ -130,21 +140,37 @@ const API_URL = 'https://your-api-domain.com';
 
 ### 方式三：React Native（移动应用）
 
-1. **安装依赖**
-   ```bash
-   npm install
-   ```
+#### 1. 安装依赖
+```bash
+npm install
+```
 
-2. **iOS 安装额外依赖** (仅 macOS)
-   ```bash
-   cd ios
-   pod install
-   cd ..
-   ```
+#### 2. 配置 Supabase 数据库（可选但推荐）
 
-3. **运行应用**
-   ```bash
-   # Android
+**获取 API 密钥：**
+1. 访问 [Supabase Dashboard](https://app.supabase.com)
+2. 选择项目（ID: `hmmruoankhohowlzajll`）
+3. 进入 Settings → API
+4. 复制 `anon public` 密钥
+
+**配置密钥：**
+编辑 `src/config/supabase.js`，替换 `YOUR_SUPABASE_ANON_KEY`：
+```javascript
+const SUPABASE_ANON_KEY = '你的实际密钥';
+```
+
+详细配置步骤请参考 [SUPABASE_SETUP.md](./SUPABASE_SETUP.md)
+
+#### 3. iOS 安装额外依赖（仅 macOS）
+```bash
+cd ios
+pod install
+cd ..
+```
+
+#### 4. 运行应用
+```bash
+# Android
    npm run android
    
    # iOS
@@ -291,14 +317,32 @@ GET /health
 项目包含完整的 Supabase 数据库表结构设计：
 
 - **cities** - 城市表
-- **hotels** - 酒店表
+- **hotels** - 酒店表（存储酒店安全评分数据）
 - **reviews** - 评价表
 - **favorites** - 收藏表
 - **user_profiles** - 用户扩展信息表
 - **photo_detections** - 拍照检测记录表
 - **review_helpful** - 评价有用性表
 
-详细说明请查看 `supabase/README.md`
+### 数据库集成
+
+应用已集成 Supabase 数据库，可以自动从数据库加载酒店安全评分数据：
+
+- ✅ **自动加载**：打开地图时自动从数据库获取酒店数据
+- ✅ **智能回退**：如果数据库连接失败，自动使用本地模拟数据
+- ✅ **实时更新**：数据库中的评分更新会立即反映在地图上
+- ✅ **筛选功能**：支持按城市和评分筛选酒店
+
+**配置步骤：**
+1. 安装依赖：`npm install @supabase/supabase-js`
+2. 配置 API 密钥（见 [SUPABASE_SETUP.md](./SUPABASE_SETUP.md)）
+3. 导入酒店数据到数据库
+4. 启动应用，自动从数据库加载数据
+
+详细说明请查看：
+- [supabase/README.md](./supabase/README.md) - 数据库表结构
+- [SUPABASE_SETUP.md](./SUPABASE_SETUP.md) - 配置指南
+- [DATABASE_INTEGRATION.md](./DATABASE_INTEGRATION.md) - 集成文档
 
 ## 🚢 部署说明
 

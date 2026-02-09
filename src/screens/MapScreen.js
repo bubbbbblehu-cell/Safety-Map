@@ -11,11 +11,21 @@ import {
 } from 'react-native';
 import MapView, { Marker, Circle, PROVIDER_GOOGLE } from 'react-native-maps';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { generateMockHotelData, generateHeatmapData } from '../data/mockHotelData';
+import { generateMockHotelData, generateHeatmapData as generateMockHeatmap } from '../data/mockHotelData';
 import { CITIES } from '../constants/cities';
 import PhotoDetectionPanel from '../components/PhotoDetectionPanel';
 import ProfilePanel from '../components/ProfilePanel';
 import HotelDetailModal from '../components/HotelDetailModal';
+import {
+  getAllHotels,
+  getHotelStats,
+  generateHeatmapData,
+  transformHotelsData,
+  addHotelReview,
+  addFavorite,
+  removeFavorite,
+  getUserFavorites,
+} from '../services/hotelService';
 
 const MapScreen = ({ route, navigation }) => {
   const [city, setCity] = useState(route.params?.city || null);
@@ -57,21 +67,56 @@ const MapScreen = ({ route, navigation }) => {
         }
       }
 
-      const hotelData = generateMockHotelData(currentCity.id);
-      setAllHotels(hotelData);
-      
-      const heatmap = generateHeatmapData(hotelData);
-      setHeatmapData(heatmap);
+      // 尝试从数据库加载酒店数据
+      try {
+        console.log('正在从数据库加载酒店数据...');
+        const dbHotels = await getAllHotels({ cityId: currentCity.id });
+        
+        if (dbHotels && dbHotels.length > 0) {
+          console.log(`成功从数据库加载 ${dbHotels.length} 个酒店`);
+          const transformedHotels = transformHotelsData(dbHotels);
+          setAllHotels(transformedHotels);
+          
+          const heatmap = generateHeatmapData(transformedHotels);
+          setHeatmapData(heatmap);
+        } else {
+          console.log('数据库中没有酒店数据，使用模拟数据');
+          // 如果数据库中没有数据，使用模拟数据
+          const hotelData = generateMockHotelData(currentCity.id);
+          setAllHotels(hotelData);
+          
+          const heatmap = generateMockHeatmap(hotelData);
+          setHeatmapData(heatmap);
+        }
+      } catch (dbError) {
+        console.error('从数据库加载失败，使用模拟数据:', dbError);
+        // 如果数据库加载失败，回退到模拟数据
+        const hotelData = generateMockHotelData(currentCity.id);
+        setAllHotels(hotelData);
+        
+        const heatmap = generateMockHeatmap(hotelData);
+        setHeatmapData(heatmap);
+        
+        // 显示提示信息
+        Alert.alert(
+          '提示',
+          '无法连接到数据库，正在使用本地数据。请检查网络连接或 Supabase 配置。',
+          [{ text: '确定' }]
+        );
+      }
       
       setLoading(false);
     } catch (error) {
       console.error('Error loading city data:', error);
       setLoading(false);
+      Alert.alert('错误', '加载数据失败，请重试');
     }
   };
 
   const loadFavorites = async () => {
     try {
+      // 尝试从数据库加载收藏（需要用户登录）
+      // 暂时使用本地存储
       const savedFavorites = await AsyncStorage.getItem('favorites');
       if (savedFavorites) {
         setFavorites(JSON.parse(savedFavorites));
