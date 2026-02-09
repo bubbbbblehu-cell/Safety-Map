@@ -1265,6 +1265,7 @@
                         console.log(`  ${i+1}. ${hotel.name} - 评分: ${hotel.safety_score}`);
                     });
                     isLoadingFromDatabase = false;
+<<<<<<< HEAD
                     
                     // 🔥 关键修复：数据加载完成后，如果地图已初始化，立即更新地图和热力图
                     if (map && currentCity) {
@@ -1282,6 +1283,8 @@
                         console.log('✅ 地图和热力图已更新！');
                     }
                     
+=======
+>>>>>>> 3b794c64dc85a08c88c0e50cb422e85c321c6497
                     return data;
                 } else {
                     console.warn('⚠️ 数据库返回空数组');
@@ -1757,7 +1760,12 @@
             
             const filteredHotels = hotels.filter(h => h.score >= minRating);
             
-            console.log('准备创建标记，酒店数量:', filteredHotels.length);
+            console.log('========================================');
+            console.log('🗺️ 更新地图标记');
+            console.log('酒店总数:', hotels.length);
+            console.log('筛选后数量:', filteredHotels.length);
+            console.log('热力图状态:', showHeatmap ? '开启' : '关闭');
+            console.log('========================================');
             
             filteredHotels.forEach((hotel, index) => {
                 const markerColor = getMarkerColor(hotel.score);
@@ -1773,7 +1781,10 @@
                     bubblingMouseEvents: false  // 阻止事件冒泡
                 }).addTo(map);
                 
-                console.log(`创建标记 ${index + 1}:`, hotel.name, '位置:', hotel.lat, hotel.lng);
+                // 只输出前3个和每100个的日志，避免刷屏
+                if (index < 3 || index % 100 === 0) {
+                    console.log(`创建标记 ${index + 1}:`, hotel.name, '位置:', hotel.lat, hotel.lng);
+                }
                 
                 // 添加标题，方便识别
                 marker.bindTooltip(hotel.name, {
@@ -1865,10 +1876,11 @@
                 
                 markers.push(marker);
                 
+                // 🔥 添加热力图（半透明大圆圈）
                 if (showHeatmap) {
                     const heatColor = getHeatColor(hotel.score);
                     const heatCircle = L.circle([hotel.lat, hotel.lng], {
-                        radius: 500 + hotel.score * 200,
+                        radius: 500 + hotel.score * 200,  // 500-1500米半径
                         fillColor: heatColor === 'heat-green' ? '#4ade80' : 
                                   heatColor === 'heat-yellow' ? '#fbbf24' : '#f87171',
                         color: 'transparent',
@@ -1878,15 +1890,28 @@
                         bubblingMouseEvents: false
                     }).addTo(map);
                     
-                    // 确保热力图在标记下方（通过CSS）
+                    // 确保热力图在标记下方
                     const heatElement = heatCircle.getElement();
                     if (heatElement) {
                         heatElement.style.pointerEvents = 'none';  // 不拦截鼠标事件
+                        heatElement.style.zIndex = '-1';  // 确保在标记下方
                     }
                     
                     heatmapCircles.push(heatCircle);
+                    
+                    // 每50个酒店输出一次日志
+                    if (index % 50 === 0) {
+                        console.log(`🔥 已创建 ${index + 1} 个热力图圆圈`);
+                    }
                 }
             });
+            
+            // 完成后输出总结
+            console.log('========================================');
+            console.log('✅ 地图更新完成');
+            console.log('标记总数:', markers.length);
+            console.log('热力图圆圈总数:', heatmapCircles.length);
+            console.log('========================================');
         }
 
         function getHeatColor(score) {
