@@ -1,0 +1,50 @@
+<!-- 在 HTML 中直接使用 Supabase（无需 npm） -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  // 初始化 Supabase 客户端
+  const { createClient } = supabase;
+  
+  const SUPABASE_URL = 'https://hmmruoankhohowlzajll.supabase.co';
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhtbXJ1b2Fua2hvaG93bHphamxsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA1MjQxNjgsImV4cCI6MjA4NjEwMDE2OH0.nGVgFlrTPQh86Ba0doT_mmeHvCnF0NjJ6MUJEvQKV3g';
+  
+  const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  
+  // 测试连接
+  async function testConnection() {
+    console.log('测试 Supabase 连接...');
+    
+    const { data, error } = await supabaseClient
+      .from('hotels')
+      .select('*')
+      .limit(5);
+    
+    if (error) {
+      console.error('❌ 连接失败:', error);
+    } else {
+      console.log('✅ 成功！获取到', data.length, '个酒店');
+      console.log('数据:', data);
+    }
+  }
+  
+  // 获取所有酒店
+  async function getAllHotels() {
+    const { data, error } = await supabaseClient
+      .from('hotels')
+      .select('*')
+      .eq('is_active', true);
+    
+    if (error) {
+      console.error('获取酒店失败:', error);
+      return [];
+    }
+    
+    console.log('✅ 从数据库加载了', data.length, '个酒店');
+    return data;
+  }
+  
+  // 页面加载后测试
+  window.addEventListener('load', () => {
+    testConnection();
+  });
+</script>
+
