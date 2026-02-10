@@ -1308,25 +1308,15 @@
             console.log('🔍 获取城市酒店数据，城市ID:', cityId);
             
             if (dbHotelsData && dbHotelsData.length > 0) {
-                // 城市ID映射到数据库中的城市名称
-                const cityNameMap = {
-                    'xishuangbanna': '西双版纳',
-                    'guiyang': '贵阳',
-                    'bangkok': '曼谷',
-                    'shanghai': '上海',
-                    'naples': '那不勒斯'
-                };
+                console.log('  数据库中总酒店数:', dbHotelsData.length);
                 
-                const cityName = cityNameMap[cityId];
-                console.log('  映射城市名称:', cityName);
+                // 先查看数据库中实际的城市字段值
+                const uniqueCities = [...new Set(dbHotelsData.map(h => h.city))];
+                console.log('  数据库中的城市列表:', uniqueCities);
                 
-                // 过滤该城市的酒店
-                const cityHotels = dbHotelsData.filter(h => {
-                    // 尝试多种匹配方式
-                    return h.city === cityName || 
-                           h.city === cityId ||
-                           (h.city && h.city.toLowerCase().includes(cityId.toLowerCase()));
-                });
+                // 🔥 临时修复：先不做城市筛选，显示所有酒店
+                console.log('  ⚠️ 暂时显示所有酒店（不按城市筛选）');
+                const cityHotels = dbHotelsData;
                 
                 console.log(`  找到 ${cityHotels.length} 个酒店`);
                 
@@ -1355,6 +1345,11 @@
                 console.log(`  有效坐标酒店: ${validHotels.length} 个`);
                 
                 if (validHotels.length > 0) {
+                    console.log('  前3个酒店示例:');
+                    validHotels.slice(0, 3).forEach((h, i) => {
+                        console.log(`    ${i+1}. ${h.name} - 城市: ${h.city} - 坐标: [${h.lat}, ${h.lng}]`);
+                    });
+                    
                     console.log('  坐标范围:');
                     const lats = validHotels.map(h => h.lat);
                     const lngs = validHotels.map(h => h.lng);
@@ -1364,7 +1359,7 @@
                 
                 return validHotels;
             } else {
-                console.log('  使用模拟数据');
+                console.log('  数据库无数据，使用模拟数据');
                 return mockHotels[cityId] || [];
             }
         }
