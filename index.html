@@ -1314,22 +1314,35 @@
                 const uniqueCities = [...new Set(dbHotelsData.map(h => h.city))];
                 console.log('  数据库中的城市列表:', uniqueCities);
                 
+                // 检查第一个酒店的所有字段
+                if (dbHotelsData.length > 0) {
+                    console.log('  第一个酒店的所有字段:', Object.keys(dbHotelsData[0]));
+                    console.log('  第一个酒店示例:', dbHotelsData[0]);
+                }
+                
                 // 🔥 临时修复：先不做城市筛选，显示所有酒店
                 console.log('  ⚠️ 暂时显示所有酒店（不按城市筛选）');
                 const cityHotels = dbHotelsData;
                 
                 console.log(`  找到 ${cityHotels.length} 个酒店`);
                 
-                // 转换为应用格式
-                const hotels = cityHotels.map(h => ({
-                    id: h.id,
-                    name: h.name,
-                    score: parseFloat(h.safety_score) || 0,
-                    lat: parseFloat(h.latitude),
-                    lng: parseFloat(h.longitude),
-                    reviews: h.review_count || 0,
-                    city: h.city
-                }));
+                // 转换为应用格式 - 尝试多种可能的字段名
+                const hotels = cityHotels.map(h => {
+                    // 尝试多种可能的纬度字段名
+                    const lat = parseFloat(h.latitude || h.lat || h.Latitude || h.LAT);
+                    // 尝试多种可能的经度字段名
+                    const lng = parseFloat(h.longitude || h.lng || h.lon || h.Longitude || h.LON);
+                    
+                    return {
+                        id: h.id,
+                        name: h.name,
+                        score: parseFloat(h.safety_score || h.score) || 0,
+                        lat: lat,
+                        lng: lng,
+                        reviews: h.review_count || h.reviews || 0,
+                        city: h.city
+                    };
+                });
                 
                 // 验证坐标有效性
                 const validHotels = hotels.filter(h => {
@@ -1337,15 +1350,16 @@
                                    h.lat !== 0 && h.lng !== 0 &&
                                    Math.abs(h.lat) <= 90 && Math.abs(h.lng) <= 180;
                     if (!isValid) {
-                        console.warn(`  ⚠️ 无效坐标: ${h.name} [${h.lat}, ${h.lng}]`);
+                        console.warn(`  ⚠️ 无效坐标: ${h.name} - 城市: ${h.city} - 坐标: [${h.lat}, ${h.lng}]`);
                     }
                     return isValid;
                 });
                 
                 console.log(`  有效坐标酒店: ${validHotels.length} 个`);
+                console.log(`  无效坐标酒店: ${hotels.length - validHotels.length} 个`);
                 
                 if (validHotels.length > 0) {
-                    console.log('  前3个酒店示例:');
+                    console.log('  前3个有效酒店示例:');
                     validHotels.slice(0, 3).forEach((h, i) => {
                         console.log(`    ${i+1}. ${h.name} - 城市: ${h.city} - 坐标: [${h.lat}, ${h.lng}]`);
                     });
@@ -1355,6 +1369,9 @@
                     const lngs = validHotels.map(h => h.lng);
                     console.log(`    纬度: ${Math.min(...lats).toFixed(4)} ~ ${Math.max(...lats).toFixed(4)}`);
                     console.log(`    经度: ${Math.min(...lngs).toFixed(4)} ~ ${Math.max(...lngs).toFixed(4)}`);
+                } else {
+                    console.error('  ❌ 没有找到任何有效坐标的酒店！');
+                    console.log('  请检查数据库中的坐标字段名称');
                 }
                 
                 return validHotels;
@@ -1966,9 +1983,41 @@
             
             // 如果有标记，自动调整地图视野以显示所有标记
             if (markers.length > 0) {
-                const group = L.featureGroup(markers);
-                map.fitBounds(group.getBounds().pad(0.1));  // 添加10%的边距
-                console.log('🗺️ 已自动调整地图视野以显示所有酒店');
+                try {
+                    const group = L.featureGroup(markers);
+                    const bounds = group.getBounds();
+                    
+                    // 检查边界是否有效
+                    if (bounds.isValid()) {
+                        map.fitBounds(bounds.pad(0.1));  // 添加10%的边距
+                        console.log('🗺️ 已自动调整地图视野以显示所有酒店');
+                        console.log('   边界:', bounds.toBBoxString());
+                    } else {
+                        console.warn('⚠️ 边界无效，使用默认视野');
+                        // 使用城市默认坐标
+                        if (currentCity && cityCoordinates[currentCity.id]) {
+                            const coords = cityCoordinates[currentCity.id];
+                            map.setView([coords.lat, coords.lng], coords.zoom);
+                            console.log('🗺️ 使用城市默认坐标:', coords);
+                        }
+                    }
+                } catch (error) {
+                    console.error('❌ 调整地图视野失败:', error);
+                    // 使用城市默认坐标作为后备
+                    if (currentCity && cityCoordinates[currentCity.id]) {
+                        const coords = cityCoordinates[currentCity.id];
+                        map.setView([coords.lat, coords.lng], coords.zoom);
+                        console.log('🗺️ 使用城市默认坐标（后备）:', coords);
+                    }
+                }
+            } else {
+                console.warn('⚠️ 没有标记，使用城市默认视野');
+                // 使用城市默认坐标
+                if (currentCity && cityCoordinates[currentCity.id]) {
+                    const coords = cityCoordinates[currentCity.id];
+                    map.setView([coords.lat, coords.lng], coords.zoom);
+                    console.log('🗺️ 使用城市默认坐标:', coords);
+                }
             }
         }
 
