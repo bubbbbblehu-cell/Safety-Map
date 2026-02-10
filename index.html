@@ -1800,16 +1800,16 @@
             console.log('🎯 开始创建酒店标记...');
             filteredHotels.forEach((hotel, index) => {
                 const markerColor = getMarkerColor(hotel.score);
-                // 使用更大的标记，增加点击区域
+                // 使用更大更明显的标记
                 const marker = L.circleMarker([hotel.lat, hotel.lng], {
-                    radius: 12,
+                    radius: 8,  // 标记半径
                     fillColor: markerColor,
-                    color: '#fff',
-                    weight: 3,
+                    color: '#fff',  // 白色边框
+                    weight: 2,  // 边框宽度
                     opacity: 1,
-                    fillOpacity: 0.95,
-                    interactive: true,  // 确保可交互
-                    bubblingMouseEvents: false  // 阻止事件冒泡
+                    fillOpacity: 1,  // 完全不透明，更明显
+                    interactive: true,
+                    bubblingMouseEvents: false
                 }).addTo(map);
                 
                 // 只输出前3个和每100个的日志，避免刷屏
@@ -1892,16 +1892,16 @@
                 // 鼠标悬停时显示popup和改变样式
                 marker.on('mouseover', function() {
                     this.setStyle({
-                        radius: 14,
-                        fillOpacity: 1
+                        radius: 10,
+                        weight: 3
                     });
                     this.openPopup();
                 });
                 
                 marker.on('mouseout', function() {
                     this.setStyle({
-                        radius: 12,
-                        fillOpacity: 0.9
+                        radius: 8,
+                        weight: 2
                     });
                 });
                 
@@ -1913,7 +1913,18 @@
             console.log('✅ 地图更新完成');
             console.log('🎯 标记总数:', markers.length);
             console.log('🔥 热力图圆圈总数:', heatmapCircles.length);
+            console.log('📍 前10个酒店位置:');
+            filteredHotels.slice(0, 10).forEach((h, i) => {
+                console.log(`  ${i+1}. ${h.name} - 位置: [${h.lat}, ${h.lng}]`);
+            });
             console.log('========================================');
+            
+            // 如果有标记，自动调整地图视野以显示所有标记
+            if (markers.length > 0) {
+                const group = L.featureGroup(markers);
+                map.fitBounds(group.getBounds().pad(0.1));  // 添加10%的边距
+                console.log('🗺️ 已自动调整地图视野以显示所有酒店');
+            }
         }
 
         function getHeatColor(score) {
