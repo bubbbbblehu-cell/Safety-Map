@@ -1764,11 +1764,45 @@
             console.log('热力图状态:', showHeatmap ? '开启' : '关闭');
             console.log('========================================');
             
+            // 🔥 第一步：先添加所有热力图圆圈（这样它们会在底层）
+            if (showHeatmap) {
+                console.log('🔥 开始创建热力图圆圈...');
+                filteredHotels.forEach((hotel, index) => {
+                    const heatColor = getHeatColor(hotel.score);
+                    const heatCircle = L.circle([hotel.lat, hotel.lng], {
+                        radius: 500 + hotel.score * 200,  // 500-1500米半径
+                        fillColor: heatColor === 'heat-green' ? '#4ade80' : 
+                                  heatColor === 'heat-yellow' ? '#fbbf24' : '#f87171',
+                        color: 'transparent',
+                        fillOpacity: 0.3,  // 提高透明度，更明显
+                        weight: 0,
+                        interactive: false,  // 关键：热力图不拦截点击事件
+                        bubblingMouseEvents: false
+                    }).addTo(map);
+                    
+                    // 确保热力图不拦截鼠标事件
+                    const heatElement = heatCircle.getElement();
+                    if (heatElement) {
+                        heatElement.style.pointerEvents = 'none';
+                    }
+                    
+                    heatmapCircles.push(heatCircle);
+                    
+                    // 每50个酒店输出一次日志
+                    if ((index + 1) % 50 === 0 || index === 0) {
+                        console.log(`🔥 已创建 ${index + 1} 个热力图圆圈 (半径: ${Math.round(500 + hotel.score * 200)}米, 颜色: ${heatColor})`);
+                    }
+                });
+                console.log(`🔥 热力图创建完成！总共 ${heatmapCircles.length} 个圆圈`);
+            }
+            
+            // 🎯 第二步：再添加所有标记（这样它们会在热力图上层）
+            console.log('🎯 开始创建酒店标记...');
             filteredHotels.forEach((hotel, index) => {
                 const markerColor = getMarkerColor(hotel.score);
                 // 使用更大的标记，增加点击区域
                 const marker = L.circleMarker([hotel.lat, hotel.lng], {
-                    radius: 15,  // 增大半径，更容易点击
+                    radius: 12,
                     fillColor: markerColor,
                     color: '#fff',
                     weight: 3,
@@ -1780,7 +1814,7 @@
                 
                 // 只输出前3个和每100个的日志，避免刷屏
                 if (index < 3 || index % 100 === 0) {
-                    console.log(`创建标记 ${index + 1}:`, hotel.name, '位置:', hotel.lat, hotel.lng);
+                    console.log(`🎯 创建标记 ${index + 1}:`, hotel.name, '位置:', hotel.lat, hotel.lng);
                 }
                 
                 // 添加标题，方便识别
@@ -1872,46 +1906,13 @@
                 });
                 
                 markers.push(marker);
-                
-                // 🔥 添加热力图（半透明大圆圈）
-                if (showHeatmap) {
-                    const heatColor = getHeatColor(hotel.score);
-                    const heatCircle = L.circle([hotel.lat, hotel.lng], {
-                        radius: 500 + hotel.score * 200,  // 500-1500米半径
-                        fillColor: heatColor === 'heat-green' ? '#4ade80' : 
-                                  heatColor === 'heat-yellow' ? '#fbbf24' : '#f87171',
-                        color: 'transparent',
-                        fillOpacity: 0.25,  // 稍微降低透明度，更容易看到
-                        weight: 0,
-                        interactive: false,  // 关键：热力图不拦截点击事件
-                        bubblingMouseEvents: false,
-                        pane: 'overlayPane'  // 使用正确的图层面板
-                    });
-                    
-                    // 先添加热力图到地图
-                    heatCircle.addTo(map);
-                    
-                    // 确保热力图在标记下方，但仍然可见
-                    const heatElement = heatCircle.getElement();
-                    if (heatElement) {
-                        heatElement.style.pointerEvents = 'none';  // 不拦截鼠标事件
-                        // 不设置负的 z-index，而是确保它在正确的图层
-                    }
-                    
-                    heatmapCircles.push(heatCircle);
-                    
-                    // 每50个酒店输出一次日志
-                    if ((index + 1) % 50 === 0 || index === 0) {
-                        console.log(`🔥 已创建 ${index + 1} 个热力图圆圈 (半径: ${500 + hotel.score * 200}米, 颜色: ${heatColor})`);
-                    }
-                }
             });
             
             // 完成后输出总结
             console.log('========================================');
             console.log('✅ 地图更新完成');
-            console.log('标记总数:', markers.length);
-            console.log('热力图圆圈总数:', heatmapCircles.length);
+            console.log('🎯 标记总数:', markers.length);
+            console.log('🔥 热力图圆圈总数:', heatmapCircles.length);
             console.log('========================================');
         }
 
