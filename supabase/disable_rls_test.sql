@@ -28,3 +28,4 @@ SELECT COUNT(*) as active_hotels FROM public.hotels WHERE is_active = true;
 
 
 
+
