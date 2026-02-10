@@ -1260,23 +1260,30 @@
                 
                 if (data && data.length > 0) {
                     dbHotelsData = data;
-                    console.log('前3个酒店示例:');
-                    data.slice(0, 3).forEach((hotel, i) => {
-                        console.log(`  ${i+1}. ${hotel.name} - 评分: ${hotel.safety_score}`);
+                    console.log('📊 数据库酒店统计:');
+                    console.log('  总数:', data.length);
+                    
+                    // 统计每个城市的酒店数量
+                    const cityCounts = {};
+                    data.forEach(h => {
+                        const city = h.city || '未知';
+                        cityCounts[city] = (cityCounts[city] || 0) + 1;
+                    });
+                    console.log('  各城市分布:', cityCounts);
+                    
+                    console.log('前5个酒店示例:');
+                    data.slice(0, 5).forEach((hotel, i) => {
+                        console.log(`  ${i+1}. ${hotel.name}`);
+                        console.log(`     城市: ${hotel.city || '未知'}`);
+                        console.log(`     坐标: [${hotel.latitude}, ${hotel.longitude}]`);
+                        console.log(`     评分: ${hotel.safety_score}`);
                     });
                     isLoadingFromDatabase = false;
                     
                     // 🔥 关键修复：数据加载完成后，如果地图已初始化，立即更新地图和热力图
                     if (map && currentCity) {
                         console.log('🔄 数据加载完成，更新地图和热力图...');
-                        const hotels = dbHotelsData.map(h => ({
-                            id: h.id,
-                            name: h.name,
-                            score: parseFloat(h.safety_score) || 0,
-                            lat: parseFloat(h.latitude),
-                            lng: parseFloat(h.longitude),
-                            reviews: h.review_count || 0
-                        }));
+                        const hotels = getHotelsForCity(currentCity.id);
                         updateMapMarkers(hotels);
                         updateStats();
                         console.log('✅ 地图和热力图已更新！');
@@ -1293,6 +1300,72 @@
                 console.error('========================================');
                 isLoadingFromDatabase = false;
                 return [];
+            }
+        }
+        
+        // 根据城市ID获取酒店数据
+        function getHotelsForCity(cityId) {
+            console.log('🔍 获取城市酒店数据，城市ID:', cityId);
+            
+            if (dbHotelsData && dbHotelsData.length > 0) {
+                // 城市ID映射到数据库中的城市名称
+                const cityNameMap = {
+                    'xishuangbanna': '西双版纳',
+                    'guiyang': '贵阳',
+                    'bangkok': '曼谷',
+                    'shanghai': '上海',
+                    'naples': '那不勒斯'
+                };
+                
+                const cityName = cityNameMap[cityId];
+                console.log('  映射城市名称:', cityName);
+                
+                // 过滤该城市的酒店
+                const cityHotels = dbHotelsData.filter(h => {
+                    // 尝试多种匹配方式
+                    return h.city === cityName || 
+                           h.city === cityId ||
+                           (h.city && h.city.toLowerCase().includes(cityId.toLowerCase()));
+                });
+                
+                console.log(`  找到 ${cityHotels.length} 个酒店`);
+                
+                // 转换为应用格式
+                const hotels = cityHotels.map(h => ({
+                    id: h.id,
+                    name: h.name,
+                    score: parseFloat(h.safety_score) || 0,
+                    lat: parseFloat(h.latitude),
+                    lng: parseFloat(h.longitude),
+                    reviews: h.review_count || 0,
+                    city: h.city
+                }));
+                
+                // 验证坐标有效性
+                const validHotels = hotels.filter(h => {
+                    const isValid = !isNaN(h.lat) && !isNaN(h.lng) && 
+                                   h.lat !== 0 && h.lng !== 0 &&
+                                   Math.abs(h.lat) <= 90 && Math.abs(h.lng) <= 180;
+                    if (!isValid) {
+                        console.warn(`  ⚠️ 无效坐标: ${h.name} [${h.lat}, ${h.lng}]`);
+                    }
+                    return isValid;
+                });
+                
+                console.log(`  有效坐标酒店: ${validHotels.length} 个`);
+                
+                if (validHotels.length > 0) {
+                    console.log('  坐标范围:');
+                    const lats = validHotels.map(h => h.lat);
+                    const lngs = validHotels.map(h => h.lng);
+                    console.log(`    纬度: ${Math.min(...lats).toFixed(4)} ~ ${Math.max(...lats).toFixed(4)}`);
+                    console.log(`    经度: ${Math.min(...lngs).toFixed(4)} ~ ${Math.max(...lngs).toFixed(4)}`);
+                }
+                
+                return validHotels;
+            } else {
+                console.log('  使用模拟数据');
+                return mockHotels[cityId] || [];
             }
         }
         
@@ -1535,47 +1608,24 @@
                 return;
             }
             
-            console.log('initMap 被调用，城市ID:', cityId);
+            console.log('========================================');
+            console.log('🗺️ initMap 被调用');
+            console.log('城市ID:', cityId);
+            console.log('城市名称:', currentCity ? currentCity.name : '未知');
+            console.log('========================================');
             
             const coords = cityCoordinates[cityId];
             
-            // 优先使用数据库数据，如果没有则使用模拟数据
-            let hotels = [];
-            if (dbHotelsData && dbHotelsData.length > 0) {
-                console.log('✅ 使用数据库中的酒店数据');
-                // 转换数据库格式为应用格式
-                hotels = dbHotelsData.map(h => ({
-                    id: h.id,
-                    name: h.name,
-                    score: parseFloat(h.safety_score) || 0,
-                    lat: parseFloat(h.latitude),
-                    lng: parseFloat(h.longitude),
-                    reviews: h.review_count || 0
-                }));
-                console.log(`转换后的酒店数量: ${hotels.length}`);
-            } else if (isLoadingFromDatabase) {
+            // 如果数据库还在加载，等待加载完成
+            if (isLoadingFromDatabase) {
                 console.log('⏳ 等待数据库数据加载...');
-                // 等待数据库加载完成
                 await loadHotelsFromDatabase();
-                if (dbHotelsData && dbHotelsData.length > 0) {
-                    hotels = dbHotelsData.map(h => ({
-                        id: h.id,
-                        name: h.name,
-                        score: parseFloat(h.safety_score) || 0,
-                        lat: parseFloat(h.latitude),
-                        lng: parseFloat(h.longitude),
-                        reviews: h.review_count || 0
-                    }));
-                } else {
-                    console.log('⚠️ 数据库无数据，使用模拟数据');
-                    hotels = mockHotels[cityId] || [];
-                }
-            } else {
-                console.log('⚠️ 使用模拟数据');
-                hotels = mockHotels[cityId] || [];
             }
             
-            console.log(`最终使用的酒店数量: ${hotels.length}`);
+            // 使用新的函数获取该城市的酒店
+            let hotels = getHotelsForCity(cityId);
+            
+            console.log(`🏨 最终使用的酒店数量: ${hotels.length}`);
             
             const placeholder = document.getElementById('mapPlaceholder');
             if (placeholder) {
@@ -1940,14 +1990,10 @@
         }
 
         function updateStats() {
-            // 优先使用数据库数据
+            // 使用当前城市的酒店数据
             let hotels = [];
-            if (dbHotelsData && dbHotelsData.length > 0) {
-                hotels = dbHotelsData.map(h => ({
-                    score: parseFloat(h.safety_score) || 0
-                }));
-            } else if (currentCity) {
-                hotels = mockHotels[currentCity.id] || [];
+            if (currentCity && currentCity.id) {
+                hotels = getHotelsForCity(currentCity.id);
             }
             
             const totalHotels = hotels.length;
@@ -1956,7 +2002,7 @@
             document.getElementById('totalHotels').textContent = totalHotels;
             document.getElementById('ratedHotels').textContent = ratedHotels;
             
-            console.log(`📊 统计信息: 总数 ${totalHotels}, 已评分 ${ratedHotels}`);
+            console.log(`📊 统计信息 (${currentCity ? currentCity.name : '未知'}): 总数 ${totalHotels}, 已评分 ${ratedHotels}`);
         }
 
         // 全局函数，供popup中的按钮调用
@@ -2243,20 +2289,7 @@
             this.classList.toggle('active', showHeatmap);
             
             if (currentCity && map) {
-                // 🔥 修复：使用数据库数据而不是模拟数据
-                let hotels = [];
-                if (dbHotelsData && dbHotelsData.length > 0) {
-                    hotels = dbHotelsData.map(h => ({
-                        id: h.id,
-                        name: h.name,
-                        score: parseFloat(h.safety_score) || 0,
-                        lat: parseFloat(h.latitude),
-                        lng: parseFloat(h.longitude),
-                        reviews: h.review_count || 0
-                    }));
-                } else {
-                    hotels = mockHotels[currentCity.id] || [];
-                }
+                const hotels = getHotelsForCity(currentCity.id);
                 console.log(`🔄 切换热力图状态: ${showHeatmap ? '开启' : '关闭'}，酒店数量: ${hotels.length}`);
                 updateMapMarkers(hotels);
             }
@@ -2273,20 +2306,7 @@
             document.getElementById('filterModal').classList.remove('active');
             
             if (currentCity && map) {
-                // 🔥 修复：使用数据库数据而不是模拟数据
-                let hotels = [];
-                if (dbHotelsData && dbHotelsData.length > 0) {
-                    hotels = dbHotelsData.map(h => ({
-                        id: h.id,
-                        name: h.name,
-                        score: parseFloat(h.safety_score) || 0,
-                        lat: parseFloat(h.latitude),
-                        lng: parseFloat(h.longitude),
-                        reviews: h.review_count || 0
-                    }));
-                } else {
-                    hotels = mockHotels[currentCity.id] || [];
-                }
+                const hotels = getHotelsForCity(currentCity.id);
                 console.log(`🔍 应用筛选: 最低评分 ${rating}，酒店数量: ${hotels.length}`);
                 updateMapMarkers(hotels);
             }
@@ -2298,20 +2318,7 @@
             document.getElementById('filterModal').classList.remove('active');
             
             if (currentCity && map) {
-                // 🔥 修复：使用数据库数据而不是模拟数据
-                let hotels = [];
-                if (dbHotelsData && dbHotelsData.length > 0) {
-                    hotels = dbHotelsData.map(h => ({
-                        id: h.id,
-                        name: h.name,
-                        score: parseFloat(h.safety_score) || 0,
-                        lat: parseFloat(h.latitude),
-                        lng: parseFloat(h.longitude),
-                        reviews: h.review_count || 0
-                    }));
-                } else {
-                    hotels = mockHotels[currentCity.id] || [];
-                }
+                const hotels = getHotelsForCity(currentCity.id);
                 console.log(`🔍 清除筛选，酒店数量: ${hotels.length}`);
                 updateMapMarkers(hotels);
             }
