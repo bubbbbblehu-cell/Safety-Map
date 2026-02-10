@@ -1881,24 +1881,28 @@
                         fillColor: heatColor === 'heat-green' ? '#4ade80' : 
                                   heatColor === 'heat-yellow' ? '#fbbf24' : '#f87171',
                         color: 'transparent',
-                        fillOpacity: 0.3,
+                        fillOpacity: 0.25,  // 稍微降低透明度，更容易看到
                         weight: 0,
                         interactive: false,  // 关键：热力图不拦截点击事件
-                        bubblingMouseEvents: false
-                    }).addTo(map);
+                        bubblingMouseEvents: false,
+                        pane: 'overlayPane'  // 使用正确的图层面板
+                    });
                     
-                    // 确保热力图在标记下方
+                    // 先添加热力图到地图
+                    heatCircle.addTo(map);
+                    
+                    // 确保热力图在标记下方，但仍然可见
                     const heatElement = heatCircle.getElement();
                     if (heatElement) {
                         heatElement.style.pointerEvents = 'none';  // 不拦截鼠标事件
-                        heatElement.style.zIndex = '-1';  // 确保在标记下方
+                        // 不设置负的 z-index，而是确保它在正确的图层
                     }
                     
                     heatmapCircles.push(heatCircle);
                     
                     // 每50个酒店输出一次日志
-                    if (index % 50 === 0) {
-                        console.log(`🔥 已创建 ${index + 1} 个热力图圆圈`);
+                    if ((index + 1) % 50 === 0 || index === 0) {
+                        console.log(`🔥 已创建 ${index + 1} 个热力图圆圈 (半径: ${500 + hotel.score * 200}米, 颜色: ${heatColor})`);
                     }
                 }
             });

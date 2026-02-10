@@ -25,3 +25,5 @@ SELECT COUNT(*) as active_hotels FROM public.hotels WHERE is_active = true;
 -- ALTER TABLE public.hotels ENABLE ROW LEVEL SECURITY;
 -- ALTER TABLE public.cities ENABLE ROW LEVEL SECURITY;
 
+
+
