@@ -19,3 +19,4 @@ fetch('https://hmmruoankhohowlzajll.supabase.co/rest/v1/hotels?select=*&limit=5'
 
 
 
+

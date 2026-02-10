@@ -29,3 +29,4 @@ WHERE tablename IN ('hotels', 'cities');
 
 
 
+
