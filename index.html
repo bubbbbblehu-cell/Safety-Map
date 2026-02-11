@@ -1908,7 +1908,7 @@
                     closeOnClick: false
                 });
                 
-                // 点击事件 - 直接打开详情弹窗
+                // 点击事件 - 关闭popup并打开详情弹窗
                 marker.on('click', function(e) {
                     console.log('✅ 点击酒店标记事件触发:', this.hotelData ? this.hotelData.name : '未知');
                     // 阻止事件冒泡到地图
@@ -1916,6 +1916,8 @@
                         e.originalEvent.stopPropagation();
                         e.originalEvent.preventDefault();
                     }
+                    // 关闭popup
+                    this.closePopup();
                     // 使用保存的酒店数据
                     const hotelData = this.hotelData || hotel;
                     console.log('✅ 准备打开弹窗，酒店数据:', hotelData);
@@ -2222,14 +2224,21 @@
             }
         }
 
-        // API配置 - 可以根据环境修改
+        // API配置 - 自动检测环境
         const API_CONFIG = {
             // 开发环境
             development: 'http://localhost:3001',
-            // 生产环境（部署后修改为实际API地址）
-            production: 'https://your-api-domain.com',
-            // 当前使用的环境
-            current: 'http://localhost:3001'
+            // 生产环境（Vercel部署后的API地址）
+            production: 'https://safety-map-api.vercel.app',
+            // 自动检测当前环境
+            get current() {
+                // 如果是localhost或127.0.0.1，使用开发环境
+                if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+                    return this.development;
+                }
+                // 否则使用生产环境
+                return this.production;
+            }
         };
 
         async function finalProcess() {
@@ -2291,8 +2300,18 @@
                 }
             } catch (error) {
                 console.error('提交错误:', error);
+                const currentAPI = API_CONFIG.current;
+                const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+                
                 if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
-                    alert('无法连接到服务器\n\n请确保：\n1. 后端服务器正在运行\n2. API地址配置正确\n3. 网络连接正常\n\n当前API地址: ' + API_CONFIG.current);
+                    let errorMsg = '无法连接到服务器\n\n';
+                    if (isLocalhost) {
+                        errorMsg += '请确保：\n1. 后端服务器正在运行\n2. 运行命令: node server.js\n3. 端口3001未被占用\n\n';
+                    } else {
+                        errorMsg += '请确保：\n1. API服务器已部署\n2. API地址配置正确\n3. 网络连接正常\n\n';
+                    }
+                    errorMsg += '当前API地址: ' + currentAPI;
+                    alert(errorMsg);
                 } else {
                     alert('提交失败：' + error.message);
                 }
