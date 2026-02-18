@@ -2228,15 +2228,15 @@
         const API_CONFIG = {
             // 开发环境
             development: 'http://localhost:3001',
-            // 生产环境（Vercel部署后的API地址）
-            production: 'https://safety-map-api.vercel.app',
+            // 生产环境（使用相对路径，Vercel会自动路由到serverless函数）
+            production: '',  // 空字符串表示使用当前域名
             // 自动检测当前环境
             get current() {
                 // 如果是localhost或127.0.0.1，使用开发环境
                 if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
                     return this.development;
                 }
-                // 否则使用生产环境
+                // 否则使用生产环境（当前域名）
                 return this.production;
             }
         };

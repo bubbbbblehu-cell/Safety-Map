@@ -1,0 +1,8 @@
+{
+  "name": "safety-map-api",
+  "version": "1.0.0",
+  "dependencies": {
+    "multiparty": "^4.2.3"
+  }
+}
+
