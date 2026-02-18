@@ -328,6 +328,46 @@
             display: block;
         }
 
+        /* 固定底部按钮栏 */
+        .fixed-bottom-bar {
+            position: fixed;
+            bottom: 70px;
+            left: 0;
+            right: 0;
+            padding: 16px 20px;
+            background: white;
+            border-top: 1px solid #e0e0e0;
+            z-index: 100;
+        }
+
+        /* 蓝色按钮 */
+        .btn-blue {
+            width: 100%;
+            background: #6366f1;
+            color: white;
+            padding: 14px 20px;
+            border-radius: 12px;
+            border: none;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-blue:hover {
+            background: #4f46e5;
+            transform: translateY(-1px);
+        }
+
+        .btn-blue:active {
+            transform: translateY(0);
+        }
+
+        /* 滚动内容区域 */
+        .scroll-content {
+            padding-bottom: 100px;
+        }
+
         /* 酒店标记popup样式 */
         .hotel-popup {
             text-align: center;
@@ -1252,8 +1292,10 @@
                     .eq('is_active', true);
                 
                 if (error) {
-                    console.error('❌ 数据库查询错误:', error);
-                    throw error;
+                    console.warn('⚠️ 数据库查询错误:', error.message);
+                    console.log('使用模拟数据作为后备');
+                    isLoadingFromDatabase = false;
+                    return [];
                 }
                 
                 console.log(`✅ 成功从数据库加载 ${data ? data.length : 0} 个酒店！`);
@@ -1295,9 +1337,10 @@
                     return [];
                 }
             } catch (error) {
-                console.error('========================================');
-                console.error('❌ 从数据库加载失败:', error.message);
-                console.error('========================================');
+                console.warn('========================================');
+                console.warn('⚠️ 从数据库加载失败:', error.message);
+                console.log('将使用模拟数据作为后备');
+                console.warn('========================================');
                 isLoadingFromDatabase = false;
                 return [];
             }
@@ -2185,6 +2228,10 @@
             }
             document.getElementById('detectionModal').classList.remove('active');
             const container = document.getElementById('qa-render');
+            if (!container) {
+                console.error('qa-render 元素不存在');
+                return;
+            }
             container.innerHTML = `<h2 style="font-weight:300; margin-top:10px;">安全自查引导</h2>` + 
                 detectionSelections.map(s => `
                 <div class="qa-card">
@@ -2205,6 +2252,10 @@
 
         function renderUploads() {
             const container = document.getElementById('upload-render');
+            if (!container) {
+                console.error('upload-render 元素不存在');
+                return;
+            }
             container.innerHTML = detectionSelections.map((s, i) => `
                 <div class="upload-slot" onclick="document.getElementById('f-${i}').click()">
                     <div style="font-size:15px; font-weight:bold; color:#6366f1;">📸 拍摄【${s}】实拍</div>
@@ -2321,9 +2372,20 @@
             }
         }
 
-        // 绑定按钮事件
-        document.getElementById('goToUploadBtn').addEventListener('click', renderUploads);
-        document.getElementById('submitAnalysisBtn').addEventListener('click', finalProcess);
+        // 绑定按钮事件 - 添加安全检查
+        const goToUploadBtn = document.getElementById('goToUploadBtn');
+        if (goToUploadBtn) {
+            goToUploadBtn.addEventListener('click', renderUploads);
+        } else {
+            console.warn('goToUploadBtn 元素不存在，稍后绑定');
+        }
+        
+        const submitAnalysisBtn = document.getElementById('submitAnalysisBtn');
+        if (submitAnalysisBtn) {
+            submitAnalysisBtn.addEventListener('click', finalProcess);
+        } else {
+            console.warn('submitAnalysisBtn 元素不存在，稍后绑定');
+        }
 
         // 关闭检测模态框
         document.getElementById('detectionModal').addEventListener('click', function(e) {
