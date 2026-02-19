@@ -237,18 +237,19 @@ app.get('/api/analysis/:id', (req, res) => {
     }
 });
 
-// 阿里云 DashScope API配置
+// Coze API配置
 const AI_CONFIG = {
-    apiUrl: process.env.DASHSCOPE_API_URL || 'https://dashscope.aliyuncs.com/compatible-mode/v1',
-    apiKey: process.env.DASHSCOPE_API_KEY || '',
-    model: 'qwen-vl-max' // 使用通义千问视觉模型
+    apiUrl: process.env.COZE_API_URL || 'https://api.coze.cn/v3/chat',
+    apiKey: process.env.COZE_API_KEY || '',
+    botId: process.env.COZE_BOT_ID || '7588350694353649679',
+    userId: process.env.COZE_USER_ID || '123123'
 };
 
-// 调用阿里云DashScope API进行AI分析
+// 调用Coze API进行AI分析
 async function callCozeAPI(imagePath, detectionType) {
     try {
         if (!AI_CONFIG.apiKey) {
-            console.warn('DashScope API Key未配置，使用模拟分析');
+            console.warn('Coze API Key未配置，使用模拟分析');
             return await simulateAIAnalysis(imagePath, detectionType);
         }
 
@@ -270,95 +271,101 @@ async function callCozeAPI(imagePath, detectionType) {
   "detectedItems": ["具体问题1", "具体问题2"],
   "recommendations": ["建议1", "建议2", "建议3"],
   "safetyScore": 0.0到5.0之间的数字
-}`;
+}
 
-        // 构建请求数据（OpenAI兼容格式）
+图片内容：[图片已上传]`;
+
+        // 构建Coze API请求数据
         const requestData = {
-            model: AI_CONFIG.model,
-            messages: [
+            bot_id: AI_CONFIG.botId,
+            user_id: AI_CONFIG.userId,
+            stream: false,
+            auto_save_history: true,
+            additional_messages: [
                 {
                     role: 'user',
-                    content: [
-                        {
-                            type: 'text',
-                            text: prompt
-                        },
-                        {
-                            type: 'image_url',
-                            image_url: {
-                                url: `data:${imageMimeType};base64,${imageBase64}`
-                            }
-                        }
-                    ]
+                    content: prompt,
+                    content_type: 'text'
+                },
+                {
+                    role: 'user',
+                    content: `data:${imageMimeType};base64,${imageBase64}`,
+                    content_type: 'image'
                 }
-            ],
-            temperature: 0.3,
-            max_tokens: 1000
+            ]
         };
 
-        console.log('调用DashScope API...');
-        console.log('API URL:', `${AI_CONFIG.apiUrl}/chat/completions`);
+        console.log('调用Coze API...');
+        console.log('API URL:', AI_CONFIG.apiUrl);
+        console.log('Bot ID:', AI_CONFIG.botId);
 
-        // 调用DashScope API
+        // 调用Coze API
         const response = await axios.post(
-            `${AI_CONFIG.apiUrl}/chat/completions`,
+            AI_CONFIG.apiUrl,
             requestData,
             {
                 headers: {
-                    'Authorization': `Bearer ${AI_CONFIG.apiKey}`,
+                    'Authorization': AI_CONFIG.apiKey,
                     'Content-Type': 'application/json'
                 },
                 timeout: 60000 // 60秒超时
             }
         );
 
-        console.log('DashScope API响应状态:', response.status);
+        console.log('Coze API响应状态:', response.status);
+        console.log('Coze API响应数据:', JSON.stringify(response.data, null, 2));
         
-        if (response.data && response.data.choices && response.data.choices.length > 0) {
-            const aiResponse = response.data.choices[0].message.content;
-            console.log('AI返回的内容:', aiResponse);
+        // 解析Coze返回的结果
+        if (response.data && response.data.messages && response.data.messages.length > 0) {
+            // 找到assistant的回复
+            const assistantMessage = response.data.messages.find(msg => msg.role === 'assistant' && msg.type === 'answer');
             
-            // 尝试提取JSON
-            let analysisResult;
-            try {
-                // 尝试直接解析
-                analysisResult = JSON.parse(aiResponse);
-                console.log('成功解析JSON结果:', analysisResult);
-            } catch (jsonError) {
-                // 尝试提取JSON块
-                const jsonMatch = aiResponse.match(/\{[\s\S]*\}/);
-                if (jsonMatch) {
-                    try {
-                        analysisResult = JSON.parse(jsonMatch[0]);
-                        console.log('从文本中提取JSON成功:', analysisResult);
-                    } catch (extractError) {
-                        console.warn('JSON提取失败，使用文本解析');
+            if (assistantMessage && assistantMessage.content) {
+                const aiResponse = assistantMessage.content;
+                console.log('AI返回的内容:', aiResponse);
+                
+                // 尝试提取JSON
+                let analysisResult;
+                try {
+                    // 尝试直接解析
+                    analysisResult = JSON.parse(aiResponse);
+                    console.log('成功解析JSON结果:', analysisResult);
+                } catch (jsonError) {
+                    // 尝试提取JSON块
+                    const jsonMatch = aiResponse.match(/\{[\s\S]*\}/);
+                    if (jsonMatch) {
+                        try {
+                            analysisResult = JSON.parse(jsonMatch[0]);
+                            console.log('从文本中提取JSON成功:', analysisResult);
+                        } catch (extractError) {
+                            console.warn('JSON提取失败，使用文本解析');
+                            analysisResult = parseTextResponse(aiResponse, detectionType);
+                        }
+                    } else {
+                        console.warn('未找到JSON格式，使用文本解析');
                         analysisResult = parseTextResponse(aiResponse, detectionType);
                     }
-                } else {
-                    console.warn('未找到JSON格式，使用文本解析');
-                    analysisResult = parseTextResponse(aiResponse, detectionType);
                 }
+
+                // 验证和修正结果格式
+                analysisResult = {
+                    hasRisk: analysisResult.hasRisk || false,
+                    riskLevel: analysisResult.riskLevel || 'low',
+                    confidence: parseFloat(analysisResult.confidence) || 0.8,
+                    detectedItems: Array.isArray(analysisResult.detectedItems) ? analysisResult.detectedItems : [],
+                    recommendations: Array.isArray(analysisResult.recommendations) ? analysisResult.recommendations : ['建议保持警惕'],
+                    safetyScore: parseFloat(analysisResult.safetyScore) || 4.0,
+                    aiResponse: aiResponse // 保存原始AI回复
+                };
+
+                return analysisResult;
             }
-
-            // 验证和修正结果格式
-            analysisResult = {
-                hasRisk: analysisResult.hasRisk || false,
-                riskLevel: analysisResult.riskLevel || 'low',
-                confidence: parseFloat(analysisResult.confidence) || 0.8,
-                detectedItems: Array.isArray(analysisResult.detectedItems) ? analysisResult.detectedItems : [],
-                recommendations: Array.isArray(analysisResult.recommendations) ? analysisResult.recommendations : ['建议保持警惕'],
-                safetyScore: parseFloat(analysisResult.safetyScore) || 4.0,
-                aiResponse: aiResponse // 保存原始AI回复
-            };
-
-            return analysisResult;
-        } else {
-            throw new Error('DashScope API返回格式异常');
         }
+        
+        throw new Error('Coze API返回格式异常');
 
     } catch (error) {
-        console.error('调用DashScope API失败:', error.message);
+        console.error('调用Coze API失败:', error.message);
         if (error.response) {
             console.error('API响应状态:', error.response.status);
             console.error('API响应数据:', JSON.stringify(error.response.data, null, 2));
