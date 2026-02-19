@@ -4,8 +4,8 @@ const multiparty = require('multiparty');
 // 允许的域名（CORS配置）
 const allowedOrigins = [
     'https://safety-map-phi.vercel.app',
-    'http://localhost:3000',
-    'http://127.0.0.1:3000'
+    'http://localhost:3001',
+    'http://127.0.0.1:3001'
 ];
 
 module.exports = async (req, res) => {
