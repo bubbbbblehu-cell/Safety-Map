@@ -90,12 +90,27 @@ const MapScreen = ({ route, navigation }) => {
             console.log(`  ${i+1}. ${hotel.name} - 评分: ${hotel.safety_score}`);
           });
           
-          const transformedHotels = transformHotelsData(dbHotels);
+          // 直接使用原始数据，手动转换字段名
+          const transformedHotels = dbHotels.map(h => ({
+            id: h.id,
+            name: h.name,
+            address: h.address,
+            latitude: parseFloat(h.latitude),
+            longitude: parseFloat(h.longitude),
+            safetyScore: parseFloat(h.safety_score) || 0,
+            reviewCount: h.review_count || 0,
+            cityId: h.city_id
+          }));
           console.log(`转换后的酒店数据: ${transformedHotels.length} 个`);
           
           setAllHotels(transformedHotels);
           
-          const heatmap = generateHeatmapData(transformedHotels);
+          const heatmap = transformedHotels.map(hotel => ({
+            latitude: hotel.latitude,
+            longitude: hotel.longitude,
+            weight: hotel.safetyScore / 5.0,
+            intensity: hotel.safetyScore / 5.0,
+          }));
           console.log(`生成热力图数据点: ${heatmap.length} 个`);
           setHeatmapData(heatmap);
           
