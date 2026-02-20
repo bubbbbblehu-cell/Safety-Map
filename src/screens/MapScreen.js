@@ -12,21 +12,11 @@ import {
 } from 'react-native';
 import MapView, { Marker, Circle, PROVIDER_GOOGLE } from 'react-native-maps';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { generateMockHotelData, generateHeatmapData as generateMockHeatmap } from '../data/mockHotelData';
 import { CITIES } from '../constants/cities';
 import PhotoDetectionPanel from '../components/PhotoDetectionPanel';
 import ProfilePanel from '../components/ProfilePanel';
 import HotelDetailModal from '../components/HotelDetailModal';
-import {
-  getAllHotels,
-  getHotelStats,
-  generateHeatmapData,
-  transformHotelsData,
-  addHotelReview,
-  addFavorite,
-  removeFavorite,
-  getUserFavorites,
-} from '../services/hotelService';
+import { supabase } from '../config/supabase';
 
 const MapScreen = ({ route, navigation }) => {
   const [city, setCity] = useState(route.params?.city || null);
@@ -78,8 +68,17 @@ const MapScreen = ({ route, navigation }) => {
         console.log('城市ID (UUID):', currentCity.id);
         console.log('========================================');
         
-        // 临时：获取所有酒店数据（不筛选城市）
-        const dbHotels = await getAllHotels({});
+        // 直接查询数据库，获取所有酒店
+        const { data: dbHotels, error } = await supabase
+          .from('hotels')
+          .select('*')
+          .eq('is_active', true)
+          .order('safety_score', { ascending: false });
+        
+        if (error) {
+          console.error('数据库查询错误:', error);
+          throw error;
+        }
         
         console.log(`数据库查询结果: ${dbHotels ? dbHotels.length : 0} 个酒店`);
         
@@ -118,18 +117,8 @@ const MapScreen = ({ route, navigation }) => {
           console.log('✅ 数据库酒店数据已成功加载到地图！');
           console.log('========================================');
         } else {
-          console.log('⚠️ 数据库返回空数组，使用模拟数据');
-          const hotelData = generateMockHotelData(currentCity.id);
-          setAllHotels(hotelData);
-          
-          const heatmap = generateMockHeatmap(hotelData);
-          setHeatmapData(heatmap);
-          
-          Alert.alert(
-            '提示',
-            '数据库查询返回空结果。\n\n可能原因:\n1. 数据的 is_active 字段为 false\n2. RLS 策略阻止访问\n\n正在使用演示数据。',
-            [{ text: '确定' }]
-          );
+          console.log('⚠️ 数据库返回空数组');
+          Alert.alert('提示', '数据库中没有酒店数据');
         }
       } catch (dbError) {
         console.error('========================================');
@@ -138,20 +127,7 @@ const MapScreen = ({ route, navigation }) => {
         console.error('错误信息:', dbError.message);
         console.error('完整错误:', dbError);
         console.error('========================================');
-        
-        // 如果数据库加载失败，回退到模拟数据
-        const hotelData = generateMockHotelData(currentCity.id);
-        setAllHotels(hotelData);
-        
-        const heatmap = generateMockHeatmap(hotelData);
-        setHeatmapData(heatmap);
-        
-        // 显示提示信息
-        Alert.alert(
-          '数据库连接失败',
-          `无法从数据库加载数据，正在使用演示数据。\n\n错误: ${dbError.message}\n\n请检查:\n1. 网络连接\n2. Supabase API 密钥\n3. RLS 策略设置`,
-          [{ text: '确定' }]
-        );
+        Alert.alert('错误', `数据库加载失败: ${dbError.message}`);
       }
       
       setLoading(false);
@@ -182,7 +158,12 @@ const MapScreen = ({ route, navigation }) => {
     setHotels(filtered);
     
     // 更新热力图数据
-    const heatmap = generateHeatmapData(filtered);
+    const heatmap = filtered.map(hotel => ({
+      latitude: hotel.latitude,
+      longitude: hotel.longitude,
+      weight: hotel.safetyScore / 5.0,
+      intensity: hotel.safetyScore / 5.0,
+    }));
     console.log('🔍 生成热力图数据点:', heatmap.length);
     setHeatmapData(heatmap);
   };
