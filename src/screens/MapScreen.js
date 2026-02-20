@@ -125,6 +125,12 @@ const MapScreen = ({ route }) => {
         ))}
       </MapView>
 
+      {/* 版本标识 - 用于确认代码是否更新 */}
+      <View style={styles.versionBadge}>
+        <Text style={styles.versionText}>v2.0 - 新版本</Text>
+        <Text style={styles.versionText}>🔥 {new Date().toLocaleTimeString()}</Text>
+      </View>
+
       {/* 统计信息 */}
       <View style={styles.statsContainer}>
         <View style={styles.statsCard}>
@@ -213,6 +219,24 @@ const styles = StyleSheet.create({
   },
   buttonTextActive: {
     color: '#fff',
+  },
+  versionBadge: {
+    position: 'absolute',
+    bottom: 16,
+    right: 16,
+    backgroundColor: '#ff0000',
+    padding: 12,
+    borderRadius: 8,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  versionText: {
+    color: '#fff',
+    fontWeight: 'bold',
+    fontSize: 14,
   },
 });
 
