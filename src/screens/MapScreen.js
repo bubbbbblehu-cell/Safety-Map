@@ -20,27 +20,19 @@ import { supabase } from '../config/supabase';
 
 const MapScreen = ({ route, navigation }) => {
   const [city, setCity] = useState(route.params?.city || null);
-  const [allHotels, setAllHotels] = useState([]); // 所有酒店数据
-  const [hotels, setHotels] = useState([]); // 筛选后的酒店
+  const [hotels, setHotels] = useState([]); // 所有酒店数据
   const [heatmapData, setHeatmapData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showHeatmap, setShowHeatmap] = useState(true);
   const [showProfile, setShowProfile] = useState(false);
   const [selectedHotel, setSelectedHotel] = useState(null);
-  const [minRating, setMinRating] = useState(0); // 最低评分筛选
   const [favorites, setFavorites] = useState([]); // 收藏列表
   const [showFilterModal, setShowFilterModal] = useState(false);
-  const [filterRating, setFilterRating] = useState('0');
 
   useEffect(() => {
     loadCityData();
     loadFavorites();
   }, [city]);
-
-  useEffect(() => {
-    // 当筛选条件或所有酒店数据变化时，更新显示的酒店
-    filterHotels();
-  }, [minRating, allHotels]);
 
   const loadCityData = async () => {
     try {
@@ -102,7 +94,8 @@ const MapScreen = ({ route, navigation }) => {
           }));
           console.log(`转换后的酒店数据: ${transformedHotels.length} 个`);
           
-          setAllHotels(transformedHotels);
+          // 直接设置酒店数据，不筛选
+          setHotels(transformedHotels);
           
           const heatmap = transformedHotels.map(hotel => ({
             latitude: hotel.latitude,
@@ -140,8 +133,6 @@ const MapScreen = ({ route, navigation }) => {
 
   const loadFavorites = async () => {
     try {
-      // 尝试从数据库加载收藏（需要用户登录）
-      // 暂时使用本地存储
       const savedFavorites = await AsyncStorage.getItem('favorites');
       if (savedFavorites) {
         setFavorites(JSON.parse(savedFavorites));
@@ -151,34 +142,15 @@ const MapScreen = ({ route, navigation }) => {
     }
   };
 
-  const filterHotels = () => {
-    console.log('🔍 开始筛选酒店，总数:', allHotels.length, '最低评分:', minRating);
-    const filtered = allHotels.filter(hotel => hotel.safetyScore >= minRating);
-    console.log('🔍 筛选后酒店数:', filtered.length);
-    setHotels(filtered);
-    
-    // 更新热力图数据
-    const heatmap = filtered.map(hotel => ({
-      latitude: hotel.latitude,
-      longitude: hotel.longitude,
-      weight: hotel.safetyScore / 5.0,
-      intensity: hotel.safetyScore / 5.0,
-    }));
-    console.log('🔍 生成热力图数据点:', heatmap.length);
-    setHeatmapData(heatmap);
-  };
-
   const handleMarkerPress = (hotel) => {
     setSelectedHotel(hotel);
   };
 
   const handleAddReview = async (review) => {
     try {
-      // 更新酒店的评价数据（在实际应用中应该调用API）
-      const updatedHotels = allHotels.map(hotel => {
+      const updatedHotels = hotels.map(hotel => {
         if (hotel.id === review.hotelId) {
           const newReviewCount = (hotel.reviewCount || 0) + 1;
-          // 简单计算新评分（实际应该更复杂）
           const newScore = ((hotel.safetyScore * hotel.reviewCount) + review.rating) / newReviewCount;
           return {
             ...hotel,
@@ -188,9 +160,8 @@ const MapScreen = ({ route, navigation }) => {
         }
         return hotel;
       });
-      setAllHotels(updatedHotels);
+      setHotels(updatedHotels);
       
-      // 保存评价到本地存储
       const reviews = await AsyncStorage.getItem('reviews');
       const reviewsList = reviews ? JSON.parse(reviews) : [];
       reviewsList.push(review);
@@ -237,14 +208,12 @@ const MapScreen = ({ route, navigation }) => {
   };
 
   const handleApplyFilter = () => {
-    const rating = parseFloat(filterRating) || 0;
-    setMinRating(rating);
     setShowFilterModal(false);
   };
 
   // 计算统计数据
-  const totalHotels = allHotels.length;
-  const hotelsWithRating = allHotels.filter(h => h.safetyScore > 0).length;
+  const totalHotels = hotels.length;
+  const hotelsWithRating = hotels.filter(h => h.safetyScore > 0).length;
   const isFavorite = selectedHotel ? favorites.some(f => f.id === selectedHotel.id) : false;
 
   if (loading || !city) {
@@ -341,9 +310,7 @@ const MapScreen = ({ route, navigation }) => {
             style={styles.controlButton}
             onPress={() => setShowFilterModal(true)}
           >
-            <Text style={styles.controlButtonText}>
-              筛选 {minRating > 0 ? `≥${minRating}` : ''}
-            </Text>
+            <Text style={styles.controlButtonText}>筛选</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -405,32 +372,14 @@ const MapScreen = ({ route, navigation }) => {
       >
         <View style={styles.modalOverlay}>
           <View style={styles.filterModal}>
-            <Text style={styles.filterTitle}>筛选酒店</Text>
-            <Text style={styles.filterLabel}>最低安全评分：</Text>
-            <TextInput
-              style={styles.filterInput}
-              placeholder="例如: 4.0"
-              keyboardType="numeric"
-              value={filterRating}
-              onChangeText={setFilterRating}
-            />
-            <View style={styles.filterButtons}>
-              <TouchableOpacity
-                style={[styles.filterButton, styles.filterButtonCancel]}
-                onPress={() => {
-                  setFilterRating('0');
-                  setShowFilterModal(false);
-                }}
-              >
-                <Text style={styles.filterButtonText}>清除</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={[styles.filterButton, styles.filterButtonApply]}
-                onPress={handleApplyFilter}
-              >
-                <Text style={[styles.filterButtonText, styles.filterButtonTextApply]}>应用</Text>
-              </TouchableOpacity>
-            </View>
+            <Text style={styles.filterTitle}>筛选功能</Text>
+            <Text style={styles.filterLabel}>筛选功能暂时禁用，显示所有酒店</Text>
+            <TouchableOpacity
+              style={[styles.filterButton, styles.filterButtonApply]}
+              onPress={() => setShowFilterModal(false)}
+            >
+              <Text style={[styles.filterButtonText, styles.filterButtonTextApply]}>确定</Text>
+            </TouchableOpacity>
           </View>
         </View>
       </Modal>
