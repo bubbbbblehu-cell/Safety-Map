@@ -58,14 +58,13 @@ const MapScreen = ({ route, navigation }) => {
       
       let currentCity = city;
       if (!currentCity) {
-        const savedCity = await AsyncStorage.getItem('selectedCity');
-        if (savedCity) {
-          currentCity = JSON.parse(savedCity);
-          setCity(currentCity);
-        } else {
-          currentCity = CITIES[0];
-          setCity(currentCity);
-        }
+        // 清除旧的缓存数据（临时）
+        await AsyncStorage.removeItem('selectedCity');
+        
+        currentCity = CITIES[0];
+        setCity(currentCity);
+        // 保存新的城市数据
+        await AsyncStorage.setItem('selectedCity', JSON.stringify(currentCity));
       }
 
       // 尝试从数据库加载酒店数据
