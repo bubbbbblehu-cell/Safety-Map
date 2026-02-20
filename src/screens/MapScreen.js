@@ -62,9 +62,12 @@ const MapScreen = ({ route, navigation }) => {
         await AsyncStorage.removeItem('selectedCity');
         
         currentCity = CITIES[0];
+        console.log('🔍 从 CITIES 数组获取的城市:', JSON.stringify(currentCity, null, 2));
         setCity(currentCity);
         // 保存新的城市数据
         await AsyncStorage.setItem('selectedCity', JSON.stringify(currentCity));
+      } else {
+        console.log('🔍 使用传入的城市参数:', JSON.stringify(currentCity, null, 2));
       }
 
       // 尝试从数据库加载酒店数据

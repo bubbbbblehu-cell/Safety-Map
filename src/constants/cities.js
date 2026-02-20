@@ -1,7 +1,7 @@
 // 支持的城市列表及其坐标信息
 export const CITIES = [
   {
-    id: 'a26978da-4f18-42e6-8949-624d108b6c24',
+    id: 'a26978da-4f18-42e6-8949-624d108b6c24', // 西双版纳的数据库 UUID
     code: 'xishuangbanna',
     name: '西双版纳',
     country: '中国',
