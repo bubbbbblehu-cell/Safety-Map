@@ -411,6 +411,7 @@ export const generateHeatmapData = (hotels) => {
  * @returns {Object} 应用格式的酒店对象
  */
 export const transformHotelData = (dbHotel) => {
+  console.log('转换酒店数据:', dbHotel.name, '经纬度:', dbHotel.latitude, dbHotel.longitude);
   return {
     id: dbHotel.id,
     name: dbHotel.name,
@@ -423,7 +424,7 @@ export const transformHotelData = (dbHotel) => {
     phone: dbHotel.phone,
     description: dbHotel.description,
     isVerified: dbHotel.is_verified,
-    city: dbHotel.city,
+    cityId: dbHotel.city_id,
   };
 };
 

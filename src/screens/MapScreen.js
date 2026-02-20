@@ -161,11 +161,14 @@ const MapScreen = ({ route, navigation }) => {
   };
 
   const filterHotels = () => {
+    console.log('🔍 开始筛选酒店，总数:', allHotels.length, '最低评分:', minRating);
     const filtered = allHotels.filter(hotel => hotel.safetyScore >= minRating);
+    console.log('🔍 筛选后酒店数:', filtered.length);
     setHotels(filtered);
     
     // 更新热力图数据
     const heatmap = generateHeatmapData(filtered);
+    console.log('🔍 生成热力图数据点:', heatmap.length);
     setHeatmapData(heatmap);
   };
 
