@@ -78,10 +78,8 @@ const MapScreen = ({ route, navigation }) => {
         console.log('城市ID (UUID):', currentCity.id);
         console.log('========================================');
         
-        // 直接使用城市 UUID 筛选酒店数据
-        const dbHotels = await getAllHotels({ 
-          cityId: currentCity.id
-        });
+        // 临时：获取所有酒店数据（不筛选城市）
+        const dbHotels = await getAllHotels({});
         
         console.log(`数据库查询结果: ${dbHotels ? dbHotels.length : 0} 个酒店`);
         
