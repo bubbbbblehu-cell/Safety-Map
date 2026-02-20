@@ -1299,8 +1299,7 @@
                 console.log('========================================');
                 
                 const { data, error } = await supabaseClient
-                    .from('hotels').select('*, cities(name)').eq('is_active', true)
-                    .eq('is_active', true);
+                    .from('hotels').select('*, cities(name)').eq('is_active', true);
                 
                 if (error) {
                     console.warn('⚠️ 数据库查询错�?', error.message);
@@ -1318,7 +1317,7 @@
                     
                     // 统计每个城市的酒店数�?                    const cityCounts = {};
                     data.forEach(h => {
-                        const city = h.city || '未知';
+                        const city = h.cities?.name || '未知';
                         cityCounts[city] = (cityCounts[city] || 0) + 1;
                     });
                     console.log('  各城市分�?', cityCounts);
@@ -1364,7 +1363,7 @@
             if (dbHotelsData && dbHotelsData.length > 0) {
                 console.log('  数据库中总酒店数:', dbHotelsData.length);
                 
-                // 先查看数据库中实际的城市字段�?                const uniqueCities = [...new Set(dbHotelsData.map(h => h.city))];
+                // 先查看数据库中实际的城市字段�?                const uniqueCities = [...new Set(dbHotelsData.map(h => h.cities?.name))];
                 console.log('  数据库中的城市列�?', uniqueCities);
                 
                 // 检查第一个酒店的所有字�?                if (dbHotelsData.length > 0) {
@@ -1377,7 +1376,7 @@
                 
                 let cityHotels;
                 if (cityName) {
-                    // 按城市名称筛�?                    cityHotels = dbHotelsData.filter(h => h.city === cityName);
+                    // 按城市名称筛�?                    cityHotels = dbHotelsData.filter(h => h.cities?.name === cityName);
                     console.log(`  筛选出 ${cityHotels.length} �?${cityName} 的酒店`);
                 } else {
                     // 如果没有选择城市，显示所有酒�?                    console.log('  ⚠️ 未选择城市，显示所有酒�?);
@@ -1400,7 +1399,7 @@
                         lat: lat,
                         lng: lng,
                         reviews: h.review_count || h.reviews || 0,
-                        city: h.city
+                        city: h.cities?.name
                     };
                 });
                 
@@ -1409,7 +1408,7 @@
                                    h.lat !== 0 && h.lng !== 0 &&
                                    Math.abs(h.lat) <= 90 && Math.abs(h.lng) <= 180;
                     if (!isValid) {
-                        console.warn(`  ⚠️ 无效坐标: ${h.name} - 城市: ${h.city} - 坐标: [${h.lat}, ${h.lng}]`);
+                        console.warn(`  ⚠️ 无效坐标: ${h.name} - 城市: ${h.cities?.name} - 坐标: [${h.lat}, ${h.lng}]`);
                     }
                     return isValid;
                 });
@@ -1420,7 +1419,7 @@
                 if (validHotels.length > 0) {
                     console.log('  �?个有效酒店示�?');
                     validHotels.slice(0, 3).forEach((h, i) => {
-                        console.log(`    ${i+1}. ${h.name} - 城市: ${h.city} - 坐标: [${h.lat}, ${h.lng}]`);
+                        console.log(`    ${i+1}. ${h.name} - 城市: ${h.cities?.name} - 坐标: [${h.lat}, ${h.lng}]`);
                     });
                     
                     console.log('  坐标范围:');
@@ -2448,7 +2447,7 @@
         
         const submitAnalysisBtn = document.getElementById('submitAnalysisBtn');
         if (submitAnalysisBtn) {
-            submitAnalysisBtn.addEventListener('click', finalProcess);
+            submitAnalysisBtn.addEventListener('click', function() { window.open('https://www.coze.cn/space/7383534396151693331/bot/7588350694353649679', '_blank'); alert('即将跳转�?Coze 智能体，请在新窗口中上传图片进行分析'); });
         } else {
             console.warn('submitAnalysisBtn 元素不存在，稍后绑定');
         }
@@ -2659,4 +2658,8 @@
     </script>
 </body>
 </html>
+
+
+
+
 
