@@ -1375,31 +1375,9 @@
             if (dbHotelsData && dbHotelsData.length > 0) {
                 console.log('  数据库中总酒店数:', dbHotelsData.length);
                 
-                // 先查看数据库中实际的城市字段值
-                const uniqueCities = [...new Set(dbHotelsData.map(h => h.city))];
-                console.log('  数据库中的城市列表:', uniqueCities);
-                
-                // 检查第一个酒店的所有字段
-                if (dbHotelsData.length > 0) {
-                    console.log('  第一个酒店的所有字段:', Object.keys(dbHotelsData[0]));
-                    console.log('  第一个酒店示例:', dbHotelsData[0]);
-                }
-                
-                // 🔥 根据城市名称筛选酒店
-                // 从 currentCity 对象中获取城市名称
-                const cityName = currentCity ? currentCity.name : null;
-                console.log('  当前选择的城市名称:', cityName);
-                
-                let cityHotels;
-                if (cityName) {
-                    // 按城市名称筛选
-                    cityHotels = dbHotelsData.filter(h => h.city === cityName);
-                    console.log(`  筛选出 ${cityHotels.length} 个 ${cityName} 的酒店`);
-                } else {
-                    // 如果没有选择城市，显示所有酒店
-                    console.log('  ⚠️ 未选择城市，显示所有酒店');
-                    cityHotels = dbHotelsData;
-                }
+                // 🔥 关键修复：直接返回所有酒店，不按城市筛选
+                console.log('  ✅ 返回所有酒店（不筛选城市）');
+                const cityHotels = dbHotelsData;
                 
                 console.log(`  找到 ${cityHotels.length} 个酒店`);
                 
