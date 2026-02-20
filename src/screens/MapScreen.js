@@ -10,24 +10,35 @@ import {
 import MapView, { Marker, Circle, PROVIDER_GOOGLE } from 'react-native-maps';
 import { supabase } from '../config/supabase';
 
-const MapScreen = () => {
+const MapScreen = ({ route }) => {
   const [hotels, setHotels] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showHeatmap, setShowHeatmap] = useState(true);
+  const city = route?.params?.city;
 
   useEffect(() => {
     loadHotels();
-  }, []);
+  }, [city]);
 
   const loadHotels = async () => {
     try {
       console.log('🔥 开始加载酒店数据...');
+      console.log('📍 当前城市:', city?.name, 'ID:', city?.id);
       
-      const { data, error } = await supabase
+      let query = supabase
         .from('hotels')
         .select('*')
-        .eq('is_active', true)
-        .order('safety_score', { ascending: false });
+        .eq('is_active', true);
+      
+      // 如果有城市ID，按城市筛选
+      if (city?.id) {
+        console.log('🔍 按城市筛选:', city.id);
+        query = query.eq('city_id', city.id);
+      }
+      
+      query = query.order('safety_score', { ascending: false });
+      
+      const { data, error } = await query;
 
       if (error) {
         console.error('❌ 查询错误:', error);
@@ -78,7 +89,7 @@ const MapScreen = () => {
       <MapView
         provider={PROVIDER_GOOGLE}
         style={styles.map}
-        initialRegion={{
+        initialRegion={city?.region || {
           latitude: 22.0084,
           longitude: 100.7979,
           latitudeDelta: 0.5,
