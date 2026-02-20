@@ -8,6 +8,7 @@ import {
   Modal,
   TextInput,
   Alert,
+  Linking,
 } from 'react-native';
 import MapView, { Marker, Circle, PROVIDER_GOOGLE } from 'react-native-maps';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -215,8 +216,22 @@ const MapScreen = ({ route, navigation }) => {
     }
   };
 
-  const handlePhotoDetection = () => {
-    Alert.alert('拍照检测', '此功能正在开发中...');
+  const handlePhotoDetection = async () => {
+    // Coze agent URL - 请替换为你的实际 Coze agent 链接
+    const cozeAgentUrl = 'https://www.coze.cn/store/bot/YOUR_BOT_ID';
+    
+    try {
+      const supported = await Linking.canOpenURL(cozeAgentUrl);
+      
+      if (supported) {
+        await Linking.openURL(cozeAgentUrl);
+      } else {
+        Alert.alert('错误', '无法打开 AI 助手链接');
+      }
+    } catch (error) {
+      console.error('打开 Coze agent 失败:', error);
+      Alert.alert('错误', '打开 AI 助手失败，请稍后重试');
+    }
   };
 
   const handleApplyFilter = () => {
