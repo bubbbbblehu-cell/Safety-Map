@@ -2,6 +2,7 @@
 export const CITIES = [
   {
     id: 'xishuangbanna',
+    cityId: 'a26978da-4f18-42e6-8949-624d108b6c24',
     name: '西双版纳',
     country: '中国',
     latitude: 22.0084,

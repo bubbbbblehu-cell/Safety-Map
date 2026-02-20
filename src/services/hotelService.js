@@ -98,15 +98,17 @@ export const getHotelsByCityCode = async (cityCode) => {
  * @param {Object} filters - 筛选条件
  * @param {number} filters.minRating - 最低评分
  * @param {string} filters.cityCode - 城市代码（如 'xishuangbanna'）
+ * @param {string} filters.cityId - 城市 UUID（如果提供则直接使用，不查询 cities 表）
  * @returns {Promise<Array>} 酒店列表
  */
 export const getAllHotels = async (filters = {}) => {
   try {
     console.log('getAllHotels 调用，筛选条件:', filters);
     
-    // 如果有城市代码筛选，先获取城市 UUID
-    let cityId = null;
-    if (filters.cityCode) {
+    // 如果有城市 UUID，直接使用；否则通过 code 查询
+    let cityId = filters.cityId || null;
+    
+    if (!cityId && filters.cityCode) {
       console.log('按城市代码筛选:', filters.cityCode);
       const { data: cityData, error: cityError } = await supabase
         .from('cities')
@@ -136,6 +138,7 @@ export const getAllHotels = async (filters = {}) => {
 
     // 应用城市筛选
     if (cityId) {
+      console.log('使用城市 UUID 筛选:', cityId);
       query = query.eq('city_id', cityId);
     }
 
