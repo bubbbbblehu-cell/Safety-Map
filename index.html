@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
@@ -7,9 +7,9 @@
     <link rel="apple-touch-icon" href="icon.png">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="女性安全地�?>
+    <meta name="apple-mobile-web-app-title" content="濂虫€у畨鍏ㄥ湴鍥?>
     
-    <title>女性安全地�?- 预览</title>
+    <title>濂虫€у畨鍏ㄥ湴鍥?- 棰勮</title>
     <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <!-- Leaflet JS -->
@@ -23,10 +23,10 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
-            background: #FFFFFF; /* 强制背景为白，防止黑色闪�?*/
+            background: #FFFFFF; /* 寮哄埗鑳屾櫙涓虹櫧锛岄槻姝㈤粦鑹查棯鐜?*/
             overflow-x: hidden;
             padding-bottom: 70px;
-            position: relative; /* 允许页面滚动 */
+            position: relative; /* 鍏佽椤甸潰婊氬姩 */
             min-height: 100vh;
             width: 100vw;
         }
@@ -40,7 +40,7 @@
             box-shadow: 0 0 20px rgba(0,0,0,0.1);
         }
 
-        /* 城市选择页面样式 */
+        /* 鍩庡競閫夋嫨椤甸潰鏍峰紡 */
         .city-selection {
             padding: 24px;
             padding-bottom: 100px;
@@ -121,7 +121,7 @@
             color: #333;
         }
 
-        /* 页面容器 */
+        /* 椤甸潰瀹瑰櫒 */
         .page {
             display: none;
             min-height: calc(100vh - 70px);
@@ -132,7 +132,7 @@
             display: block;
         }
 
-        /* 拍照检测页�?*/
+        /* 鎷嶇収妫€娴嬮〉闈?*/
         .photo-page {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
@@ -202,7 +202,7 @@
             margin-right: 12px;
         }
 
-        /* 检测部位选择模态框 */
+        /* 妫€娴嬮儴浣嶉€夋嫨妯℃€佹 */
         .detection-modal {
             display: none;
             position: fixed;
@@ -247,7 +247,7 @@
             background: #f0f7ff;
         }
 
-        /* 自查引导页面 */
+        /* 鑷煡寮曞椤甸潰 */
         .qa-page {
             background: #f5f5f5;
             padding: 20px;
@@ -307,7 +307,7 @@
             font-weight: bold;
         }
 
-        /* 照片上传页面 */
+        /* 鐓х墖涓婁紶椤甸潰 */
         .upload-page {
             background: #f5f5f5;
             padding: 20px;
@@ -341,7 +341,7 @@
             display: block;
         }
 
-        /* 固定底部按钮�?*/
+        /* 鍥哄畾搴曢儴鎸夐挳鏍?*/
         .fixed-bottom-bar {
             position: fixed;
             bottom: 70px;
@@ -353,7 +353,7 @@
             z-index: 100;
         }
 
-        /* 蓝色按钮 */
+        /* 钃濊壊鎸夐挳 */
         .btn-blue {
             width: 100%;
             background: #6366f1;
@@ -376,12 +376,12 @@
             transform: translateY(0);
         }
 
-        /* 滚动内容区域 */
+        /* 婊氬姩鍐呭鍖哄煙 */
         .scroll-content {
             padding-bottom: 100px;
         }
 
-        /* 酒店标记popup样式 */
+        /* 閰掑簵鏍囪popup鏍峰紡 */
         .hotel-popup {
             text-align: center;
         }
@@ -403,7 +403,7 @@
             transform: scale(1.05);
         }
 
-        /* 地图页面 */
+        /* 鍦板浘椤甸潰 */
         .map-page {
             height: calc(100vh - 70px);
             min-height: calc(100vh - 70px);
@@ -465,7 +465,7 @@
             opacity: 0.8;
         }
 
-        /* 左上角：统计信息 */
+        /* 宸︿笂瑙掞細缁熻淇℃伅 */
         .stats-container {
             position: absolute;
             top: 16px;
@@ -496,7 +496,7 @@
             color: #6366f1;
         }
 
-        /* 右上角：控制按钮 */
+        /* 鍙充笂瑙掞細鎺у埗鎸夐挳 */
         .top-controls {
             position: absolute;
             top: 16px;
@@ -535,7 +535,7 @@
             color: white;
         }
 
-        /* 底部图例 */
+        /* 搴曢儴鍥句緥 */
         .legend {
             position: absolute;
             bottom: 90px;
@@ -579,7 +579,7 @@
             color: #666;
         }
 
-        /* 个人中心页面 */
+        /* 涓汉涓績椤甸潰 */
         .profile-page {
             background: #f5f5f5;
             min-height: calc(100vh - 70px);
@@ -669,7 +669,7 @@
             padding: 40px 20px;
         }
 
-        /* 底部导航�?*/
+        /* 搴曢儴瀵艰埅鏍?*/
         .bottom-nav {
             position: fixed;
             bottom: 0;
@@ -713,7 +713,7 @@
             font-weight: 500;
         }
 
-        /* 模态框 */
+        /* 妯℃€佹 */
         .modal-overlay {
             display: none;
             position: fixed;
@@ -770,7 +770,7 @@
             color: #333;
         }
 
-        /* 酒店详情弹窗 */
+        /* 閰掑簵璇︽儏寮圭獥 */
         .hotel-modal-content {
             padding: 20px;
         }
@@ -907,7 +907,7 @@
             background: #4f46e5;
         }
 
-        /* 筛选弹�?*/
+        /* 绛涢€夊脊绐?*/
         .filter-modal-content {
             padding: 24px;
         }
@@ -963,7 +963,7 @@
         .filter-button:hover {
             opacity: 0.9;
         }
-        /* 开屏页样式 */
+        /* 寮€灞忛〉鏍峰紡 */
         #splash-screen {
             position: fixed;
             top: -5px;
@@ -986,133 +986,133 @@
             object-position: center;
         }
 
-        /* 如果没有图片，显示渐变背�?*/
+        /* 濡傛灉娌℃湁鍥剧墖锛屾樉绀烘笎鍙樿儗鏅?*/
         #splash-screen:has(img[style*="display: none"]) {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         }
     </style>
 </head>
 <body>
-    <!-- 开屏页 -->
+    <!-- 寮€灞忛〉 -->
     <div id="splash-screen">
-        <img src="splash.png" alt="启动画面" onerror="handleSplashError(this);">
+        <img src="splash.png" alt="鍚姩鐢婚潰" onerror="handleSplashError(this);">
     </div>
 
 <div class="container">
-        <!-- 城市选择页面 -->
+        <!-- 鍩庡競閫夋嫨椤甸潰 -->
         <div class="city-selection" id="citySelection">
             <div class="header">
-                <div class="title">欢迎使用女性安全地�?/div>
-                <div class="subtitle">请选择您要查看的城�?/div>
+                <div class="title">娆㈣繋浣跨敤濂虫€у畨鍏ㄥ湴鍥?/div>
+                <div class="subtitle">璇烽€夋嫨鎮ㄨ鏌ョ湅鐨勫煄甯?/div>
             </div>
 
             <div class="country-section">
-                <div class="country-title">中国</div>
+                <div class="country-title">涓浗</div>
                 <div class="cities-container">
-                    <div class="city-button" data-city='{"id":"xishuangbanna","name":"西双版纳","country":"中国"}'>
-                        <div class="city-button-text">西双版纳</div>
+                    <div class="city-button" data-city='{"id":"xishuangbanna","name":"瑗垮弻鐗堢撼","country":"涓浗"}'>
+                        <div class="city-button-text">瑗垮弻鐗堢撼</div>
                     </div>
-                    <div class="city-button" data-city='{"id":"guiyang","name":"贵阳","country":"中国"}'>
-                        <div class="city-button-text">贵阳</div>
+                    <div class="city-button" data-city='{"id":"guiyang","name":"璐甸槼","country":"涓浗"}'>
+                        <div class="city-button-text">璐甸槼</div>
                     </div>
-                    <div class="city-button" data-city='{"id":"shanghai","name":"上海","country":"中国"}'>
-                        <div class="city-button-text">上海</div>
+                    <div class="city-button" data-city='{"id":"shanghai","name":"涓婃捣","country":"涓浗"}'>
+                        <div class="city-button-text">涓婃捣</div>
                     </div>
                 </div>
             </div>
 
             <div class="country-section">
-                <div class="country-title">泰国</div>
+                <div class="country-title">娉板浗</div>
                 <div class="cities-container">
-                    <div class="city-button" data-city='{"id":"bangkok","name":"曼谷","country":"泰国"}'>
-                        <div class="city-button-text">曼谷</div>
+                    <div class="city-button" data-city='{"id":"bangkok","name":"鏇艰胺","country":"娉板浗"}'>
+                        <div class="city-button-text">鏇艰胺</div>
                     </div>
                 </div>
             </div>
 
             <div class="country-section">
-                <div class="country-title">意大�?/div>
+                <div class="country-title">鎰忓ぇ鍒?/div>
                 <div class="cities-container">
-                    <div class="city-button" data-city='{"id":"naples","name":"那不勒斯","country":"意大�?}'>
-                        <div class="city-button-text">那不勒斯</div>
+                    <div class="city-button" data-city='{"id":"naples","name":"閭ｄ笉鍕掓柉","country":"鎰忓ぇ鍒?}'>
+                        <div class="city-button-text">閭ｄ笉鍕掓柉</div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- 拍照检测首�?-->
+        <!-- 鎷嶇収妫€娴嬮椤?-->
         <div class="page photo-page" id="photoPage">
-            <div class="photo-icon-large">📷</div>
-            <div class="photo-title">拍照检�?/div>
-            <div class="photo-subtitle">使用AI技术检测酒店安全环�?/div>
-            <div class="photo-button-large" id="photoButtonLarge">开启守�?/div>
+            <div class="photo-icon-large">馃摲</div>
+            <div class="photo-title">鎷嶇収妫€娴?/div>
+            <div class="photo-subtitle">浣跨敤AI鎶€鏈娴嬮厭搴楀畨鍏ㄧ幆澧?/div>
+            <div class="photo-button-large" id="photoButtonLarge">寮€鍚畧鎶?/div>
             
             <div class="photo-features">
                 <div class="photo-feature-item">
-                    <span class="photo-feature-icon">🔍</span>
-                    <span>智能识别安全隐患</span>
+                    <span class="photo-feature-icon">馃攳</span>
+                    <span>鏅鸿兘璇嗗埆瀹夊叏闅愭偅</span>
                 </div>
                 <div class="photo-feature-item">
-                    <span class="photo-feature-icon">📊</span>
-                    <span>生成安全评分报告</span>
+                    <span class="photo-feature-icon">馃搳</span>
+                    <span>鐢熸垚瀹夊叏璇勫垎鎶ュ憡</span>
                 </div>
                 <div class="photo-feature-item">
-                    <span class="photo-feature-icon">�?/span>
-                    <span>快速评估酒店环�?/span>
+                    <span class="photo-feature-icon">鉁?/span>
+                    <span>蹇€熻瘎浼伴厭搴楃幆澧?/span>
                 </div>
             </div>
         </div>
 
-        <!-- 自查引导页面 -->
+        <!-- 鑷煡寮曞椤甸潰 -->
         <div class="page qa-page" id="qaPage" style="display: none;">
             <div class="scroll-content" id="qa-render"></div>
             <div class="fixed-bottom-bar">
-                <button class="btn-blue" id="goToUploadBtn">完成自查，去拍摄照片</button>
+                <button class="btn-blue" id="goToUploadBtn">瀹屾垚鑷煡锛屽幓鎷嶆憚鐓х墖</button>
             </div>
         </div>
 
-        <!-- 照片上传页面 -->
+        <!-- 鐓х墖涓婁紶椤甸潰 -->
         <div class="page upload-page" id="uploadPage" style="display: none;">
-            <h2 style="font-weight:300; margin: 20px 0;">影像取证上传</h2>
+            <h2 style="font-weight:300; margin: 20px 0;">褰卞儚鍙栬瘉涓婁紶</h2>
             <div class="scroll-content" id="upload-render"></div>
             <div class="fixed-bottom-bar">
-                <button class="btn-blue" id="submitAnalysisBtn">提交 AI 专家深度分析</button>
+                <button class="btn-blue" id="submitAnalysisBtn">鎻愪氦 AI 涓撳娣卞害鍒嗘瀽</button>
             </div>
         </div>
 
-        <!-- 地图页面 -->
+        <!-- 鍦板浘椤甸潰 -->
         <div class="page map-page" id="mapPage">
             <div class="map-container">
                 <div id="map"></div>
                 <div class="map-placeholder" id="mapPlaceholder">
-                    <div class="map-icon">🗺�?/div>
-                    <div class="map-text" id="cityNameDisplay">选择城市查看地图</div>
-                    <div class="map-subtext">正在加载地图...</div>
+                    <div class="map-icon">馃椇锔?/div>
+                    <div class="map-text" id="cityNameDisplay">閫夋嫨鍩庡競鏌ョ湅鍦板浘</div>
+                    <div class="map-subtext">姝ｅ湪鍔犺浇鍦板浘...</div>
                 </div>
             </div>
 
-            <!-- 左上角：统计信息 -->
+            <!-- 宸︿笂瑙掞細缁熻淇℃伅 -->
             <div class="stats-container">
                 <div class="stats-card">
-                    <div class="stats-label">酒店总数</div>
+                    <div class="stats-label">閰掑簵鎬绘暟</div>
                     <div class="stats-value" id="totalHotels">0</div>
                 </div>
                 <div class="stats-card">
-                    <div class="stats-label">已评�?/div>
+                    <div class="stats-label">宸茶瘎鍒?/div>
                     <div class="stats-value" id="ratedHotels">0</div>
                 </div>
             </div>
 
-            <!-- 右上角：控制按钮 -->
+            <!-- 鍙充笂瑙掞細鎺у埗鎸夐挳 -->
             <div class="top-controls">
-                <div class="control-button" id="switchCityButton">切换城市</div>
-                <div class="control-button active" id="toggleHeatmap">热力�?/div>
-                <div class="control-button" id="filterButton">筛�?/div>
+                <div class="control-button" id="switchCityButton">鍒囨崲鍩庡競</div>
+                <div class="control-button active" id="toggleHeatmap">鐑姏鍥?/div>
+                <div class="control-button" id="filterButton">绛涢€?/div>
             </div>
 
-            <!-- 底部图例 -->
+            <!-- 搴曢儴鍥句緥 -->
             <div class="legend">
-                <div class="legend-title">安全评分图例</div>
+                <div class="legend-title">瀹夊叏璇勫垎鍥句緥</div>
                 <div class="legend-items">
                     <div class="legend-item">
                         <div class="legend-color" style="background-color: #4ade80;"></div>
@@ -1130,74 +1130,74 @@
             </div>
         </div>
 
-        <!-- 个人中心页面 -->
+        <!-- 涓汉涓績椤甸潰 -->
         <div class="page profile-page" id="profilePage">
             <div class="profile-header-section">
-                <div class="profile-avatar">👤</div>
-                <div class="profile-name">用户</div>
+                <div class="profile-avatar">馃懁</div>
+                <div class="profile-name">鐢ㄦ埛</div>
                 <div class="profile-email">user@example.com</div>
             </div>
 
             <div class="profile-section">
-                <div class="profile-section-title">我的收藏</div>
+                <div class="profile-section-title">鎴戠殑鏀惰棌</div>
                 <div id="favoritesList">
-                    <div class="empty-text">暂无收藏的酒�?/div>
+                    <div class="empty-text">鏆傛棤鏀惰棌鐨勯厭搴?/div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- 底部导航�?-->
+    <!-- 搴曢儴瀵艰埅鏍?-->
     <div class="bottom-nav">
         <div class="nav-item active" data-page="photoPage">
-            <div class="nav-icon">📷</div>
-            <div class="nav-label">拍照检�?/div>
+            <div class="nav-icon">馃摲</div>
+            <div class="nav-label">鎷嶇収妫€娴?/div>
         </div>
         <div class="nav-item" data-page="mapPage">
-            <div class="nav-icon">🗺�?/div>
-            <div class="nav-label">地图</div>
+            <div class="nav-icon">馃椇锔?/div>
+            <div class="nav-label">鍦板浘</div>
         </div>
         <div class="nav-item" data-page="profilePage">
-            <div class="nav-icon">👤</div>
-            <div class="nav-label">个人中心</div>
+            <div class="nav-icon">馃懁</div>
+            <div class="nav-label">涓汉涓績</div>
         </div>
     </div>
 
-    <!-- 城市切换模态框 -->
+    <!-- 鍩庡競鍒囨崲妯℃€佹 -->
     <div class="modal-overlay" id="cityModal">
         <div class="modal-content">
             <div class="modal-header">
-                <div class="modal-title">选择城市</div>
-                <div class="close-button" id="closeCityModal">�?/div>
+                <div class="modal-title">閫夋嫨鍩庡競</div>
+                <div class="close-button" id="closeCityModal">鉁?/div>
             </div>
             <div class="city-selection" style="padding: 16px;">
                 <div class="country-section">
-                    <div class="country-title">中国</div>
+                    <div class="country-title">涓浗</div>
                     <div class="cities-container">
-                        <div class="city-button" data-city='{"id":"xishuangbanna","name":"西双版纳","country":"中国"}'>
-                            <div class="city-button-text">西双版纳</div>
+                        <div class="city-button" data-city='{"id":"xishuangbanna","name":"瑗垮弻鐗堢撼","country":"涓浗"}'>
+                            <div class="city-button-text">瑗垮弻鐗堢撼</div>
                         </div>
-                        <div class="city-button" data-city='{"id":"guiyang","name":"贵阳","country":"中国"}'>
-                            <div class="city-button-text">贵阳</div>
+                        <div class="city-button" data-city='{"id":"guiyang","name":"璐甸槼","country":"涓浗"}'>
+                            <div class="city-button-text">璐甸槼</div>
                         </div>
-                        <div class="city-button" data-city='{"id":"shanghai","name":"上海","country":"中国"}'>
-                            <div class="city-button-text">上海</div>
+                        <div class="city-button" data-city='{"id":"shanghai","name":"涓婃捣","country":"涓浗"}'>
+                            <div class="city-button-text">涓婃捣</div>
                         </div>
                     </div>
                 </div>
                 <div class="country-section">
-                    <div class="country-title">泰国</div>
+                    <div class="country-title">娉板浗</div>
                     <div class="cities-container">
-                        <div class="city-button" data-city='{"id":"bangkok","name":"曼谷","country":"泰国"}'>
-                            <div class="city-button-text">曼谷</div>
+                        <div class="city-button" data-city='{"id":"bangkok","name":"鏇艰胺","country":"娉板浗"}'>
+                            <div class="city-button-text">鏇艰胺</div>
                         </div>
                     </div>
                 </div>
                 <div class="country-section">
-                    <div class="country-title">意大�?/div>
+                    <div class="country-title">鎰忓ぇ鍒?/div>
                     <div class="cities-container">
-                        <div class="city-button" data-city='{"id":"naples","name":"那不勒斯","country":"意大�?}'>
-                            <div class="city-button-text">那不勒斯</div>
+                        <div class="city-button" data-city='{"id":"naples","name":"閭ｄ笉鍕掓柉","country":"鎰忓ぇ鍒?}'>
+                            <div class="city-button-text">閭ｄ笉鍕掓柉</div>
                         </div>
                     </div>
                 </div>
@@ -1205,69 +1205,69 @@
         </div>
     </div>
 
-    <!-- 酒店详情弹窗 -->
+    <!-- 閰掑簵璇︽儏寮圭獥 -->
     <div class="modal-overlay" id="hotelModal">
         <div class="modal-content">
             <div class="modal-header">
-                <div class="modal-title" id="hotelName">酒店名称</div>
-                <div class="close-button" id="closeHotelModal">�?/div>
+                <div class="modal-title" id="hotelName">閰掑簵鍚嶇О</div>
+                <div class="close-button" id="closeHotelModal">鉁?/div>
             </div>
             <div class="hotel-modal-content">
                 <div class="hotel-info-section">
-                    <div class="info-label">安全评分</div>
+                    <div class="info-label">瀹夊叏璇勫垎</div>
                     <div class="info-value" id="hotelScore">0/5.0</div>
                 </div>
                 <div class="hotel-info-section">
-                    <div class="info-label">评价数量</div>
-                    <div class="info-value" id="hotelReviews">0 �?/div>
+                    <div class="info-label">璇勪环鏁伴噺</div>
+                    <div class="info-value" id="hotelReviews">0 鏉?/div>
                 </div>
                 <div class="hotel-actions">
-                    <div class="action-button favorite" id="favoriteButton">�?收藏</div>
-                    <div class="action-button platform" id="platformButton">查看在线平台</div>
+                    <div class="action-button favorite" id="favoriteButton">鈽?鏀惰棌</div>
+                    <div class="action-button platform" id="platformButton">鏌ョ湅鍦ㄧ嚎骞冲彴</div>
                 </div>
                 <div class="review-section">
-                    <div class="review-section-title">添加评价</div>
+                    <div class="review-section-title">娣诲姞璇勪环</div>
                     <div class="rating-section">
-                        <div class="rating-label">评分�?/div>
+                        <div class="rating-label">璇勫垎锛?/div>
                         <div class="rating-buttons" id="ratingButtons">
-                            <div class="star-button" data-rating="1">�?/div>
-                            <div class="star-button" data-rating="2">�?/div>
-                            <div class="star-button" data-rating="3">�?/div>
-                            <div class="star-button" data-rating="4">�?/div>
-                            <div class="star-button active" data-rating="5">�?/div>
+                            <div class="star-button" data-rating="1">鈽?/div>
+                            <div class="star-button" data-rating="2">鈽?/div>
+                            <div class="star-button" data-rating="3">鈽?/div>
+                            <div class="star-button" data-rating="4">鈽?/div>
+                            <div class="star-button active" data-rating="5">鈽?/div>
                         </div>
                     </div>
-                    <textarea class="comment-input" id="commentInput" placeholder="请输入您的评�?.."></textarea>
-                    <div class="submit-button" id="submitReview">提交评价</div>
+                    <textarea class="comment-input" id="commentInput" placeholder="璇疯緭鍏ユ偍鐨勮瘎浠?.."></textarea>
+                    <div class="submit-button" id="submitReview">鎻愪氦璇勪环</div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- 检测部位选择模态框 -->
+    <!-- 妫€娴嬮儴浣嶉€夋嫨妯℃€佹 -->
     <div class="detection-modal" id="detectionModal">
         <div class="detection-modal-content">
-            <h3 style="margin:0 0 20px 0; font-weight:400; text-align:center;">请选择检测部�?/h3>
-            <div class="option-box" onclick="toggleSelect(this, '门锁')">门锁安全检�?/div>
-            <div class="option-box" onclick="toggleSelect(this, '窗户')">窗户外部检�?/div>
-            <div class="option-box" onclick="toggleSelect(this, '镜子')">双面镜检�?/div>
-            <div class="option-box" onclick="toggleSelect(this, '浴室')">浴室通风口检�?/div>
-            <div class="option-box" onclick="toggleSelect(this, '插座')">插座与面板检�?/div>
-            <div class="option-box" onclick="toggleSelect(this, '路由�?)">路由器与信号检�?/div>
-            <button class="btn-blue" style="margin-top:10px;" onclick="startQA()">确认并开始自�?/button>
+            <h3 style="margin:0 0 20px 0; font-weight:400; text-align:center;">璇烽€夋嫨妫€娴嬮儴浣?/h3>
+            <div class="option-box" onclick="toggleSelect(this, '闂ㄩ攣')">闂ㄩ攣瀹夊叏妫€鏌?/div>
+            <div class="option-box" onclick="toggleSelect(this, '绐楁埛')">绐楁埛澶栭儴妫€鏌?/div>
+            <div class="option-box" onclick="toggleSelect(this, '闀滃瓙')">鍙岄潰闀滄娴?/div>
+            <div class="option-box" onclick="toggleSelect(this, '娴村')">娴村閫氶鍙ｆ鏌?/div>
+            <div class="option-box" onclick="toggleSelect(this, '鎻掑骇')">鎻掑骇涓庨潰鏉挎鏌?/div>
+            <div class="option-box" onclick="toggleSelect(this, '璺敱鍣?)">璺敱鍣ㄤ笌淇″彿妫€鏌?/div>
+            <button class="btn-blue" style="margin-top:10px;" onclick="startQA()">纭骞跺紑濮嬭嚜鏌?/button>
         </div>
     </div>
 
-    <!-- 筛选弹�?-->
+    <!-- 绛涢€夊脊绐?-->
     <div class="modal-overlay" id="filterModal">
         <div class="modal-content">
             <div class="filter-modal-content">
-                <div class="filter-title">筛选酒�?/div>
-                <div class="filter-label">最低安全评分：</div>
-                <input type="number" class="filter-input" id="filterInput" placeholder="例如: 4.0" step="0.1" min="0" max="5">
+                <div class="filter-title">绛涢€夐厭搴?/div>
+                <div class="filter-label">鏈€浣庡畨鍏ㄨ瘎鍒嗭細</div>
+                <input type="number" class="filter-input" id="filterInput" placeholder="渚嬪: 4.0" step="0.1" min="0" max="5">
                 <div class="filter-buttons">
-                    <div class="filter-button cancel" id="clearFilter">清除</div>
-                    <div class="filter-button apply" id="applyFilter">应用</div>
+                    <div class="filter-button cancel" id="clearFilter">娓呴櫎</div>
+                    <div class="filter-button apply" id="applyFilter">搴旂敤</div>
                 </div>
             </div>
         </div>
@@ -1278,118 +1278,118 @@
     
     <script>
         // ========================================
-        // Supabase 数据库配�?        // ========================================
+        // Supabase 鏁版嵁搴撻厤缃?        // ========================================
         const { createClient } = supabase;
         const SUPABASE_URL = 'https://hmmruoankhohowlzajll.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhtbXJ1b2Fua2hvaG93bHphamxsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA1MjQxNjgsImV4cCI6MjA4NjEwMDE2OH0.nGVgFlrTPQh86Ba0doT_mmeHvCnF0NjJ6MUJEvQKV3g';
         
         const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         
-        console.log('�?Supabase 客户端已初始�?);
-        console.log('数据�?URL:', SUPABASE_URL);
+        console.log('鉁?Supabase 瀹㈡埛绔凡鍒濆鍖?);
+        console.log('鏁版嵁搴?URL:', SUPABASE_URL);
         
-        // 从数据库加载酒店数据
+        // 浠庢暟鎹簱鍔犺浇閰掑簵鏁版嵁
         let dbHotelsData = [];
         let isLoadingFromDatabase = true;
         
         async function loadHotelsFromDatabase() {
             try {
                 console.log('========================================');
-                console.log('🔄 正在�?Supabase 数据库加载酒店数�?..');
+                console.log('馃攧 姝ｅ湪浠?Supabase 鏁版嵁搴撳姞杞介厭搴楁暟鎹?..');
                 console.log('========================================');
                 
                 const { data, error } = await supabaseClient
                     .from('hotels').select('*, cities(name)').eq('is_active', true);
                 
                 if (error) {
-                    console.warn('⚠️ 数据库查询错�?', error.message);
-                    console.log('使用模拟数据作为后备');
+                    console.warn('鈿狅笍 鏁版嵁搴撴煡璇㈤敊璇?', error.message);
+                    console.log('浣跨敤妯℃嫙鏁版嵁浣滀负鍚庡');
                     isLoadingFromDatabase = false;
                     return [];
                 }
                 
-                console.log(`�?成功从数据库加载 ${data ? data.length : 0} 个酒店！`);
+                console.log(`鉁?鎴愬姛浠庢暟鎹簱鍔犺浇 ${data ? data.length : 0} 涓厭搴楋紒`);
                 
                 if (data && data.length > 0) {
                     dbHotelsData = data;
-                    console.log('📊 数据库酒店统�?');
-                    console.log('  总数:', data.length);
+                    console.log('馃搳 鏁版嵁搴撻厭搴楃粺璁?');
+                    console.log('  鎬绘暟:', data.length);
                     
-                    // 统计每个城市的酒店数�?                    const cityCounts = {};
+                    // 缁熻姣忎釜鍩庡競鐨勯厭搴楁暟閲?                    const cityCounts = {};
                     data.forEach(h => {
-                        const city = h.cities?.name || '未知';
+                        const city = h.cities?.name || '鏈煡';
                         cityCounts[city] = (cityCounts[city] || 0) + 1;
                     });
-                    console.log('  各城市分�?', cityCounts);
+                    console.log('  鍚勫煄甯傚垎甯?', cityCounts);
                     
-                    console.log('�?个酒店示�?');
+                    console.log('鍓?涓厭搴楃ず渚?');
                     data.slice(0, 5).forEach((hotel, i) => {
                         console.log(`  ${i+1}. ${hotel.name}`);
-                        console.log(`     城市: ${hotel.city || '未知'}`);
-                        console.log(`     坐标: [${hotel.latitude}, ${hotel.longitude}]`);
-                        console.log(`     评分: ${hotel.safety_score}`);
+                        console.log(`     鍩庡競: ${hotel.city || '鏈煡'}`);
+                        console.log(`     鍧愭爣: [${hotel.latitude}, ${hotel.longitude}]`);
+                        console.log(`     璇勫垎: ${hotel.safety_score}`);
                     });
                     isLoadingFromDatabase = false;
                     
-                    // 🔥 关键修复：数据加载完成后，动态生成城市列�?                    generateCityListFromData(data);
+                    // 馃敟 鍏抽敭淇锛氭暟鎹姞杞藉畬鎴愬悗锛屽姩鎬佺敓鎴愬煄甯傚垪琛?                    generateCityListFromData(data);
                     
-                    // 如果地图已初始化，立即更新地图和热力�?                    if (map && currentCity) {
-                        console.log('🔄 数据加载完成，更新地图和热力�?..');
+                    // 濡傛灉鍦板浘宸插垵濮嬪寲锛岀珛鍗虫洿鏂板湴鍥惧拰鐑姏鍥?                    if (map && currentCity) {
+                        console.log('馃攧 鏁版嵁鍔犺浇瀹屾垚锛屾洿鏂板湴鍥惧拰鐑姏鍥?..');
                         const hotels = getHotelsForCity(currentCity.id);
                         updateMapMarkers(hotels);
                         updateStats();
-                        console.log('�?地图和热力图已更新！');
+                        console.log('鉁?鍦板浘鍜岀儹鍔涘浘宸叉洿鏂帮紒');
                     }
                     
                     return data;
                 } else {
-                    console.warn('⚠️ 数据库返回空数组');
+                    console.warn('鈿狅笍 鏁版嵁搴撹繑鍥炵┖鏁扮粍');
                     return [];
                 }
             } catch (error) {
                 console.warn('========================================');
-                console.warn('⚠️ 从数据库加载失败:', error.message);
-                console.log('将使用模拟数据作为后�?);
+                console.warn('鈿狅笍 浠庢暟鎹簱鍔犺浇澶辫触:', error.message);
+                console.log('灏嗕娇鐢ㄦā鎷熸暟鎹綔涓哄悗澶?);
                 console.warn('========================================');
                 isLoadingFromDatabase = false;
                 return [];
             }
         }
         
-        // 根据城市ID获取酒店数据
+        // 鏍规嵁鍩庡競ID鑾峰彇閰掑簵鏁版嵁
         function getHotelsForCity(cityId) {
-            console.log('🔍 获取城市酒店数据，城市ID:', cityId);
+            console.log('馃攳 鑾峰彇鍩庡競閰掑簵鏁版嵁锛屽煄甯侷D:', cityId);
             
             if (dbHotelsData && dbHotelsData.length > 0) {
-                console.log('  数据库中总酒店数:', dbHotelsData.length);
+                console.log('  鏁版嵁搴撲腑鎬婚厭搴楁暟:', dbHotelsData.length);
                 
-                // 先查看数据库中实际的城市字段�?                const uniqueCities = [...new Set(dbHotelsData.map(h => h.cities?.name))];
-                console.log('  数据库中的城市列�?', uniqueCities);
+                // 鍏堟煡鐪嬫暟鎹簱涓疄闄呯殑鍩庡競瀛楁鍊?                const uniqueCities = [...new Set(dbHotelsData.map(h => h.cities?.name))];
+                console.log('  鏁版嵁搴撲腑鐨勫煄甯傚垪琛?', uniqueCities);
                 
-                // 检查第一个酒店的所有字�?                if (dbHotelsData.length > 0) {
-                    console.log('  第一个酒店的所有字�?', Object.keys(dbHotelsData[0]));
-                    console.log('  第一个酒店示�?', dbHotelsData[0]);
+                // 妫€鏌ョ涓€涓厭搴楃殑鎵€鏈夊瓧娈?                if (dbHotelsData.length > 0) {
+                    console.log('  绗竴涓厭搴楃殑鎵€鏈夊瓧娈?', Object.keys(dbHotelsData[0]));
+                    console.log('  绗竴涓厭搴楃ず渚?', dbHotelsData[0]);
                 }
                 
-                // 🔥 根据城市名称筛选酒�?                // �?currentCity 对象中获取城市名�?                const cityName = currentCity ? currentCity.name : null;
-                console.log('  当前选择的城市名�?', cityName);
+                // 馃敟 鏍规嵁鍩庡競鍚嶇О绛涢€夐厭搴?                // 浠?currentCity 瀵硅薄涓幏鍙栧煄甯傚悕绉?                const cityName = currentCity ? currentCity.name : null;
+                console.log('  褰撳墠閫夋嫨鐨勫煄甯傚悕绉?', cityName);
                 
                 let cityHotels;
                 if (cityName) {
-                    // 按城市名称筛�?                    cityHotels = dbHotelsData.filter(h => h.cities?.name === cityName);
-                    console.log(`  筛选出 ${cityHotels.length} �?${cityName} 的酒店`);
+                    // 鎸夊煄甯傚悕绉扮瓫閫?                    cityHotels = dbHotelsData.filter(h => h.cities?.name === cityName);
+                    console.log(`  绛涢€夊嚭 ${cityHotels.length} 涓?${cityName} 鐨勯厭搴梎);
                 } else {
-                    // 如果没有选择城市，显示所有酒�?                    console.log('  ⚠️ 未选择城市，显示所有酒�?);
+                    // 濡傛灉娌℃湁閫夋嫨鍩庡競锛屾樉绀烘墍鏈夐厭搴?                    console.log('  鈿狅笍 鏈€夋嫨鍩庡競锛屾樉绀烘墍鏈夐厭搴?);
                     cityHotels = dbHotelsData;
                 }
                 
-                console.log(`  找到 ${cityHotels.length} 个酒店`);
+                console.log(`  鎵惧埌 ${cityHotels.length} 涓厭搴梎);
                 
-                // 转换为应用格�?- 尝试多种可能的字段名
+                // 杞崲涓哄簲鐢ㄦ牸寮?- 灏濊瘯澶氱鍙兘鐨勫瓧娈靛悕
                 const hotels = cityHotels.map(h => {
-                    // 尝试多种可能的纬度字段名
+                    // 灏濊瘯澶氱鍙兘鐨勭含搴﹀瓧娈靛悕
                     const lat = parseFloat(h.latitude || h.lat || h.Latitude || h.LAT);
-                    // 尝试多种可能的经度字段名
+                    // 灏濊瘯澶氱鍙兘鐨勭粡搴﹀瓧娈靛悕
                     const lng = parseFloat(h.longitude || h.lng || h.lon || h.Longitude || h.LON);
                     
                     return {
@@ -1403,48 +1403,48 @@
                     };
                 });
                 
-                // 验证坐标有效�?                const validHotels = hotels.filter(h => {
+                // 楠岃瘉鍧愭爣鏈夋晥鎬?                const validHotels = hotels.filter(h => {
                     const isValid = !isNaN(h.lat) && !isNaN(h.lng) && 
                                    h.lat !== 0 && h.lng !== 0 &&
                                    Math.abs(h.lat) <= 90 && Math.abs(h.lng) <= 180;
                     if (!isValid) {
-                        console.warn(`  ⚠️ 无效坐标: ${h.name} - 城市: ${h.cities?.name} - 坐标: [${h.lat}, ${h.lng}]`);
+                        console.warn(`  鈿狅笍 鏃犳晥鍧愭爣: ${h.name} - 鍩庡競: ${h.cities?.name} - 鍧愭爣: [${h.lat}, ${h.lng}]`);
                     }
                     return isValid;
                 });
                 
-                console.log(`  有效坐标酒店: ${validHotels.length} 个`);
-                console.log(`  无效坐标酒店: ${hotels.length - validHotels.length} 个`);
+                console.log(`  鏈夋晥鍧愭爣閰掑簵: ${validHotels.length} 涓猔);
+                console.log(`  鏃犳晥鍧愭爣閰掑簵: ${hotels.length - validHotels.length} 涓猔);
                 
                 if (validHotels.length > 0) {
-                    console.log('  �?个有效酒店示�?');
+                    console.log('  鍓?涓湁鏁堥厭搴楃ず渚?');
                     validHotels.slice(0, 3).forEach((h, i) => {
-                        console.log(`    ${i+1}. ${h.name} - 城市: ${h.cities?.name} - 坐标: [${h.lat}, ${h.lng}]`);
+                        console.log(`    ${i+1}. ${h.name} - 鍩庡競: ${h.cities?.name} - 鍧愭爣: [${h.lat}, ${h.lng}]`);
                     });
                     
-                    console.log('  坐标范围:');
+                    console.log('  鍧愭爣鑼冨洿:');
                     const lats = validHotels.map(h => h.lat);
                     const lngs = validHotels.map(h => h.lng);
-                    console.log(`    纬度: ${Math.min(...lats).toFixed(4)} ~ ${Math.max(...lats).toFixed(4)}`);
-                    console.log(`    经度: ${Math.min(...lngs).toFixed(4)} ~ ${Math.max(...lngs).toFixed(4)}`);
+                    console.log(`    绾害: ${Math.min(...lats).toFixed(4)} ~ ${Math.max(...lats).toFixed(4)}`);
+                    console.log(`    缁忓害: ${Math.min(...lngs).toFixed(4)} ~ ${Math.max(...lngs).toFixed(4)}`);
                 } else {
-                    console.error('  �?没有找到任何有效坐标的酒店！');
-                    console.log('  请检查数据库中的坐标字段名称');
+                    console.error('  鉂?娌℃湁鎵惧埌浠讳綍鏈夋晥鍧愭爣鐨勯厭搴楋紒');
+                    console.log('  璇锋鏌ユ暟鎹簱涓殑鍧愭爣瀛楁鍚嶇О');
                 }
                 
                 return validHotels;
             } else {
-                console.log('  数据库无数据，使用模拟数�?);
+                console.log('  鏁版嵁搴撴棤鏁版嵁锛屼娇鐢ㄦā鎷熸暟鎹?);
                 return mockHotels[cityId] || [];
             }
         }
         
-        // 动态生成城市列�?        function generateCityListFromData(hotels) {
-            console.log('🏙�?开始生成城市列�?..');
+        // 鍔ㄦ€佺敓鎴愬煄甯傚垪琛?        function generateCityListFromData(hotels) {
+            console.log('馃彊锔?寮€濮嬬敓鎴愬煄甯傚垪琛?..');
             
-            // 统计每个城市的酒店数�?            const cityStats = {};
+            // 缁熻姣忎釜鍩庡競鐨勯厭搴楁暟閲?            const cityStats = {};
             hotels.forEach(hotel => {
-                const city = hotel.city || '未知';
+                const city = hotel.city || '鏈煡';
                 if (!cityStats[city]) {
                     cityStats[city] = {
                         count: 0,
@@ -1455,37 +1455,37 @@
                 cityStats[city].hotels.push(hotel);
             });
             
-            console.log('城市统计:', cityStats);
+            console.log('鍩庡競缁熻:', cityStats);
             
-            // 按酒店数量排�?            const sortedCities = Object.entries(cityStats)
+            // 鎸夐厭搴楁暟閲忔帓搴?            const sortedCities = Object.entries(cityStats)
                 .sort((a, b) => b[1].count - a[1].count)
-                .filter(([city]) => city !== '未知');
+                .filter(([city]) => city !== '鏈煡');
             
-            console.log(`找到 ${sortedCities.length} 个城市`);
+            console.log(`鎵惧埌 ${sortedCities.length} 涓煄甯俙);
             
-            // 生成城市列表HTML
+            // 鐢熸垚鍩庡競鍒楄〃HTML
             const citySelection = document.getElementById('citySelection');
             if (!citySelection) {
-                console.error('找不到城市选择容器');
+                console.error('鎵句笉鍒板煄甯傞€夋嫨瀹瑰櫒');
                 return;
             }
             
-            // 清空现有内容
+            // 娓呯┖鐜版湁鍐呭
             citySelection.innerHTML = `
                 <div class="header">
-                    <div class="title">欢迎使用女性安全地�?/div>
-                    <div class="subtitle">请选择您要查看的城�?/div>
+                    <div class="title">娆㈣繋浣跨敤濂虫€у畨鍏ㄥ湴鍥?/div>
+                    <div class="subtitle">璇烽€夋嫨鎮ㄨ鏌ョ湅鐨勫煄甯?/div>
                 </div>
             `;
             
-            // 按国家分�?            const citiesByCountry = {};
+            // 鎸夊浗瀹跺垎缁?            const citiesByCountry = {};
             sortedCities.forEach(([city, data]) => {
-                // 简单的国家判断（可以根据实际数据调整）
-                let country = '中国'; // 默认中国
-                if (city.includes('曼谷') || city.includes('清迈') || city.includes('普吉')) {
-                    country = '泰国';
-                } else if (city.includes('巴厘�?)) {
-                    country = '印度尼西�?;
+                // 绠€鍗曠殑鍥藉鍒ゆ柇锛堝彲浠ユ牴鎹疄闄呮暟鎹皟鏁达級
+                let country = '涓浗'; // 榛樿涓浗
+                if (city.includes('鏇艰胺') || city.includes('娓呰繄') || city.includes('鏅悏')) {
+                    country = '娉板浗';
+                } else if (city.includes('宸村帢宀?)) {
+                    country = '鍗板害灏艰タ浜?;
                 }
                 
                 if (!citiesByCountry[country]) {
@@ -1494,7 +1494,7 @@
                 citiesByCountry[country].push([city, data]);
             });
             
-            // 渲染每个国家的城�?            Object.entries(citiesByCountry).forEach(([country, cities]) => {
+            // 娓叉煋姣忎釜鍥藉鐨勫煄甯?            Object.entries(citiesByCountry).forEach(([country, cities]) => {
                 const countrySection = document.createElement('div');
                 countrySection.className = 'country-section';
                 
@@ -1510,7 +1510,7 @@
                     const cityButton = document.createElement('div');
                     cityButton.className = 'city-button';
                     
-                    // 生成城市ID（拼音或英文�?                    const cityId = city.toLowerCase().replace(/\s+/g, '');
+                    // 鐢熸垚鍩庡競ID锛堟嫾闊虫垨鑻辨枃锛?                    const cityId = city.toLowerCase().replace(/\s+/g, '');
                     
                     cityButton.setAttribute('data-city', JSON.stringify({
                         id: cityId,
@@ -1520,7 +1520,7 @@
                     
                     cityButton.innerHTML = `
                         <div class="city-button-text">${city}</div>
-                        <div class="city-button-count">${data.count} 家酒�?/div>
+                        <div class="city-button-count">${data.count} 瀹堕厭搴?/div>
                     `;
                     
                     citiesContainer.appendChild(cityButton);
@@ -1530,13 +1530,13 @@
                 citySelection.appendChild(countrySection);
             });
             
-            console.log('�?城市列表生成完成�?);
+            console.log('鉁?鍩庡競鍒楄〃鐢熸垚瀹屾垚锛?);
         }
         
-        // 立即开始加载数据库数据
+        // 绔嬪嵆寮€濮嬪姞杞芥暟鎹簱鏁版嵁
         loadHotelsFromDatabase();
         
-        // 城市坐标数据
+        // 鍩庡競鍧愭爣鏁版嵁
         const cityCoordinates = {
             xishuangbanna: { lat: 22.0084, lng: 100.7979, zoom: 13 },
             guiyang: { lat: 26.6470, lng: 106.6302, zoom: 13 },
@@ -1545,32 +1545,32 @@
             naples: { lat: 40.8518, lng: 14.2681, zoom: 13 },
         };
 
-        // 模拟酒店数据（作为备用）
+        // 妯℃嫙閰掑簵鏁版嵁锛堜綔涓哄鐢級
         const mockHotels = {
             xishuangbanna: [
-                { id: 1, name: '西双版纳万达文华酒店', score: 4.5, lat: 22.0084, lng: 100.7979, reviews: 128 },
-                { id: 2, name: '景洪大酒�?, score: 4.2, lat: 22.0150, lng: 100.8100, reviews: 95 },
-                { id: 3, name: '西双版纳洲际酒店', score: 4.8, lat: 22.0000, lng: 100.7900, reviews: 156 },
+                { id: 1, name: '瑗垮弻鐗堢撼涓囪揪鏂囧崕閰掑簵', score: 4.5, lat: 22.0084, lng: 100.7979, reviews: 128 },
+                { id: 2, name: '鏅椽澶ч厭搴?, score: 4.2, lat: 22.0150, lng: 100.8100, reviews: 95 },
+                { id: 3, name: '瑗垮弻鐗堢撼娲查檯閰掑簵', score: 4.8, lat: 22.0000, lng: 100.7900, reviews: 156 },
             ],
             guiyang: [
-                { id: 1, name: '贵阳喜来登酒�?, score: 4.3, lat: 26.6470, lng: 106.6302, reviews: 112 },
-                { id: 2, name: '贵阳凯宾斯基酒店', score: 4.6, lat: 26.6550, lng: 106.6400, reviews: 89 },
-                { id: 3, name: '贵阳万丽酒店', score: 4.4, lat: 26.6400, lng: 106.6200, reviews: 76 },
+                { id: 1, name: '璐甸槼鍠滄潵鐧婚厭搴?, score: 4.3, lat: 26.6470, lng: 106.6302, reviews: 112 },
+                { id: 2, name: '璐甸槼鍑鏂熀閰掑簵', score: 4.6, lat: 26.6550, lng: 106.6400, reviews: 89 },
+                { id: 3, name: '璐甸槼涓囦附閰掑簵', score: 4.4, lat: 26.6400, lng: 106.6200, reviews: 76 },
             ],
             bangkok: [
-                { id: 1, name: '曼谷文华东方酒店', score: 4.7, lat: 13.7563, lng: 100.5018, reviews: 234 },
-                { id: 2, name: '曼谷半岛酒店', score: 4.5, lat: 13.7500, lng: 100.5100, reviews: 198 },
-                { id: 3, name: '曼谷素可泰酒�?, score: 4.3, lat: 13.7600, lng: 100.4950, reviews: 167 },
+                { id: 1, name: '鏇艰胺鏂囧崕涓滄柟閰掑簵', score: 4.7, lat: 13.7563, lng: 100.5018, reviews: 234 },
+                { id: 2, name: '鏇艰胺鍗婂矝閰掑簵', score: 4.5, lat: 13.7500, lng: 100.5100, reviews: 198 },
+                { id: 3, name: '鏇艰胺绱犲彲娉伴厭搴?, score: 4.3, lat: 13.7600, lng: 100.4950, reviews: 167 },
             ],
             shanghai: [
-                { id: 1, name: '上海外滩茂悦大酒�?, score: 4.6, lat: 31.2304, lng: 121.4737, reviews: 312 },
-                { id: 2, name: '上海和平饭店', score: 4.8, lat: 31.2350, lng: 121.4800, reviews: 289 },
-                { id: 3, name: '上海半岛酒店', score: 4.7, lat: 31.2250, lng: 121.4700, reviews: 256 },
+                { id: 1, name: '涓婃捣澶栨哗鑼傛偊澶ч厭搴?, score: 4.6, lat: 31.2304, lng: 121.4737, reviews: 312 },
+                { id: 2, name: '涓婃捣鍜屽钩楗簵', score: 4.8, lat: 31.2350, lng: 121.4800, reviews: 289 },
+                { id: 3, name: '涓婃捣鍗婂矝閰掑簵', score: 4.7, lat: 31.2250, lng: 121.4700, reviews: 256 },
             ],
             naples: [
-                { id: 1, name: '那不勒斯大饭�?, score: 4.2, lat: 40.8518, lng: 14.2681, reviews: 145 },
-                { id: 2, name: '那不勒斯皇家酒店', score: 4.4, lat: 40.8550, lng: 14.2700, reviews: 132 },
-                { id: 3, name: '那不勒斯地中海酒�?, score: 4.1, lat: 40.8480, lng: 14.2650, reviews: 98 },
+                { id: 1, name: '閭ｄ笉鍕掓柉澶чキ搴?, score: 4.2, lat: 40.8518, lng: 14.2681, reviews: 145 },
+                { id: 2, name: '閭ｄ笉鍕掓柉鐨囧閰掑簵', score: 4.4, lat: 40.8550, lng: 14.2700, reviews: 132 },
+                { id: 3, name: '閭ｄ笉鍕掓柉鍦颁腑娴烽厭搴?, score: 4.1, lat: 40.8480, lng: 14.2650, reviews: 98 },
             ],
         };
 
@@ -1585,45 +1585,45 @@
         let currentRating = 5;
         let currentPage = 'photoPage';
 
-        // 页面切换功能
+        // 椤甸潰鍒囨崲鍔熻兘
         function switchPage(pageId) {
-            console.log('切换到页�?', pageId, '当前城市:', currentCity);
+            console.log('鍒囨崲鍒伴〉闈?', pageId, '褰撳墠鍩庡競:', currentCity);
             
-            // 隐藏所有页�?            document.querySelectorAll('.page').forEach(page => {
+            // 闅愯棌鎵€鏈夐〉闈?            document.querySelectorAll('.page').forEach(page => {
                 page.classList.remove('active');
                 page.style.display = 'none';
             });
             
-            // 隐藏城市选择页面
+            // 闅愯棌鍩庡競閫夋嫨椤甸潰
             const citySelection = document.getElementById('citySelection');
             if (citySelection) {
                 citySelection.style.display = 'none';
             }
             
-            // 显示选中的页�?            const targetPage = document.getElementById(pageId);
+            // 鏄剧ず閫変腑鐨勯〉闈?            const targetPage = document.getElementById(pageId);
             if (!targetPage) {
-                console.error('页面不存�?', pageId);
+                console.error('椤甸潰涓嶅瓨鍦?', pageId);
                 return;
             }
             
-            // 确保目标页面可见
+            // 纭繚鐩爣椤甸潰鍙
             targetPage.style.display = 'block';
             targetPage.classList.add('active');
             
-            // 更新导航栏状�?            document.querySelectorAll('.nav-item').forEach(item => {
+            // 鏇存柊瀵艰埅鏍忕姸鎬?            document.querySelectorAll('.nav-item').forEach(item => {
                 item.classList.remove('active');
             });
             const navItem = document.querySelector(`[data-page="${pageId}"]`);
             if (navItem) {
                 navItem.classList.add('active');
             } else {
-                console.error('导航项不存在:', pageId);
+                console.error('瀵艰埅椤逛笉瀛樺湪:', pageId);
             }
             
             currentPage = pageId;
             
-            // 如果切换到地图页�?            if (pageId === 'mapPage') {
-                // 如果没有选择城市，显示城市选择页面
+            // 濡傛灉鍒囨崲鍒板湴鍥鹃〉闈?            if (pageId === 'mapPage') {
+                // 濡傛灉娌℃湁閫夋嫨鍩庡競锛屾樉绀哄煄甯傞€夋嫨椤甸潰
                 if (!currentCity) {
                     if (citySelection) {
                         citySelection.style.display = 'block';
@@ -1633,19 +1633,19 @@
                         cityModal.classList.add('active');
                     }
                 } else {
-                    // 确保地图容器可见
+                    // 纭繚鍦板浘瀹瑰櫒鍙
                     const mapPageElement = document.getElementById('mapPage');
                     if (mapPageElement) {
                         mapPageElement.style.display = 'block';
                         mapPageElement.classList.add('active');
                     }
-                    // 延迟初始化地图，确保DOM已渲�?                    setTimeout(() => {
+                    // 寤惰繜鍒濆鍖栧湴鍥撅紝纭繚DOM宸叉覆鏌?                    setTimeout(() => {
                         if (currentCity && currentCity.id) {
-                            console.log('初始化地图，城市ID:', currentCity.id);
-                            // 确保地图容器可见且有高度
+                            console.log('鍒濆鍖栧湴鍥撅紝鍩庡競ID:', currentCity.id);
+                            // 纭繚鍦板浘瀹瑰櫒鍙涓旀湁楂樺害
                             const mapContainer = document.getElementById('map');
                             if (mapContainer) {
-                                // 强制设置高度
+                                // 寮哄埗璁剧疆楂樺害
                                 const mapPage = document.getElementById('mapPage');
                                 if (mapPage && mapPage.offsetHeight > 0) {
                                     mapContainer.style.height = mapPage.offsetHeight + 'px';
@@ -1654,22 +1654,22 @@
                                 }
                             }
                             initMap(currentCity.id);
-                            // 确保统计数据也更�?                            updateStats();
+                            // 纭繚缁熻鏁版嵁涔熸洿鏂?                            updateStats();
                         } else {
-                            console.error('城市数据无效:', currentCity);
+                            console.error('鍩庡競鏁版嵁鏃犳晥:', currentCity);
                         }
                     }, 300);
                 }
             }
             
-            // 如果切换到个人中心，延迟更新收藏列表
+            // 濡傛灉鍒囨崲鍒颁釜浜轰腑蹇冿紝寤惰繜鏇存柊鏀惰棌鍒楄〃
             if (pageId === 'profilePage') {
                 setTimeout(() => {
                     updateFavoritesList();
                 }, 100);
             }
             
-            // 如果切换到拍照检测页�?            if (pageId === 'photoPage') {
+            // 濡傛灉鍒囨崲鍒版媿鐓ф娴嬮〉闈?            if (pageId === 'photoPage') {
                 const photoPage = document.getElementById('photoPage');
                 if (photoPage) {
                     photoPage.style.display = 'flex';
@@ -1677,7 +1677,7 @@
                 }
             }
 
-            // 如果切换到自查引导页�?            if (pageId === 'qaPage') {
+            // 濡傛灉鍒囨崲鍒拌嚜鏌ュ紩瀵奸〉闈?            if (pageId === 'qaPage') {
                 const qaPage = document.getElementById('qaPage');
                 if (qaPage) {
                     qaPage.style.display = 'block';
@@ -1685,7 +1685,7 @@
                 }
             }
 
-            // 如果切换到上传页�?            if (pageId === 'uploadPage') {
+            // 濡傛灉鍒囨崲鍒颁笂浼犻〉闈?            if (pageId === 'uploadPage') {
                 const uploadPage = document.getElementById('uploadPage');
                 if (uploadPage) {
                     uploadPage.style.display = 'block';
@@ -1694,18 +1694,18 @@
             }
         }
 
-        // 底部导航栏事�?        document.querySelectorAll('.nav-item').forEach(item => {
+        // 搴曢儴瀵艰埅鏍忎簨浠?        document.querySelectorAll('.nav-item').forEach(item => {
             item.addEventListener('click', function() {
                 const pageId = this.getAttribute('data-page');
                 if (pageId) {
                     switchPage(pageId);
                 } else {
-                    console.error('导航项缺�?data-page 属�?);
+                    console.error('瀵艰埅椤圭己灏?data-page 灞炴€?);
                 }
             });
         });
 
-        // 城市选择 - 使用事件委托处理所有城市按钮（包括模态框中的�?        document.addEventListener('click', function(e) {
+        // 鍩庡競閫夋嫨 - 浣跨敤浜嬩欢濮旀墭澶勭悊鎵€鏈夊煄甯傛寜閽紙鍖呮嫭妯℃€佹涓殑锛?        document.addEventListener('click', function(e) {
             const cityButton = e.target.closest('.city-button');
             if (cityButton) {
                 e.preventDefault();
@@ -1716,7 +1716,7 @@
                         const cityData = JSON.parse(cityDataStr);
                         selectCity(cityData);
                     } catch (error) {
-                        console.error('解析城市数据失败:', error);
+                        console.error('瑙ｆ瀽鍩庡競鏁版嵁澶辫触:', error);
                     }
                 }
             }
@@ -1724,14 +1724,14 @@
 
         function selectCity(city) {
             if (!city || !city.id) {
-                console.error('无效的城市数�?', city);
+                console.error('鏃犳晥鐨勫煄甯傛暟鎹?', city);
                 return;
             }
             
-            console.log('选择城市:', city);
+            console.log('閫夋嫨鍩庡競:', city);
             currentCity = city;
             
-            // 关闭城市选择页面和模态框
+            // 鍏抽棴鍩庡競閫夋嫨椤甸潰鍜屾ā鎬佹
             const citySelection = document.getElementById('citySelection');
             if (citySelection) {
                 citySelection.style.display = 'none';
@@ -1742,49 +1742,49 @@
                 cityModal.classList.remove('active');
             }
             
-            // 强制切换到地图页面，使用稍长的延迟确保模态框已关�?            setTimeout(() => {
-                console.log('切换到地图页面，当前城市:', currentCity);
-                // 只调�?switchPage，它会自动调�?initMap
+            // 寮哄埗鍒囨崲鍒板湴鍥鹃〉闈紝浣跨敤绋嶉暱鐨勫欢杩熺‘淇濇ā鎬佹宸插叧闂?            setTimeout(() => {
+                console.log('鍒囨崲鍒板湴鍥鹃〉闈紝褰撳墠鍩庡競:', currentCity);
+                // 鍙皟鐢?switchPage锛屽畠浼氳嚜鍔ㄨ皟鐢?initMap
                 switchPage('mapPage');
             }, 100);
         }
 
         async function initMap(cityId) {
             if (!cityId || !cityCoordinates[cityId]) {
-                console.error('无效的城市ID:', cityId);
+                console.error('鏃犳晥鐨勫煄甯侷D:', cityId);
                 const placeholder = document.getElementById('mapPlaceholder');
                 if (placeholder) {
                     placeholder.classList.remove('hidden');
-                    document.getElementById('cityNameDisplay').textContent = '请先选择城市';
+                    document.getElementById('cityNameDisplay').textContent = '璇峰厛閫夋嫨鍩庡競';
                 }
                 return;
             }
             
             console.log('========================================');
-            console.log('🗺�?initMap 被调�?);
-            console.log('城市ID:', cityId);
-            console.log('城市名称:', currentCity ? currentCity.name : '未知');
+            console.log('馃椇锔?initMap 琚皟鐢?);
+            console.log('鍩庡競ID:', cityId);
+            console.log('鍩庡競鍚嶇О:', currentCity ? currentCity.name : '鏈煡');
             console.log('========================================');
             
             const coords = cityCoordinates[cityId];
             
-            // 如果数据库还在加载，等待加载完成
+            // 濡傛灉鏁版嵁搴撹繕鍦ㄥ姞杞斤紝绛夊緟鍔犺浇瀹屾垚
             if (isLoadingFromDatabase) {
-                console.log('�?等待数据库数据加�?..');
+                console.log('鈴?绛夊緟鏁版嵁搴撴暟鎹姞杞?..');
                 await loadHotelsFromDatabase();
             }
             
-            // 使用新的函数获取该城市的酒店
+            // 浣跨敤鏂扮殑鍑芥暟鑾峰彇璇ュ煄甯傜殑閰掑簵
             let hotels = getHotelsForCity(cityId);
             
-            console.log(`🏨 最终使用的酒店数量: ${hotels.length}`);
+            console.log(`馃彣 鏈€缁堜娇鐢ㄧ殑閰掑簵鏁伴噺: ${hotels.length}`);
             
             const placeholder = document.getElementById('mapPlaceholder');
             if (placeholder) {
                 placeholder.classList.remove('hidden');
             }
             
-            // 清除旧标�?            if (markers && markers.length > 0) {
+            // 娓呴櫎鏃ф爣璁?            if (markers && markers.length > 0) {
                 markers.forEach(marker => {
                     if (map && map.hasLayer(marker)) {
                         map.removeLayer(marker);
@@ -1793,7 +1793,7 @@
             }
             markers = [];
             
-            // 清除旧热力图
+            // 娓呴櫎鏃х儹鍔涘浘
             if (heatmapCircles && heatmapCircles.length > 0) {
                 heatmapCircles.forEach(circle => {
                     if (map && map.hasLayer(circle)) {
@@ -1803,128 +1803,128 @@
             }
             heatmapCircles = [];
             
-            // 完全移除旧地�?            if (map) {
+            // 瀹屽叏绉婚櫎鏃у湴鍥?            if (map) {
                 try {
-                    // 移除所有图�?                    map.eachLayer(function(layer) {
+                    // 绉婚櫎鎵€鏈夊浘灞?                    map.eachLayer(function(layer) {
                         map.removeLayer(layer);
                     });
-                    // 移除地图实例
+                    // 绉婚櫎鍦板浘瀹炰緥
                     map.remove();
-                    map.off(); // 移除所有事件监听器
+                    map.off(); // 绉婚櫎鎵€鏈変簨浠剁洃鍚櫒
                 } catch (e) {
-                    console.log('移除旧地图时出错:', e);
+                    console.log('绉婚櫎鏃у湴鍥炬椂鍑洪敊:', e);
                 }
                 map = null;
             }
             
-            // 清空地图容器 - 这是关键，必须完全清�?            const mapContainer = document.getElementById('map');
+            // 娓呯┖鍦板浘瀹瑰櫒 - 杩欐槸鍏抽敭锛屽繀椤诲畬鍏ㄦ竻绌?            const mapContainer = document.getElementById('map');
             if (mapContainer) {
-                // 完全清空容器，包括所有子元素和事件监听器
+                // 瀹屽叏娓呯┖瀹瑰櫒锛屽寘鎷墍鏈夊瓙鍏冪礌鍜屼簨浠剁洃鍚櫒
                 mapContainer.innerHTML = '';
-                // 移除可能存在�?Leaflet �?                mapContainer.className = '';
+                // 绉婚櫎鍙兘瀛樺湪鐨?Leaflet 绫?                mapContainer.className = '';
             }
             
-            // 延迟初始化，确保DOM已准备好
+            // 寤惰繜鍒濆鍖栵紝纭繚DOM宸插噯澶囧ソ
             setTimeout(() => {
                 try {
                     const mapElement = document.getElementById('map');
                     if (!mapElement) {
-                        console.error('地图容器不存�?);
+                        console.error('鍦板浘瀹瑰櫒涓嶅瓨鍦?);
                         return;
                     }
                     
-                    // 检查地图容器是否已经被初始�?                    if (mapElement._leaflet_id) {
-                        console.warn('地图容器已被初始化，先清�?', mapElement._leaflet_id);
-                        // 如果容器已经�?Leaflet ID，说明之前初始化过，需要先清除
+                    // 妫€鏌ュ湴鍥惧鍣ㄦ槸鍚﹀凡缁忚鍒濆鍖?                    if (mapElement._leaflet_id) {
+                        console.warn('鍦板浘瀹瑰櫒宸茶鍒濆鍖栵紝鍏堟竻闄?', mapElement._leaflet_id);
+                        // 濡傛灉瀹瑰櫒宸茬粡鏈?Leaflet ID锛岃鏄庝箣鍓嶅垵濮嬪寲杩囷紝闇€瑕佸厛娓呴櫎
                         try {
                             if (map) {
                                 map.remove();
                             }
                         } catch (e) {
-                            console.log('清除旧地图实例时出错:', e);
+                            console.log('娓呴櫎鏃у湴鍥惧疄渚嬫椂鍑洪敊:', e);
                         }
-                        // 完全清空容器
+                        // 瀹屽叏娓呯┖瀹瑰櫒
                         mapElement.innerHTML = '';
                         mapElement.className = '';
                         delete mapElement._leaflet_id;
                         map = null;
                     }
                     
-                    // 确保地图容器有高�?                    if (mapElement.offsetHeight === 0) {
-                        console.warn('地图容器高度�?，尝试设置高�?);
+                    // 纭繚鍦板浘瀹瑰櫒鏈夐珮搴?                    if (mapElement.offsetHeight === 0) {
+                        console.warn('鍦板浘瀹瑰櫒楂樺害涓?锛屽皾璇曡缃珮搴?);
                         const mapPage = document.getElementById('mapPage');
                         if (mapPage) {
                             mapElement.style.height = 'calc(100vh - 70px)';
                         }
                     }
                     
-                    // 检查Leaflet是否加载
+                    // 妫€鏌eaflet鏄惁鍔犺浇
                     if (typeof L === 'undefined') {
-                        console.error('Leaflet库未加载');
+                        console.error('Leaflet搴撴湭鍔犺浇');
                         if (placeholder) {
                             placeholder.classList.remove('hidden');
                             const cityNameDisplay = document.getElementById('cityNameDisplay');
                             if (cityNameDisplay) {
-                                cityNameDisplay.textContent = '地图库加载失败，请刷新页�?;
+                                cityNameDisplay.textContent = '鍦板浘搴撳姞杞藉け璐ワ紝璇峰埛鏂伴〉闈?;
                             }
                         }
                         return;
                     }
                     
-                    console.log('创建新的地图实例');
+                    console.log('鍒涘缓鏂扮殑鍦板浘瀹炰緥');
                     map = L.map('map', {
                         zoomControl: true,
                         attributionControl: true
                     }).setView([coords.lat, coords.lng], coords.zoom);
                     
-                    // 使用多个瓦片源作为备�?                    const tileLayer1 = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                        attribution: '© OpenStreetMap contributors',
+                    // 浣跨敤澶氫釜鐡︾墖婧愪綔涓哄鐢?                    const tileLayer1 = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                        attribution: '漏 OpenStreetMap contributors',
                         maxZoom: 19,
                         subdomains: ['a', 'b', 'c']
                     });
                     
                     const tileLayer2 = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                        attribution: '© OpenStreetMap contributors',
+                        attribution: '漏 OpenStreetMap contributors',
                         maxZoom: 19
                     });
                     
-                    // 尝试加载第一个瓦片源，失败则使用第二�?                    tileLayer1.addTo(map);
+                    // 灏濊瘯鍔犺浇绗竴涓摝鐗囨簮锛屽け璐ュ垯浣跨敤绗簩涓?                    tileLayer1.addTo(map);
                     
-                    // 监听瓦片加载错误
+                    // 鐩戝惉鐡︾墖鍔犺浇閿欒
                     tileLayer1.on('tileerror', function() {
-                        console.warn('主瓦片源加载失败，尝试备用源');
+                        console.warn('涓荤摝鐗囨簮鍔犺浇澶辫触锛屽皾璇曞鐢ㄦ簮');
                         map.removeLayer(tileLayer1);
                         tileLayer2.addTo(map);
                     });
                     
-                    // 地图准备好后更新UI
+                    // 鍦板浘鍑嗗濂藉悗鏇存柊UI
                     map.whenReady(() => {
-                        console.log('地图加载完成');
-                        // 确保地图大小正确
+                        console.log('鍦板浘鍔犺浇瀹屾垚');
+                        // 纭繚鍦板浘澶у皬姝ｇ‘
                         setTimeout(() => {
                             map.invalidateSize();
                             if (placeholder) {
                                 placeholder.classList.add('hidden');
                             }
-                            console.log('开始添加标记，酒店数量:', hotels.length);
+                            console.log('寮€濮嬫坊鍔犳爣璁帮紝閰掑簵鏁伴噺:', hotels.length);
                             updateMapMarkers(hotels);
                             updateStats();
-                            console.log('标记添加完成，标记数�?', markers.length);
+                            console.log('鏍囪娣诲姞瀹屾垚锛屾爣璁版暟閲?', markers.length);
                         }, 100);
                     });
                     
-                    // 监听地图加载错误
+                    // 鐩戝惉鍦板浘鍔犺浇閿欒
                     map.on('tileerror', function(error, tile) {
-                        console.warn('瓦片加载错误:', error, tile);
+                        console.warn('鐡︾墖鍔犺浇閿欒:', error, tile);
                     });
                     
                 } catch (error) {
-                    console.error('地图初始化错�?', error);
+                    console.error('鍦板浘鍒濆鍖栭敊璇?', error);
                     if (placeholder) {
                         placeholder.classList.remove('hidden');
                         const cityNameDisplay = document.getElementById('cityNameDisplay');
                         if (cityNameDisplay) {
-                            cityNameDisplay.textContent = '地图加载失败: ' + error.message;
+                            cityNameDisplay.textContent = '鍦板浘鍔犺浇澶辫触: ' + error.message;
                         }
                     }
                 }
@@ -1951,26 +1951,26 @@
             const filteredHotels = hotels.filter(h => h.score >= minRating);
             
             console.log('========================================');
-            console.log('🗺�?更新地图标记');
-            console.log('酒店总数:', hotels.length);
-            console.log('筛选后数量:', filteredHotels.length);
-            console.log('热力图状�?', showHeatmap ? '开�? : '关闭');
+            console.log('馃椇锔?鏇存柊鍦板浘鏍囪');
+            console.log('閰掑簵鎬绘暟:', hotels.length);
+            console.log('绛涢€夊悗鏁伴噺:', filteredHotels.length);
+            console.log('鐑姏鍥剧姸鎬?', showHeatmap ? '寮€鍚? : '鍏抽棴');
             console.log('========================================');
             
-            // 🔥 第一步：先添加所有热力图圆圈（这样它们会在底层）
+            // 馃敟 绗竴姝ワ細鍏堟坊鍔犳墍鏈夌儹鍔涘浘鍦嗗湀锛堣繖鏍峰畠浠細鍦ㄥ簳灞傦級
             if (showHeatmap) {
-                console.log('🔥 开始创建热力图圆圈...');
+                console.log('馃敟 寮€濮嬪垱寤虹儹鍔涘浘鍦嗗湀...');
                 filteredHotels.forEach((hotel, index) => {
                     const heatColor = getHeatColor(hotel.score);
                     const heatCircle = L.circle([hotel.lat, hotel.lng], {
-                        radius: 500 + hotel.score * 200,  // 500-1500米半�?                        fillColor: heatColor === 'heat-green' ? '#4ade80' : 
+                        radius: 500 + hotel.score * 200,  // 500-1500绫冲崐寰?                        fillColor: heatColor === 'heat-green' ? '#4ade80' : 
                                   heatColor === 'heat-yellow' ? '#fbbf24' : '#f87171',
                         color: 'transparent',
-                        fillOpacity: 0.3,  // 提高透明度，更明�?                        weight: 0,
-                        interactive: false,  // 关键：热力图不拦截点击事�?                        bubblingMouseEvents: false
+                        fillOpacity: 0.3,  // 鎻愰珮閫忔槑搴︼紝鏇存槑鏄?                        weight: 0,
+                        interactive: false,  // 鍏抽敭锛氱儹鍔涘浘涓嶆嫤鎴偣鍑讳簨浠?                        bubblingMouseEvents: false
                     }).addTo(map);
                     
-                    // 确保热力图不拦截鼠标事件
+                    // 纭繚鐑姏鍥句笉鎷︽埅榧犳爣浜嬩欢
                     const heatElement = heatCircle.getElement();
                     if (heatElement) {
                         heatElement.style.pointerEvents = 'none';
@@ -1978,51 +1978,51 @@
                     
                     heatmapCircles.push(heatCircle);
                     
-                    // �?0个酒店输出一次日�?                    if ((index + 1) % 50 === 0 || index === 0) {
-                        console.log(`🔥 已创�?${index + 1} 个热力图圆圈 (半径: ${Math.round(500 + hotel.score * 200)}�? 颜色: ${heatColor})`);
+                    // 姣?0涓厭搴楄緭鍑轰竴娆℃棩蹇?                    if ((index + 1) % 50 === 0 || index === 0) {
+                        console.log(`馃敟 宸插垱寤?${index + 1} 涓儹鍔涘浘鍦嗗湀 (鍗婂緞: ${Math.round(500 + hotel.score * 200)}绫? 棰滆壊: ${heatColor})`);
                     }
                 });
-                console.log(`🔥 热力图创建完成！总共 ${heatmapCircles.length} 个圆圈`);
+                console.log(`馃敟 鐑姏鍥惧垱寤哄畬鎴愶紒鎬诲叡 ${heatmapCircles.length} 涓渾鍦坄);
             }
             
-            // 🎯 第二步：再添加所有标记（这样它们会在热力图上层）
-            console.log('🎯 开始创建酒店标�?..');
+            // 馃幆 绗簩姝ワ細鍐嶆坊鍔犳墍鏈夋爣璁帮紙杩欐牱瀹冧滑浼氬湪鐑姏鍥句笂灞傦級
+            console.log('馃幆 寮€濮嬪垱寤洪厭搴楁爣璁?..');
             filteredHotels.forEach((hotel, index) => {
                 const markerColor = getMarkerColor(hotel.score);
-                // 使用更大更明显的标记
+                // 浣跨敤鏇村ぇ鏇存槑鏄剧殑鏍囪
                 const marker = L.circleMarker([hotel.lat, hotel.lng], {
-                    radius: 8,  // 标记半径
+                    radius: 8,  // 鏍囪鍗婂緞
                     fillColor: markerColor,
-                    color: '#fff',  // 白色边框
-                    weight: 2,  // 边框宽度
+                    color: '#fff',  // 鐧借壊杈规
+                    weight: 2,  // 杈规瀹藉害
                     opacity: 1,
-                    fillOpacity: 1,  // 完全不透明，更明显
+                    fillOpacity: 1,  // 瀹屽叏涓嶉€忔槑锛屾洿鏄庢樉
                     interactive: true,
                     bubblingMouseEvents: false
                 }).addTo(map);
                 
-                // 只输出前3个和�?00个的日志，避免刷�?                if (index < 3 || index % 100 === 0) {
-                    console.log(`🎯 创建标记 ${index + 1}:`, hotel.name, '位置:', hotel.lat, hotel.lng);
+                // 鍙緭鍑哄墠3涓拰姣?00涓殑鏃ュ織锛岄伩鍏嶅埛灞?                if (index < 3 || index % 100 === 0) {
+                    console.log(`馃幆 鍒涘缓鏍囪 ${index + 1}:`, hotel.name, '浣嶇疆:', hotel.lat, hotel.lng);
                 }
                 
-                // 添加标题，方便识�?                marker.bindTooltip(hotel.name, {
+                // 娣诲姞鏍囬锛屾柟渚胯瘑鍒?                marker.bindTooltip(hotel.name, {
                     permanent: false,
                     direction: 'top',
                     offset: [0, -10]
                 });
                 
-                // 绑定弹出窗口（鼠标悬停时显示�?                const popupContent = `
+                // 缁戝畾寮瑰嚭绐楀彛锛堥紶鏍囨偓鍋滄椂鏄剧ず锛?                const popupContent = `
                     <div style="text-align: center; min-width: 150px; padding: 8px;">
                         <strong style="font-size: 14px; display: block; margin-bottom: 6px;">${hotel.name}</strong>
-                        <span style="font-size: 12px; color: #666; display: block; margin-bottom: 4px;">安全评分: ${hotel.score}/5.0</span>
-                        <span style="font-size: 12px; color: #666; display: block; margin-bottom: 8px;">评价�? ${hotel.reviews}</span>
-                        <div style="font-size: 11px; color: #999; margin-top: 8px;">点击标记查看详情</div>
+                        <span style="font-size: 12px; color: #666; display: block; margin-bottom: 4px;">瀹夊叏璇勫垎: ${hotel.score}/5.0</span>
+                        <span style="font-size: 12px; color: #666; display: block; margin-bottom: 8px;">璇勪环鏁? ${hotel.reviews}</span>
+                        <div style="font-size: 11px; color: #999; margin-top: 8px;">鐐瑰嚮鏍囪鏌ョ湅璇︽儏</div>
                     </div>
                 `;
                 
-                // 保存酒店数据到marker对象，方便访�?                marker.hotelData = hotel;
+                // 淇濆瓨閰掑簵鏁版嵁鍒癿arker瀵硅薄锛屾柟渚胯闂?                marker.hotelData = hotel;
                 
-                // 绑定popup（用于悬停显示）
+                // 缁戝畾popup锛堢敤浜庢偓鍋滄樉绀猴級
                 marker.bindPopup(popupContent, {
                     maxWidth: 200,
                     className: 'hotel-popup',
@@ -2031,39 +2031,39 @@
                     closeOnClick: false
                 });
                 
-                // 点击事件 - 关闭popup并打开详情弹窗
+                // 鐐瑰嚮浜嬩欢 - 鍏抽棴popup骞舵墦寮€璇︽儏寮圭獥
                 marker.on('click', function(e) {
-                    console.log('�?点击酒店标记事件触发:', this.hotelData ? this.hotelData.name : '未知');
-                    // 阻止事件冒泡到地�?                    if (e.originalEvent) {
+                    console.log('鉁?鐐瑰嚮閰掑簵鏍囪浜嬩欢瑙﹀彂:', this.hotelData ? this.hotelData.name : '鏈煡');
+                    // 闃绘浜嬩欢鍐掓场鍒板湴鍥?                    if (e.originalEvent) {
                         e.originalEvent.stopPropagation();
                         e.originalEvent.preventDefault();
                     }
-                    // 关闭popup
+                    // 鍏抽棴popup
                     this.closePopup();
-                    // 使用保存的酒店数�?                    const hotelData = this.hotelData || hotel;
-                    console.log('�?准备打开弹窗，酒店数�?', hotelData);
-                    // 立即打开详情弹窗
+                    // 浣跨敤淇濆瓨鐨勯厭搴楁暟鎹?                    const hotelData = this.hotelData || hotel;
+                    console.log('鉁?鍑嗗鎵撳紑寮圭獥锛岄厭搴楁暟鎹?', hotelData);
+                    // 绔嬪嵆鎵撳紑璇︽儏寮圭獥
                     openHotelModal(hotelData);
                 });
                 
-                // 添加鼠标按下事件作为备用
+                // 娣诲姞榧犳爣鎸変笅浜嬩欢浣滀负澶囩敤
                 marker.on('mousedown', function(e) {
-                    console.log('🖱�?鼠标按下标记:', this.hotelData ? this.hotelData.name : '未知');
+                    console.log('馃柋锔?榧犳爣鎸変笅鏍囪:', this.hotelData ? this.hotelData.name : '鏈煡');
                     if (e.originalEvent) {
                         e.originalEvent.stopPropagation();
                     }
                 });
                 
-                // 在popup中也添加点击事件（点击popup内容也打开详情�?                marker.on('popupopen', function() {
+                // 鍦╬opup涓篃娣诲姞鐐瑰嚮浜嬩欢锛堢偣鍑籶opup鍐呭涔熸墦寮€璇︽儏锛?                marker.on('popupopen', function() {
                     const popup = this.getPopup();
                     if (popup) {
                         const popupElement = popup.getElement();
                         if (popupElement) {
                             popupElement.style.cursor = 'pointer';
-                            // 移除旧的事件监听器（如果有）
+                            // 绉婚櫎鏃х殑浜嬩欢鐩戝惉鍣紙濡傛灉鏈夛級
                             const newPopupElement = popupElement.cloneNode(true);
                             popupElement.parentNode.replaceChild(newPopupElement, popupElement);
-                            // 添加点击事件
+                            // 娣诲姞鐐瑰嚮浜嬩欢
                             newPopupElement.addEventListener('click', function(e) {
                                 e.stopPropagation();
                                 const hotelData = marker.hotelData || hotel;
@@ -2073,7 +2073,7 @@
                     }
                 });
                 
-                // 鼠标悬停时显示popup和改变样�?                marker.on('mouseover', function() {
+                // 榧犳爣鎮仠鏃舵樉绀簆opup鍜屾敼鍙樻牱寮?                marker.on('mouseover', function() {
                     this.setStyle({
                         radius: 10,
                         weight: 3
@@ -2091,50 +2091,50 @@
                 markers.push(marker);
             });
             
-            // 完成后输出总结
+            // 瀹屾垚鍚庤緭鍑烘€荤粨
             console.log('========================================');
-            console.log('�?地图更新完成');
-            console.log('🎯 标记总数:', markers.length);
-            console.log('🔥 热力图圆圈总数:', heatmapCircles.length);
-            console.log('📍 �?0个酒店位�?');
+            console.log('鉁?鍦板浘鏇存柊瀹屾垚');
+            console.log('馃幆 鏍囪鎬绘暟:', markers.length);
+            console.log('馃敟 鐑姏鍥惧渾鍦堟€绘暟:', heatmapCircles.length);
+            console.log('馃搷 鍓?0涓厭搴椾綅缃?');
             filteredHotels.slice(0, 10).forEach((h, i) => {
-                console.log(`  ${i+1}. ${h.name} - 位置: [${h.lat}, ${h.lng}]`);
+                console.log(`  ${i+1}. ${h.name} - 浣嶇疆: [${h.lat}, ${h.lng}]`);
             });
             console.log('========================================');
             
-            // 如果有标记，自动调整地图视野以显示所有标�?            if (markers.length > 0) {
+            // 濡傛灉鏈夋爣璁帮紝鑷姩璋冩暣鍦板浘瑙嗛噹浠ユ樉绀烘墍鏈夋爣璁?            if (markers.length > 0) {
                 try {
                     const group = L.featureGroup(markers);
                     const bounds = group.getBounds();
                     
-                    // 检查边界是否有�?                    if (bounds.isValid()) {
-                        map.fitBounds(bounds.pad(0.1));  // 添加10%的边�?                        console.log('🗺�?已自动调整地图视野以显示所有酒�?);
-                        console.log('   边界:', bounds.toBBoxString());
+                    // 妫€鏌ヨ竟鐣屾槸鍚︽湁鏁?                    if (bounds.isValid()) {
+                        map.fitBounds(bounds.pad(0.1));  // 娣诲姞10%鐨勮竟璺?                        console.log('馃椇锔?宸茶嚜鍔ㄨ皟鏁村湴鍥捐閲庝互鏄剧ず鎵€鏈夐厭搴?);
+                        console.log('   杈圭晫:', bounds.toBBoxString());
                     } else {
-                        console.warn('⚠️ 边界无效，使用默认视�?);
-                        // 使用城市默认坐标
+                        console.warn('鈿狅笍 杈圭晫鏃犳晥锛屼娇鐢ㄩ粯璁よ閲?);
+                        // 浣跨敤鍩庡競榛樿鍧愭爣
                         if (currentCity && cityCoordinates[currentCity.id]) {
                             const coords = cityCoordinates[currentCity.id];
                             map.setView([coords.lat, coords.lng], coords.zoom);
-                            console.log('🗺�?使用城市默认坐标:', coords);
+                            console.log('馃椇锔?浣跨敤鍩庡競榛樿鍧愭爣:', coords);
                         }
                     }
                 } catch (error) {
-                    console.error('�?调整地图视野失败:', error);
-                    // 使用城市默认坐标作为后备
+                    console.error('鉂?璋冩暣鍦板浘瑙嗛噹澶辫触:', error);
+                    // 浣跨敤鍩庡競榛樿鍧愭爣浣滀负鍚庡
                     if (currentCity && cityCoordinates[currentCity.id]) {
                         const coords = cityCoordinates[currentCity.id];
                         map.setView([coords.lat, coords.lng], coords.zoom);
-                        console.log('🗺�?使用城市默认坐标（后备）:', coords);
+                        console.log('馃椇锔?浣跨敤鍩庡競榛樿鍧愭爣锛堝悗澶囷級:', coords);
                     }
                 }
             } else {
-                console.warn('⚠️ 没有标记，使用城市默认视�?);
-                // 使用城市默认坐标
+                console.warn('鈿狅笍 娌℃湁鏍囪锛屼娇鐢ㄥ煄甯傞粯璁よ閲?);
+                // 浣跨敤鍩庡競榛樿鍧愭爣
                 if (currentCity && cityCoordinates[currentCity.id]) {
                     const coords = cityCoordinates[currentCity.id];
                     map.setView([coords.lat, coords.lng], coords.zoom);
-                    console.log('🗺�?使用城市默认坐标:', coords);
+                    console.log('馃椇锔?浣跨敤鍩庡競榛樿鍧愭爣:', coords);
                 }
             }
         }
@@ -2152,7 +2152,7 @@
         }
 
         function updateStats() {
-            // 使用当前城市的酒店数�?            let hotels = [];
+            // 浣跨敤褰撳墠鍩庡競鐨勯厭搴楁暟鎹?            let hotels = [];
             if (currentCity && currentCity.id) {
                 hotels = getHotelsForCity(currentCity.id);
             }
@@ -2163,10 +2163,10 @@
             document.getElementById('totalHotels').textContent = totalHotels;
             document.getElementById('ratedHotels').textContent = ratedHotels;
             
-            console.log(`📊 统计信息 (${currentCity ? currentCity.name : '未知'}): 总数 ${totalHotels}, 已评�?${ratedHotels}`);
+            console.log(`馃搳 缁熻淇℃伅 (${currentCity ? currentCity.name : '鏈煡'}): 鎬绘暟 ${totalHotels}, 宸茶瘎鍒?${ratedHotels}`);
         }
 
-        // 全局函数，供popup中的按钮调用
+        // 鍏ㄥ眬鍑芥暟锛屼緵popup涓殑鎸夐挳璋冪敤
         window.openHotelModalFromMap = function(hotelId) {
             if (!currentCity) return;
             const hotels = mockHotels[currentCity.id] || [];
@@ -2177,9 +2177,9 @@
         };
 
         function openHotelModal(hotel) {
-            console.log('openHotelModal 被调用，酒店:', hotel);
+            console.log('openHotelModal 琚皟鐢紝閰掑簵:', hotel);
             if (!hotel) {
-                console.error('酒店数据无效');
+                console.error('閰掑簵鏁版嵁鏃犳晥');
                 return;
             }
             
@@ -2190,50 +2190,50 @@
             
             if (hotelNameEl) {
                 hotelNameEl.textContent = hotel.name;
-                console.log('设置酒店名称:', hotel.name);
+                console.log('璁剧疆閰掑簵鍚嶇О:', hotel.name);
             } else {
-                console.error('hotelName 元素不存�?);
+                console.error('hotelName 鍏冪礌涓嶅瓨鍦?);
             }
             
             if (hotelScoreEl) {
                 hotelScoreEl.textContent = hotel.score + '/5.0';
             }
             if (hotelReviewsEl) {
-                hotelReviewsEl.textContent = hotel.reviews + ' �?;
+                hotelReviewsEl.textContent = hotel.reviews + ' 鏉?;
             }
             
             const isFavorite = currentCity && favorites.some(f => f.id === hotel.id && f.cityId === currentCity.id);
             const favoriteBtn = document.getElementById('favoriteButton');
             if (favoriteBtn) {
                 favoriteBtn.classList.toggle('active', isFavorite);
-                favoriteBtn.textContent = isFavorite ? '�?已收�? : '�?收藏';
+                favoriteBtn.textContent = isFavorite ? '鈽?宸叉敹钘? : '鈽?鏀惰棌';
             }
             
             const hotelModal = document.getElementById('hotelModal');
             if (hotelModal) {
-                console.log('显示酒店弹窗');
+                console.log('鏄剧ず閰掑簵寮圭獥');
                 hotelModal.classList.add('active');
             } else {
-                console.error('酒店详情弹窗元素不存�?);
+                console.error('閰掑簵璇︽儏寮圭獥鍏冪礌涓嶅瓨鍦?);
             }
         }
 
         function updateFavoritesList() {
             const favoritesList = document.getElementById('favoritesList');
             if (!favoritesList) {
-                console.error('favoritesList 元素不存�?);
+                console.error('favoritesList 鍏冪礌涓嶅瓨鍦?);
                 return;
             }
             
             if (favorites.length === 0) {
-                favoritesList.innerHTML = '<div class="empty-text">暂无收藏的酒�?/div>';
+                favoritesList.innerHTML = '<div class="empty-text">鏆傛棤鏀惰棌鐨勯厭搴?/div>';
                 return;
             }
             
             favoritesList.innerHTML = favorites.map(fav => `
                 <div class="favorite-item" onclick="openHotelFromFavorite('${fav.cityId}', ${fav.id})">
                     <div class="favorite-name">${fav.name}</div>
-                    <div class="favorite-score">评分: ${fav.score}/5.0</div>
+                    <div class="favorite-score">璇勫垎: ${fav.score}/5.0</div>
                 </div>
             `).join('');
         }
@@ -2245,7 +2245,7 @@
                     openHotelModal(hotel);
                 }
             } else {
-                const city = { id: cityId, name: '城市' };
+                const city = { id: cityId, name: '鍩庡競' };
                 selectCity(city);
                 setTimeout(() => {
                     const hotel = mockHotels[cityId].find(h => h.id === hotelId);
@@ -2256,18 +2256,18 @@
             }
         }
 
-        // 拍照检测相关变�?        let detectionSelections = [];
+        // 鎷嶇収妫€娴嬬浉鍏冲彉閲?        let detectionSelections = [];
         const qaData = {
-            '门锁': { q: '握住门把手摇晃，是否感觉到明显松动或听到零件撞击声？', r: '门锁松动极可能是被撬动的痕迹，或内部反锁机构已失效�? },
-            '窗户': { q: '观察窗外 1 米内是否有空调外机、水管或邻居阳台�?, r: '这类外部结构是天然的攀爬踏板，极易发生入室风险�? },
-            '镜子': { q: '用手指关节敲击镜面，声音是闷响还是空心的脆响�?, r: '脆响意味着镜后有空腔，极大概率�?双面�?偷拍�? },
-            '浴室': { q: '观察排气扇格栅内部是否有黑色圆孔或红点红光？', r: '通风口是隐藏摄像头的重灾区，红点通常是设备工作灯�? },
-            '插座': { q: '检查正对床铺的插座孔位，是否有反光点或异常缝隙�?, r: '改装插座可提供长久电源给针孔设备�? },
-            '路由�?: { q: '路由器背面除了网线，是否有不明的微小孔洞或多余接线？', r: '路由器常被植入网络嗅探或无线传输型偷拍模组�? }
+            '闂ㄩ攣': { q: '鎻′綇闂ㄦ妸鎵嬫憞鏅冿紝鏄惁鎰熻鍒版槑鏄炬澗鍔ㄦ垨鍚埌闆朵欢鎾炲嚮澹帮紵', r: '闂ㄩ攣鏉惧姩鏋佸彲鑳芥槸琚挰鍔ㄧ殑鐥曡抗锛屾垨鍐呴儴鍙嶉攣鏈烘瀯宸插け鏁堛€? },
+            '绐楁埛': { q: '瑙傚療绐楀 1 绫冲唴鏄惁鏈夌┖璋冨鏈恒€佹按绠℃垨閭诲眳闃冲彴锛?, r: '杩欑被澶栭儴缁撴瀯鏄ぉ鐒剁殑鏀€鐖笍鏉匡紝鏋佹槗鍙戠敓鍏ュ椋庨櫓銆? },
+            '闀滃瓙': { q: '鐢ㄦ墜鎸囧叧鑺傛暡鍑婚暅闈紝澹伴煶鏄椃鍝嶈繕鏄┖蹇冪殑鑴嗗搷锛?, r: '鑴嗗搷鎰忓懗鐫€闀滃悗鏈夌┖鑵旓紝鏋佸ぇ姒傜巼鏄?鍙岄潰闀?鍋锋媿銆? },
+            '娴村': { q: '瑙傚療鎺掓皵鎵囨牸鏍呭唴閮ㄦ槸鍚︽湁榛戣壊鍦嗗瓟鎴栫孩鐐圭孩鍏夛紵', r: '閫氶鍙ｆ槸闅愯棌鎽勫儚澶寸殑閲嶇伨鍖猴紝绾㈢偣閫氬父鏄澶囧伐浣滅伅銆? },
+            '鎻掑骇': { q: '妫€鏌ユ瀵瑰簥閾虹殑鎻掑骇瀛斾綅锛屾槸鍚︽湁鍙嶅厜鐐规垨寮傚父缂濋殭锛?, r: '鏀硅鎻掑骇鍙彁渚涢暱涔呯數婧愮粰閽堝瓟璁惧銆? },
+            '璺敱鍣?: { q: '璺敱鍣ㄨ儗闈㈤櫎浜嗙綉绾匡紝鏄惁鏈変笉鏄庣殑寰皬瀛旀礊鎴栧浣欐帴绾匡紵', r: '璺敱鍣ㄥ父琚鍏ョ綉缁滃梾鎺㈡垨鏃犵嚎浼犺緭鍨嬪伔鎷嶆ā缁勩€? }
         };
         let uploadedPhotos = [];
 
-        // 事件监听
+        // 浜嬩欢鐩戝惉
         document.getElementById('photoButtonLarge').addEventListener('click', () => {
             openDetectionSelector();
         });
@@ -2294,27 +2294,27 @@
 
         function startQA() {
             if (detectionSelections.length === 0) {
-                alert('请选择检测部�?);
+                alert('璇烽€夋嫨妫€娴嬮儴浣?);
                 return;
             }
             document.getElementById('detectionModal').classList.remove('active');
             const container = document.getElementById('qa-render');
             if (!container) {
-                console.error('qa-render 元素不存�?);
+                console.error('qa-render 鍏冪礌涓嶅瓨鍦?);
                 return;
             }
-            container.innerHTML = `<h2 style="font-weight:300; margin-top:10px;">安全自查引导</h2>` + 
+            container.innerHTML = `<h2 style="font-weight:300; margin-top:10px;">瀹夊叏鑷煡寮曞</h2>` + 
                 detectionSelections.map(s => `
                 <div class="qa-card">
-                    <strong>🔍 ${s}检测引导：</strong>
+                    <strong>馃攳 ${s}妫€娴嬪紩瀵硷細</strong>
                     <p style="font-size:14px; margin: 10px 0;">${qaData[s].q}</p>
                     <div class="risk-area">
-                        <span class="risk-tag">⚠️ 潜在风险�?/span>
+                        <span class="risk-tag">鈿狅笍 娼滃湪椋庨櫓鐐?/span>
                         <p class="risk-desc">${qaData[s].r}</p>
                     </div>
                     <div style="display:flex; gap:10px; margin-top: 12px;">
-                        <button class="qa-btn" onclick="handleFocus(this)">有异�?/button>
-                        <button class="qa-btn" onclick="handleFocus(this)">正常</button>
+                        <button class="qa-btn" onclick="handleFocus(this)">鏈夊紓甯?/button>
+                        <button class="qa-btn" onclick="handleFocus(this)">姝ｅ父</button>
                     </div>
                 </div>
             `).join('');
@@ -2324,12 +2324,12 @@
         function renderUploads() {
             const container = document.getElementById('upload-render');
             if (!container) {
-                console.error('upload-render 元素不存�?);
+                console.error('upload-render 鍏冪礌涓嶅瓨鍦?);
                 return;
             }
             container.innerHTML = detectionSelections.map((s, i) => `
                 <div class="upload-slot" onclick="document.getElementById('f-${i}').click()">
-                    <div style="font-size:15px; font-weight:bold; color:#6366f1;">📸 拍摄�?{s}】实�?/div>
+                    <div style="font-size:15px; font-weight:bold; color:#6366f1;">馃摳 鎷嶆憚銆?{s}銆戝疄鎷?/div>
                     <input type="file" id="f-${i}" accept="image/*" hidden onchange="showPreview(this, ${i})">
                     <img class="upload-preview" id="preview-${i}" style="width:100%; margin-top:10px; border-radius:12px;">
                 </div>
@@ -2346,14 +2346,14 @@
             }
         }
 
-        // API配置 - 自动检测环�?        const API_CONFIG = {
-            // 开发环�?            development: 'http://localhost:3001',
-            // 生产环境（使用相对路径，Vercel会自动路由到serverless函数�?            production: '',  // 空字符串表示使用当前域名
-            // 自动检测当前环�?            get current() {
-                // 如果是localhost�?27.0.0.1，使用开发环�?                if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+        // API閰嶇疆 - 鑷姩妫€娴嬬幆澧?        const API_CONFIG = {
+            // 寮€鍙戠幆澧?            development: 'http://localhost:3001',
+            // 鐢熶骇鐜锛堜娇鐢ㄧ浉瀵硅矾寰勶紝Vercel浼氳嚜鍔ㄨ矾鐢卞埌serverless鍑芥暟锛?            production: '',  // 绌哄瓧绗︿覆琛ㄧず浣跨敤褰撳墠鍩熷悕
+            // 鑷姩妫€娴嬪綋鍓嶇幆澧?            get current() {
+                // 濡傛灉鏄痩ocalhost鎴?27.0.0.1锛屼娇鐢ㄥ紑鍙戠幆澧?                if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
                     return this.development;
                 }
-                // 否则使用生产环境（当前域名）
+                // 鍚﹀垯浣跨敤鐢熶骇鐜锛堝綋鍓嶅煙鍚嶏級
                 return this.production;
             }
         };
@@ -2361,28 +2361,28 @@
         async function finalProcess() {
             const validPhotos = uploadedPhotos.filter(p => p !== null && p !== undefined);
             if (validPhotos.length === 0) {
-                alert('请至少上传一张照�?);
+                alert('璇疯嚦灏戜笂浼犱竴寮犵収鐗?);
                 return;
             }
 
             const submitBtn = document.getElementById('submitAnalysisBtn');
             const originalText = submitBtn.textContent;
             submitBtn.disabled = true;
-            submitBtn.textContent = '正在分析...';
+            submitBtn.textContent = '姝ｅ湪鍒嗘瀽...';
 
             try {
                 const formData = new FormData();
                 validPhotos.forEach((photo, index) => {
                     if (photo) {
                         formData.append('photos', photo);
-                        const detectionType = detectionSelections[index] || '通用';
+                        const detectionType = detectionSelections[index] || '閫氱敤';
                         formData.append('detectionTypes[]', detectionType);
                     }
                 });
 
-                // 调用后端API
+                // 璋冪敤鍚庣API
                 const API_URL = API_CONFIG.current;
-                console.log('提交到API:', API_URL);
+                console.log('鎻愪氦鍒癆PI:', API_URL);
                 
                 const response = await fetch(`${API_URL}/api/analyze-photos`, {
                     method: 'POST',
@@ -2390,47 +2390,47 @@
                 });
 
                 if (!response.ok) {
-                    throw new Error(`HTTP错误: ${response.status}`);
+                    throw new Error(`HTTP閿欒: ${response.status}`);
                 }
 
                 const result = await response.json();
                 
                 if (result.success) {
-                    // 显示分析结果
-                    let resultMessage = '�?分析完成！\n\n';
+                    // 鏄剧ず鍒嗘瀽缁撴灉
+                    let resultMessage = '鉁?鍒嗘瀽瀹屾垚锛乗n\n';
                     result.data.forEach((item, index) => {
                         if (item.analysis) {
-                            resultMessage += `�?{detectionSelections[index] || '通用'}】\n`;
-                            resultMessage += `风险等级: ${item.analysis.riskLevel === 'high' ? '�? : item.analysis.riskLevel === 'medium' ? '�? : '�?}\n`;
-                            resultMessage += `安全评分: ${item.analysis.safetyScore}/5.0\n\n`;
+                            resultMessage += `銆?{detectionSelections[index] || '閫氱敤'}銆慭n`;
+                            resultMessage += `椋庨櫓绛夌骇: ${item.analysis.riskLevel === 'high' ? '楂? : item.analysis.riskLevel === 'medium' ? '涓? : '浣?}\n`;
+                            resultMessage += `瀹夊叏璇勫垎: ${item.analysis.safetyScore}/5.0\n\n`;
                         }
                     });
-                    resultMessage += '详细报告已生成�?;
+                    resultMessage += '璇︾粏鎶ュ憡宸茬敓鎴愩€?;
                     
                     alert(resultMessage);
-                    console.log('分析结果:', result.data);
+                    console.log('鍒嗘瀽缁撴灉:', result.data);
                     
-                    // 可以跳转到结果页面或显示结果详情
-                    // 这里可以添加结果展示逻辑
+                    // 鍙互璺宠浆鍒扮粨鏋滈〉闈㈡垨鏄剧ず缁撴灉璇︽儏
+                    // 杩欓噷鍙互娣诲姞缁撴灉灞曠ず閫昏緫
                 } else {
-                    alert('分析失败�? + (result.message || '未知错误'));
+                    alert('鍒嗘瀽澶辫触锛? + (result.message || '鏈煡閿欒'));
                 }
             } catch (error) {
-                console.error('提交错误:', error);
+                console.error('鎻愪氦閿欒:', error);
                 const currentAPI = API_CONFIG.current;
                 const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
                 
                 if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
-                    let errorMsg = '无法连接到服务器\n\n';
+                    let errorMsg = '鏃犳硶杩炴帴鍒版湇鍔″櫒\n\n';
                     if (isLocalhost) {
-                        errorMsg += '请确保：\n1. 后端服务器正在运行\n2. 运行命令: node server.js\n3. 端口3001未被占用\n\n';
+                        errorMsg += '璇风‘淇濓細\n1. 鍚庣鏈嶅姟鍣ㄦ鍦ㄨ繍琛孿n2. 杩愯鍛戒护: node server.js\n3. 绔彛3001鏈鍗犵敤\n\n';
                     } else {
-                        errorMsg += '请确保：\n1. API服务器已部署\n2. API地址配置正确\n3. 网络连接正常\n\n';
+                        errorMsg += '璇风‘淇濓細\n1. API鏈嶅姟鍣ㄥ凡閮ㄧ讲\n2. API鍦板潃閰嶇疆姝ｇ‘\n3. 缃戠粶杩炴帴姝ｅ父\n\n';
                     }
-                    errorMsg += '当前API地址: ' + currentAPI;
+                    errorMsg += '褰撳墠API鍦板潃: ' + currentAPI;
                     alert(errorMsg);
                 } else {
-                    alert('提交失败�? + error.message);
+                    alert('鎻愪氦澶辫触锛? + error.message);
                 }
             } finally {
                 submitBtn.disabled = false;
@@ -2438,49 +2438,49 @@
             }
         }
 
-        // 绑定按钮事件 - 添加安全检�?        const goToUploadBtn = document.getElementById('goToUploadBtn');
+        // 缁戝畾鎸夐挳浜嬩欢 - 娣诲姞瀹夊叏妫€鏌?        const goToUploadBtn = document.getElementById('goToUploadBtn');
         if (goToUploadBtn) {
             goToUploadBtn.addEventListener('click', renderUploads);
         } else {
-            console.warn('goToUploadBtn 元素不存在，稍后绑定');
+            console.warn('goToUploadBtn 鍏冪礌涓嶅瓨鍦紝绋嶅悗缁戝畾');
         }
         
         const submitAnalysisBtn = document.getElementById('submitAnalysisBtn');
         if (submitAnalysisBtn) {
-            submitAnalysisBtn.addEventListener('click', function() { window.open('https://www.coze.cn/space/7383534396151693331/bot/7588350694353649679', '_blank'); alert('即将跳转�?Coze 智能体，请在新窗口中上传图片进行分析'); });
+            submitAnalysisBtn.addEventListener('click', function() { window.open('https://www.coze.cn/space/7383534396151693331/bot/7588350694353649679', '_blank'); alert('鍗冲皢璺宠浆鍒?Coze 鏅鸿兘浣擄紝璇峰湪鏂扮獥鍙ｄ腑涓婁紶鍥剧墖杩涜鍒嗘瀽'); });
         } else {
-            console.warn('submitAnalysisBtn 元素不存在，稍后绑定');
+            console.warn('submitAnalysisBtn 鍏冪礌涓嶅瓨鍦紝绋嶅悗缁戝畾');
         }
 
-        // 关闭检测模态框
+        // 鍏抽棴妫€娴嬫ā鎬佹
         document.getElementById('detectionModal').addEventListener('click', function(e) {
             if (e.target === this) {
                 this.classList.remove('active');
             }
         });
 
-        // 切换城市按钮事件
+        // 鍒囨崲鍩庡競鎸夐挳浜嬩欢
         const switchCityButton = document.getElementById('switchCityButton');
         if (switchCityButton) {
             switchCityButton.addEventListener('click', () => {
-                console.log('点击切换城市按钮');
+                console.log('鐐瑰嚮鍒囨崲鍩庡競鎸夐挳');
                 const cityModal = document.getElementById('cityModal');
                 if (cityModal) {
                     cityModal.classList.add('active');
                 } else {
-                    console.error('城市选择模态框不存�?);
+                    console.error('鍩庡競閫夋嫨妯℃€佹涓嶅瓨鍦?);
                 }
             });
         }
 
         document.getElementById('toggleHeatmap').addEventListener('click', function() {
             showHeatmap = !showHeatmap;
-            this.textContent = showHeatmap ? '热力�? : '热力�?;
+            this.textContent = showHeatmap ? '鐑姏鍥? : '鐑姏鍥?;
             this.classList.toggle('active', showHeatmap);
             
             if (currentCity && map) {
                 const hotels = getHotelsForCity(currentCity.id);
-                console.log(`🔄 切换热力图状�? ${showHeatmap ? '开�? : '关闭'}，酒店数�? ${hotels.length}`);
+                console.log(`馃攧 鍒囨崲鐑姏鍥剧姸鎬? ${showHeatmap ? '寮€鍚? : '鍏抽棴'}锛岄厭搴楁暟閲? ${hotels.length}`);
                 updateMapMarkers(hotels);
             }
         });
@@ -2497,7 +2497,7 @@
             
             if (currentCity && map) {
                 const hotels = getHotelsForCity(currentCity.id);
-                console.log(`🔍 应用筛�? 最低评�?${rating}，酒店数�? ${hotels.length}`);
+                console.log(`馃攳 搴旂敤绛涢€? 鏈€浣庤瘎鍒?${rating}锛岄厭搴楁暟閲? ${hotels.length}`);
                 updateMapMarkers(hotels);
             }
         });
@@ -2509,7 +2509,7 @@
             
             if (currentCity && map) {
                 const hotels = getHotelsForCity(currentCity.id);
-                console.log(`🔍 清除筛选，酒店数量: ${hotels.length}`);
+                console.log(`馃攳 娓呴櫎绛涢€夛紝閰掑簵鏁伴噺: ${hotels.length}`);
                 updateMapMarkers(hotels);
             }
         });
@@ -2533,7 +2533,7 @@
             const favoriteBtn = document.getElementById('favoriteButton');
             const isFavorite = favorites.some(f => f.id === currentHotel.id && f.cityId === currentCity.id);
             favoriteBtn.classList.toggle('active', isFavorite);
-            favoriteBtn.textContent = isFavorite ? '�?已收�? : '�?收藏';
+            favoriteBtn.textContent = isFavorite ? '鈽?宸叉敹钘? : '鈽?鏀惰棌';
         });
 
         document.getElementById('platformButton').addEventListener('click', () => {
@@ -2554,7 +2554,7 @@
         document.getElementById('submitReview').addEventListener('click', () => {
             const comment = document.getElementById('commentInput').value.trim();
             if (!comment) {
-                alert('请输入评价内�?);
+                alert('璇疯緭鍏ヨ瘎浠峰唴瀹?);
                 return;
             }
             
@@ -2568,7 +2568,7 @@
                 hotel.score = Math.round(hotel.score * 10) / 10;
             }
             
-            alert('评价已提交！');
+            alert('璇勪环宸叉彁浜わ紒');
             document.getElementById('commentInput').value = '';
             currentRating = 5;
             document.querySelectorAll('.star-button').forEach((btn, index) => {
@@ -2594,11 +2594,11 @@
         });
 
         document.getElementById('cityModal').addEventListener('click', function(e) {
-            // 如果点击的是模态框背景（不是内容区域），关闭模态框
+            // 濡傛灉鐐瑰嚮鐨勬槸妯℃€佹鑳屾櫙锛堜笉鏄唴瀹瑰尯鍩燂級锛屽叧闂ā鎬佹
             if (e.target === this) {
                 this.classList.remove('active');
             }
-            // 城市按钮的点击事件由事件委托处理，不需要在这里处理
+            // 鍩庡競鎸夐挳鐨勭偣鍑讳簨浠剁敱浜嬩欢濮旀墭澶勭悊锛屼笉闇€瑕佸湪杩欓噷澶勭悊
         });
 
         document.getElementById('filterModal').addEventListener('click', function(e) {
@@ -2613,9 +2613,9 @@
             }
         });
 
-        // 开屏页图片加载失败处理函数
+        // 寮€灞忛〉鍥剧墖鍔犺浇澶辫触澶勭悊鍑芥暟
         function handleSplashError(img) {
-            console.log('开屏页图片加载失败，使用渐变背�?);
+            console.log('寮€灞忛〉鍥剧墖鍔犺浇澶辫触锛屼娇鐢ㄦ笎鍙樿儗鏅?);
             img.style.display = 'none';
             const splash = document.getElementById('splash-screen');
             if (splash) {
@@ -2623,7 +2623,7 @@
             }
         }
 
-        // 开屏页处理
+        // 寮€灞忛〉澶勭悊
         window.addEventListener('load', () => {
             setTimeout(() => {
                 const splash = document.getElementById('splash-screen');
@@ -2631,19 +2631,19 @@
                     splash.style.opacity = '0';
                     setTimeout(() => {
                         splash.remove();
-                        document.body.style.overflow = 'auto'; // 恢复页面滚动
-                        // 开屏页消失后跳转到地图页面
+                        document.body.style.overflow = 'auto'; // 鎭㈠椤甸潰婊氬姩
+                        // 寮€灞忛〉娑堝け鍚庤烦杞埌鍦板浘椤甸潰
                         switchPage('mapPage');
                     }, 800);
                 } else {
-                    // 如果没有开屏页，直接跳转到地图页面
+                    // 濡傛灉娌℃湁寮€灞忛〉锛岀洿鎺ヨ烦杞埌鍦板浘椤甸潰
                     switchPage('mapPage');
                 }
-            }, 2500); // 2.5秒后开始消�?        });
+            }, 2500); // 2.5绉掑悗寮€濮嬫秷澶?        });
 
-        // 初始化：显示地图页面（如果开屏页已处理则不会执行�?        // 等待DOM完全加载后再初始�?        if (document.readyState === 'loading') {
+        // 鍒濆鍖栵細鏄剧ず鍦板浘椤甸潰锛堝鏋滃紑灞忛〉宸插鐞嗗垯涓嶄細鎵ц锛?        // 绛夊緟DOM瀹屽叏鍔犺浇鍚庡啀鍒濆鍖?        if (document.readyState === 'loading') {
             document.addEventListener('DOMContentLoaded', function() {
-                // 检查开屏页是否还在
+                // 妫€鏌ュ紑灞忛〉鏄惁杩樺湪
                 const splash = document.getElementById('splash-screen');
                 if (!splash) {
                     switchPage('mapPage');
