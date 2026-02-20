@@ -35,10 +35,7 @@ export const getHotelsByCityId = async (cityId) => {
     console.log('查询酒店，城市ID:', cityId);
     const { data, error } = await supabase
       .from('hotels')
-      .select(`
-        *,
-        city:cities(*)
-      `)
+      .select('*')
       .eq('city_id', cityId)
       .eq('is_active', true)
       .order('safety_score', { ascending: false });
@@ -130,10 +127,7 @@ export const getAllHotels = async (filters = {}) => {
     
     let query = supabase
       .from('hotels')
-      .select(`
-        *,
-        city:cities(*)
-      `)
+      .select('*')
       .eq('is_active', true);
 
     // 应用城市筛选
