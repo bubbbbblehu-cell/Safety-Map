@@ -26,20 +26,20 @@ export const getCities = async () => {
 };
 
 /**
- * 根据城市代码获取酒店列表
- * @param {string} cityCode - 城市代码（如 'xishuangbanna'）
+ * 根据城市ID获取酒店列表
+ * @param {string} cityId - 城市ID (UUID)
  * @returns {Promise<Array>} 酒店列表
  */
-export const getHotelsByCityCode = async (cityCode) => {
+export const getHotelsByCityId = async (cityId) => {
   try {
-    console.log('查询酒店，城市代码:', cityCode);
+    console.log('查询酒店，城市ID:', cityId);
     const { data, error } = await supabase
       .from('hotels')
       .select(`
         *,
-        city:cities!hotels_city_id_fkey(*)
+        city:cities(*)
       `)
-      .eq('city_id', cityCode)
+      .eq('city_id', cityId)
       .eq('is_active', true)
       .order('safety_score', { ascending: false });
 
@@ -49,6 +49,42 @@ export const getHotelsByCityCode = async (cityCode) => {
     }
     console.log('查询结果:', data ? `找到 ${data.length} 个酒店` : '没有数据');
     return data || [];
+  } catch (error) {
+    console.error('获取酒店列表失败:', error);
+    throw error;
+  }
+};
+
+/**
+ * 根据城市代码获取酒店列表
+ * @param {string} cityCode - 城市代码（如 'xishuangbanna'）
+ * @returns {Promise<Array>} 酒店列表
+ */
+export const getHotelsByCityCode = async (cityCode) => {
+  try {
+    console.log('查询酒店，城市代码:', cityCode);
+    
+    // 首先通过 code 获取城市的 UUID
+    const { data: cityData, error: cityError } = await supabase
+      .from('cities')
+      .select('id')
+      .eq('code', cityCode)
+      .eq('is_active', true)
+      .single();
+
+    if (cityError) {
+      console.error('查询城市失败:', cityError);
+      throw cityError;
+    }
+    
+    if (!cityData) {
+      throw new Error(`城市不存在: ${cityCode}`);
+    }
+
+    console.log('找到城市 UUID:', cityData.id);
+
+    // 然后用 UUID 查询酒店
+    return await getHotelsByCityId(cityData.id);
   } catch (error) {
     console.error('获取酒店列表失败:', error);
     throw error;
@@ -68,18 +104,39 @@ export const getAllHotels = async (filters = {}) => {
   try {
     console.log('getAllHotels 调用，筛选条件:', filters);
     
+    // 如果有城市代码筛选，先获取城市 UUID
+    let cityId = null;
+    if (filters.cityCode) {
+      console.log('按城市代码筛选:', filters.cityCode);
+      const { data: cityData, error: cityError } = await supabase
+        .from('cities')
+        .select('id')
+        .eq('code', filters.cityCode)
+        .eq('is_active', true)
+        .single();
+
+      if (cityError) {
+        console.error('查询城市失败:', cityError);
+        throw cityError;
+      }
+      
+      if (cityData) {
+        cityId = cityData.id;
+        console.log('找到城市 UUID:', cityId);
+      }
+    }
+    
     let query = supabase
       .from('hotels')
       .select(`
         *,
-        city:cities!hotels_city_id_fkey(*)
+        city:cities(*)
       `)
       .eq('is_active', true);
 
-    // 应用筛选条件
-    if (filters.cityCode) {
-      console.log('按城市代码筛选:', filters.cityCode);
-      query = query.eq('city_id', filters.cityCode);
+    // 应用城市筛选
+    if (cityId) {
+      query = query.eq('city_id', cityId);
     }
 
     if (filters.minRating !== undefined && filters.minRating > 0) {
@@ -307,13 +364,27 @@ export const isFavorite = async (userId, hotelId) => {
  */
 export const getHotelStats = async (cityCode = null) => {
   try {
+    // 如果有城市代码，先获取城市 UUID
+    let cityId = null;
+    if (cityCode) {
+      const { data: cityData, error: cityError } = await supabase
+        .from('cities')
+        .select('id')
+        .eq('code', cityCode)
+        .eq('is_active', true)
+        .single();
+
+      if (cityError) throw cityError;
+      if (cityData) cityId = cityData.id;
+    }
+    
     let query = supabase
       .from('hotels')
       .select('id, safety_score, review_count', { count: 'exact' })
       .eq('is_active', true);
 
-    if (cityCode) {
-      query = query.eq('city_id', cityCode);
+    if (cityId) {
+      query = query.eq('city_id', cityId);
     }
 
     const { data, error, count } = await query;
@@ -331,7 +402,7 @@ export const getHotelStats = async (cityCode = null) => {
       const hotelsWithRating = data.filter(h => h.safety_score > 0);
       if (hotelsWithRating.length > 0) {
         stats.averageRating =
-          hotelsWithRating.reduce((sum, h) => sum + h.safety_score, 0) /
+          hotelsWithRatin.reduce((sum, h) => sum + h.safety_score, 0) /
           hotelsWithRating.length;
       }
       stats.totalReviews = data.reduce((sum, h) => sum + (h.review_count || 0), 0);
