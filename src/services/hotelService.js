@@ -26,20 +26,20 @@ export const getCities = async () => {
 };
 
 /**
- * 根据城市ID获取酒店列表
- * @param {string} cityId - 城市ID
+ * 根据城市代码获取酒店列表
+ * @param {string} cityCode - 城市代码（如 'xishuangbanna'）
  * @returns {Promise<Array>} 酒店列表
  */
-export const getHotelsByCityId = async (cityId) => {
+export const getHotelsByCityCode = async (cityCode) => {
   try {
-    console.log('查询酒店，城市ID:', cityId);
+    console.log('查询酒店，城市代码:', cityCode);
     const { data, error } = await supabase
       .from('hotels')
       .select(`
         *,
-        city:cities(*)
+        city:cities!hotels_city_id_fkey(*)
       `)
-      .eq('city_id', cityId)
+      .eq('city_id', cityCode)
       .eq('is_active', true)
       .order('safety_score', { ascending: false });
 
@@ -55,37 +55,13 @@ export const getHotelsByCityId = async (cityId) => {
   }
 };
 
-/**
- * 根据城市代码获取酒店列表
- * @param {string} cityCode - 城市代码（如 'xishuangbanna'）
- * @returns {Promise<Array>} 酒店列表
- */
-export const getHotelsByCityCode = async (cityCode) => {
-  try {
-    // 首先获取城市ID
-    const { data: cityData, error: cityError } = await supabase
-      .from('cities')
-      .select('id')
-      .eq('code', cityCode)
-      .eq('is_active', true)
-      .single();
 
-    if (cityError) throw cityError;
-    if (!cityData) throw new Error('城市不存在');
-
-    // 然后获取酒店列表
-    return await getHotelsByCityId(cityData.id);
-  } catch (error) {
-    console.error('获取酒店列表失败:', error);
-    throw error;
-  }
-};
 
 /**
  * 获取所有酒店（用于地图显示）
  * @param {Object} filters - 筛选条件
  * @param {number} filters.minRating - 最低评分
- * @param {string} filters.cityId - 城市ID
+ * @param {string} filters.cityCode - 城市代码（如 'xishuangbanna'）
  * @returns {Promise<Array>} 酒店列表
  */
 export const getAllHotels = async (filters = {}) => {
@@ -96,14 +72,14 @@ export const getAllHotels = async (filters = {}) => {
       .from('hotels')
       .select(`
         *,
-        city:cities(*)
+        city:cities!hotels_city_id_fkey(*)
       `)
       .eq('is_active', true);
 
     // 应用筛选条件
-    if (filters.cityId) {
-      console.log('按城市ID筛选:', filters.cityId);
-      query = query.eq('city_id', filters.cityId);
+    if (filters.cityCode) {
+      console.log('按城市代码筛选:', filters.cityCode);
+      query = query.eq('city_id', filters.cityCode);
     }
 
     if (filters.minRating !== undefined && filters.minRating > 0) {
@@ -326,18 +302,18 @@ export const isFavorite = async (userId, hotelId) => {
 
 /**
  * 获取酒店统计信息
- * @param {string} cityId - 城市ID（可选）
+ * @param {string} cityCode - 城市代码（可选）
  * @returns {Promise<Object>} 统计信息
  */
-export const getHotelStats = async (cityId = null) => {
+export const getHotelStats = async (cityCode = null) => {
   try {
     let query = supabase
       .from('hotels')
       .select('id, safety_score, review_count', { count: 'exact' })
       .eq('is_active', true);
 
-    if (cityId) {
-      query = query.eq('city_id', cityId);
+    if (cityCode) {
+      query = query.eq('city_id', cityCode);
     }
 
     const { data, error, count } = await query;
