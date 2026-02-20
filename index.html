@@ -98,6 +98,19 @@
             border-color: #6366f1;
         }
 
+        .city-button-text {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 4px;
+        }
+
+        .city-button-count {
+            font-size: 12px;
+            color: #6366f1;
+            font-weight: 500;
+        }
+
         .city-button:active {
             transform: translateY(0);
         }
@@ -1322,7 +1335,10 @@
                     });
                     isLoadingFromDatabase = false;
                     
-                    // 🔥 关键修复：数据加载完成后，如果地图已初始化，立即更新地图和热力图
+                    // 🔥 关键修复：数据加载完成后，动态生成城市列表
+                    generateCityListFromData(data);
+                    
+                    // 如果地图已初始化，立即更新地图和热力图
                     if (map && currentCity) {
                         console.log('🔄 数据加载完成，更新地图和热力图...');
                         const hotels = getHotelsForCity(currentCity.id);
@@ -1363,9 +1379,21 @@
                     console.log('  第一个酒店示例:', dbHotelsData[0]);
                 }
                 
-                // 🔥 临时修复：先不做城市筛选，显示所有酒店
-                console.log('  ⚠️ 暂时显示所有酒店（不按城市筛选）');
-                const cityHotels = dbHotelsData;
+                // 🔥 根据城市名称筛选酒店
+                // 从 currentCity 对象中获取城市名称
+                const cityName = currentCity ? currentCity.name : null;
+                console.log('  当前选择的城市名称:', cityName);
+                
+                let cityHotels;
+                if (cityName) {
+                    // 按城市名称筛选
+                    cityHotels = dbHotelsData.filter(h => h.city === cityName);
+                    console.log(`  筛选出 ${cityHotels.length} 个 ${cityName} 的酒店`);
+                } else {
+                    // 如果没有选择城市，显示所有酒店
+                    console.log('  ⚠️ 未选择城市，显示所有酒店');
+                    cityHotels = dbHotelsData;
+                }
                 
                 console.log(`  找到 ${cityHotels.length} 个酒店`);
                 
@@ -1422,6 +1450,106 @@
                 console.log('  数据库无数据，使用模拟数据');
                 return mockHotels[cityId] || [];
             }
+        }
+        
+        // 动态生成城市列表
+        function generateCityListFromData(hotels) {
+            console.log('🏙️ 开始生成城市列表...');
+            
+            // 统计每个城市的酒店数量
+            const cityStats = {};
+            hotels.forEach(hotel => {
+                const city = hotel.city || '未知';
+                if (!cityStats[city]) {
+                    cityStats[city] = {
+                        count: 0,
+                        hotels: []
+                    };
+                }
+                cityStats[city].count++;
+                cityStats[city].hotels.push(hotel);
+            });
+            
+            console.log('城市统计:', cityStats);
+            
+            // 按酒店数量排序
+            const sortedCities = Object.entries(cityStats)
+                .sort((a, b) => b[1].count - a[1].count)
+                .filter(([city]) => city !== '未知');
+            
+            console.log(`找到 ${sortedCities.length} 个城市`);
+            
+            // 生成城市列表HTML
+            const citySelection = document.getElementById('citySelection');
+            if (!citySelection) {
+                console.error('找不到城市选择容器');
+                return;
+            }
+            
+            // 清空现有内容
+            citySelection.innerHTML = `
+                <div class="header">
+                    <div class="title">欢迎使用女性安全地图</div>
+                    <div class="subtitle">请选择您要查看的城市</div>
+                </div>
+            `;
+            
+            // 按国家分组
+            const citiesByCountry = {};
+            sortedCities.forEach(([city, data]) => {
+                // 简单的国家判断（可以根据实际数据调整）
+                let country = '中国'; // 默认中国
+                if (city.includes('曼谷') || city.includes('清迈') || city.includes('普吉')) {
+                    country = '泰国';
+                } else if (city.includes('巴厘岛')) {
+                    country = '印度尼西亚';
+                }
+                
+                if (!citiesByCountry[country]) {
+                    citiesByCountry[country] = [];
+                }
+                citiesByCountry[country].push([city, data]);
+            });
+            
+            // 渲染每个国家的城市
+            Object.entries(citiesByCountry).forEach(([country, cities]) => {
+                const countrySection = document.createElement('div');
+                countrySection.className = 'country-section';
+                
+                const countryTitle = document.createElement('div');
+                countryTitle.className = 'country-title';
+                countryTitle.textContent = country;
+                countrySection.appendChild(countryTitle);
+                
+                const citiesContainer = document.createElement('div');
+                citiesContainer.className = 'cities-container';
+                
+                cities.forEach(([city, data]) => {
+                    const cityButton = document.createElement('div');
+                    cityButton.className = 'city-button';
+                    
+                    // 生成城市ID（拼音或英文）
+                    const cityId = city.toLowerCase().replace(/\s+/g, '');
+                    
+                    cityButton.setAttribute('data-city', JSON.stringify({
+                        id: cityId,
+                        name: city,
+                        country: country
+                    }));
+                    
+                    cityButton.innerHTML = `
+                        <div class="city-button-text">${city}</div>
+                        <div class="city-button-count">${data.count} 家酒店</div>
+                    `;
+                    
+                    citiesContainer.appendChild(cityButton);
+                });
+                
+                countrySection.appendChild(citiesContainer);
+                citySelection.appendChild(countrySection);
+            });
+            
+            console.log('✅ 城市列表生成完成！');
         }
         
         // 立即开始加载数据库数据
