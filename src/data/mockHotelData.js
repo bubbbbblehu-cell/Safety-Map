@@ -1,7 +1,9 @@
 // 模拟酒店安全评价数据
 // 在实际应用中，这些数据应该从后端API获取
 
-export const generateMockHotelData = (cityId) => {
+export const generateMockHotelData = (cityIdOrCode) => {
+  // 兼容旧的 code 格式
+  const cityId = cityIdOrCode;
   // 为不同城市生成不同的模拟数据
   const baseData = {
     xishuangbanna: [

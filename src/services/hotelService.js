@@ -102,38 +102,15 @@ export const getAllHotels = async (filters = {}) => {
   try {
     console.log('getAllHotels 调用，筛选条件:', filters);
     
-    // 如果有城市 UUID，直接使用；否则通过 code 查询
-    let cityId = filters.cityId || null;
-    
-    if (!cityId && filters.cityCode) {
-      console.log('按城市代码筛选:', filters.cityCode);
-      const { data: cityData, error: cityError } = await supabase
-        .from('cities')
-        .select('id')
-        .eq('code', filters.cityCode)
-        .eq('is_active', true)
-        .single();
-
-      if (cityError) {
-        console.error('查询城市失败:', cityError);
-        throw cityError;
-      }
-      
-      if (cityData) {
-        cityId = cityData.id;
-        console.log('找到城市 UUID:', cityId);
-      }
-    }
-    
     let query = supabase
       .from('hotels')
       .select('*')
       .eq('is_active', true);
 
     // 应用城市筛选
-    if (cityId) {
-      console.log('使用城市 UUID 筛选:', cityId);
-      query = query.eq('city_id', cityId);
+    if (filters.cityId) {
+      console.log('使用城市 UUID 筛选:', filters.cityId);
+      query = query.eq('city_id', filters.cityId);
     }
 
     if (filters.minRating !== undefined && filters.minRating > 0) {
