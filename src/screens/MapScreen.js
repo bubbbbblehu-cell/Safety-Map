@@ -5,400 +5,138 @@ import {
   ActivityIndicator,
   Text,
   TouchableOpacity,
-  Modal,
-  TextInput,
   Alert,
-  Linking,
 } from 'react-native';
 import MapView, { Marker, Circle, PROVIDER_GOOGLE } from 'react-native-maps';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { CITIES } from '../constants/cities';
-import PhotoDetectionPanel from '../components/PhotoDetectionPanel';
-import ProfilePanel from '../components/ProfilePanel';
-import HotelDetailModal from '../components/HotelDetailModal';
 import { supabase } from '../config/supabase';
 
-const MapScreen = ({ route, navigation }) => {
-  const [city, setCity] = useState(route.params?.city || null);
-  const [hotels, setHotels] = useState([]); // 所有酒店数据
-  const [heatmapData, setHeatmapData] = useState([]);
+const MapScreen = () => {
+  const [hotels, setHotels] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showHeatmap, setShowHeatmap] = useState(true);
-  const [showProfile, setShowProfile] = useState(false);
-  const [selectedHotel, setSelectedHotel] = useState(null);
-  const [favorites, setFavorites] = useState([]); // 收藏列表
-  const [showFilterModal, setShowFilterModal] = useState(false);
 
   useEffect(() => {
-    loadCityData();
-    loadFavorites();
-  }, [city]);
+    loadHotels();
+  }, []);
 
-  const loadCityData = async () => {
+  const loadHotels = async () => {
     try {
-      setLoading(true);
+      console.log('🔥 开始加载酒店数据...');
       
-      let currentCity = city;
-      if (!currentCity) {
-        // 清除旧的缓存数据（临时）
-        await AsyncStorage.removeItem('selectedCity');
-        
-        currentCity = CITIES[0];
-        console.log('🔍 从 CITIES 数组获取的城市:', JSON.stringify(currentCity, null, 2));
-        setCity(currentCity);
-        // 保存新的城市数据
-        await AsyncStorage.setItem('selectedCity', JSON.stringify(currentCity));
-      } else {
-        console.log('🔍 使用传入的城市参数:', JSON.stringify(currentCity, null, 2));
+      const { data, error } = await supabase
+        .from('hotels')
+        .select('*')
+        .eq('is_active', true)
+        .order('safety_score', { ascending: false });
+
+      if (error) {
+        console.error('❌ 查询错误:', error);
+        Alert.alert('错误', error.message);
+        setLoading(false);
+        return;
       }
 
-      // 尝试从数据库加载酒店数据
-      try {
-        console.log('========================================');
-        console.log('正在从数据库加载酒店数据...');
-        console.log('当前城市:', currentCity.name);
-        console.log('城市ID (UUID):', currentCity.id);
-        console.log('========================================');
-        
-        // 直接查询数据库，获取所有酒店
-        const { data: dbHotels, error } = await supabase
-          .from('hotels')
-          .select('*')
-          .eq('is_active', true)
-          .order('safety_score', { ascending: false });
-        
-        if (error) {
-          console.error('数据库查询错误:', error);
-          throw error;
-        }
-        
-        console.log(`数据库查询结果: ${dbHotels ? dbHotels.length : 0} 个酒店`);
-        
-        if (dbHotels && dbHotels.length > 0) {
-          console.log('✅ 成功从数据库加载酒店数据！');
-          console.log('前3个酒店示例:');
-          dbHotels.slice(0, 3).forEach((hotel, i) => {
-            console.log(`  ${i+1}. ${hotel.name} - 评分: ${hotel.safety_score}`);
-          });
-          
-          // 直接使用原始数据，手动转换字段名
-          const transformedHotels = dbHotels.map(h => ({
-            id: h.id,
-            name: h.name,
-            address: h.address,
-            latitude: parseFloat(h.latitude),
-            longitude: parseFloat(h.longitude),
-            safetyScore: parseFloat(h.safety_score) || 0,
-            reviewCount: h.review_count || 0,
-            cityId: h.city_id
-          }));
-          console.log(`转换后的酒店数据: ${transformedHotels.length} 个`);
-          
-          // 直接设置酒店数据，不筛选
-          setHotels(transformedHotels);
-          
-          const heatmap = transformedHotels.map(hotel => ({
-            latitude: hotel.latitude,
-            longitude: hotel.longitude,
-            weight: hotel.safetyScore / 5.0,
-            intensity: hotel.safetyScore / 5.0,
-          }));
-          console.log(`生成热力图数据点: ${heatmap.length} 个`);
-          setHeatmapData(heatmap);
-          
-          console.log('========================================');
-          console.log('✅ 数据库酒店数据已成功加载到地图！');
-          console.log('========================================');
-        } else {
-          console.log('⚠️ 数据库返回空数组');
-          Alert.alert('提示', '数据库中没有酒店数据');
-        }
-      } catch (dbError) {
-        console.error('========================================');
-        console.error('❌ 数据库加载失败');
-        console.error('错误类型:', dbError.name);
-        console.error('错误信息:', dbError.message);
-        console.error('完整错误:', dbError);
-        console.error('========================================');
-        Alert.alert('错误', `数据库加载失败: ${dbError.message}`);
+      console.log('✅ 查询成功！获取到', data?.length || 0, '个酒店');
+
+      if (data && data.length > 0) {
+        // 转换数据
+        const transformedHotels = data.map(h => ({
+          id: h.id,
+          name: h.name,
+          address: h.address,
+          latitude: parseFloat(h.latitude),
+          longitude: parseFloat(h.longitude),
+          safetyScore: parseFloat(h.safety_score) || 0,
+        }));
+
+        console.log('✅ 转换完成，设置', transformedHotels.length, '个酒店');
+        setHotels(transformedHotels);
+      } else {
+        console.log('⚠️ 没有数据');
+        Alert.alert('提示', '数据库中没有酒店数据');
       }
-      
+
       setLoading(false);
-    } catch (error) {
-      console.error('Error loading city data:', error);
+    } catch (err) {
+      console.error('❌ 加载失败:', err);
+      Alert.alert('错误', err.message);
       setLoading(false);
-      Alert.alert('错误', '加载数据失败，请重试');
     }
   };
 
-  const loadFavorites = async () => {
-    try {
-      const savedFavorites = await AsyncStorage.getItem('favorites');
-      if (savedFavorites) {
-        setFavorites(JSON.parse(savedFavorites));
-      }
-    } catch (error) {
-      console.error('Error loading favorites:', error);
-    }
-  };
-
-  const handleMarkerPress = (hotel) => {
-    setSelectedHotel(hotel);
-  };
-
-  const handleAddReview = async (review) => {
-    try {
-      const updatedHotels = hotels.map(hotel => {
-        if (hotel.id === review.hotelId) {
-          const newReviewCount = (hotel.reviewCount || 0) + 1;
-          const newScore = ((hotel.safetyScore * hotel.reviewCount) + review.rating) / newReviewCount;
-          return {
-            ...hotel,
-            reviewCount: newReviewCount,
-            safetyScore: Math.round(newScore * 10) / 10,
-          };
-        }
-        return hotel;
-      });
-      setHotels(updatedHotels);
-      
-      const reviews = await AsyncStorage.getItem('reviews');
-      const reviewsList = reviews ? JSON.parse(reviews) : [];
-      reviewsList.push(review);
-      await AsyncStorage.setItem('reviews', JSON.stringify(reviewsList));
-    } catch (error) {
-      console.error('Error adding review:', error);
-    }
-  };
-
-  const handleToggleFavorite = async (hotel) => {
-    try {
-      const isFavorite = favorites.some(f => f.id === hotel.id);
-      let newFavorites;
-      
-      if (isFavorite) {
-        newFavorites = favorites.filter(f => f.id !== hotel.id);
-      } else {
-        newFavorites = [...favorites, hotel];
-      }
-      
-      setFavorites(newFavorites);
-      await AsyncStorage.setItem('favorites', JSON.stringify(newFavorites));
-    } catch (error) {
-      console.error('Error toggling favorite:', error);
-    }
-  };
-
-  const handlePhotoDetection = async () => {
-    // Coze agent URL - 请替换为你的实际 Coze agent 链接
-    const cozeAgentUrl = 'https://www.coze.cn/store/bot/YOUR_BOT_ID';
-    
-    try {
-      const supported = await Linking.canOpenURL(cozeAgentUrl);
-      
-      if (supported) {
-        await Linking.openURL(cozeAgentUrl);
-      } else {
-        Alert.alert('错误', '无法打开 AI 助手链接');
-      }
-    } catch (error) {
-      console.error('打开 Coze agent 失败:', error);
-      Alert.alert('错误', '打开 AI 助手失败，请稍后重试');
-    }
-  };
-
-  const handleApplyFilter = () => {
-    setShowFilterModal(false);
-  };
-
-  // 计算统计数据
-  const totalHotels = hotels.length;
-  const hotelsWithRating = hotels.filter(h => h.safetyScore > 0).length;
-  const isFavorite = selectedHotel ? favorites.some(f => f.id === selectedHotel.id) : false;
-
-  if (loading || !city) {
+  if (loading) {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color="#6366f1" />
-        <Text style={styles.loadingText}>加载地图中...</Text>
+        <Text style={styles.loadingText}>加载中...</Text>
       </View>
     );
   }
 
   return (
     <View style={styles.container}>
-      {/* 左侧：拍照检测面板 */}
-      <PhotoDetectionPanel onPress={handlePhotoDetection} />
+      <MapView
+        provider={PROVIDER_GOOGLE}
+        style={styles.map}
+        initialRegion={{
+          latitude: 22.0084,
+          longitude: 100.7979,
+          latitudeDelta: 0.5,
+          longitudeDelta: 0.5,
+        }}
+      >
+        {/* 热力图 */}
+        {showHeatmap && hotels.map((hotel, index) => (
+          <Circle
+            key={`heat-${index}`}
+            center={{
+              latitude: hotel.latitude,
+              longitude: hotel.longitude,
+            }}
+            radius={300}
+            fillColor={hotel.safetyScore >= 4.5 ? '#4ade8066' : hotel.safetyScore >= 4.0 ? '#fbbf2466' : '#f8717166'}
+            strokeWidth={0}
+          />
+        ))}
 
-      {/* 中间：地图区域 */}
-      <View style={styles.mapContainer}>
-        <MapView
-          provider={PROVIDER_GOOGLE}
-          style={styles.map}
-          initialRegion={city.region}
-          showsUserLocation={true}
-          showsMyLocationButton={true}
-        >
-          {showHeatmap && heatmapData.length > 0 && heatmapData.map((point, index) => {
-            const intensity = point.weight || 0.5;
-            const radius = 200 + intensity * 300;
-            const opacity = 0.3 + intensity * 0.4;
-            
-            let fillColor = '#4ade80';
-            if (intensity < 0.6) {
-              fillColor = '#fbbf24';
-            }
-            if (intensity < 0.4) {
-              fillColor = '#f87171';
-            }
-            
-            return (
-              <Circle
-                key={`heatmap-${index}`}
-                center={{
-                  latitude: point.latitude,
-                  longitude: point.longitude,
-                }}
-                radius={radius}
-                fillColor={fillColor}
-                strokeColor={fillColor}
-                strokeWidth={0}
-                opacity={opacity}
-              />
-            );
-          })}
-          
-          {hotels.map((hotel) => (
-            <Marker
-              key={hotel.id}
-              coordinate={{
-                latitude: hotel.latitude,
-                longitude: hotel.longitude,
-              }}
-              title={hotel.name}
-              description={`安全评分: ${hotel.safetyScore}/5.0`}
-              onPress={() => handleMarkerPress(hotel)}
-              pinColor={getMarkerColor(hotel.safetyScore)}
-            />
-          ))}
-        </MapView>
+        {/* 酒店标记 */}
+        {hotels.map((hotel) => (
+          <Marker
+            key={hotel.id}
+            coordinate={{
+              latitude: hotel.latitude,
+              longitude: hotel.longitude,
+            }}
+            title={hotel.name}
+            description={`评分: ${hotel.safetyScore}/5.0`}
+            pinColor={hotel.safetyScore >= 4.5 ? 'green' : hotel.safetyScore >= 4.0 ? 'orange' : 'red'}
+          />
+        ))}
+      </MapView>
 
-        {/* 左上角：酒店统计信息 */}
-        <View style={styles.statsContainer}>
-          <View style={styles.statsCard}>
-            <Text style={styles.statsLabel}>酒店总数</Text>
-            <Text style={styles.statsValue}>{totalHotels}</Text>
-          </View>
-          <View style={styles.statsCard}>
-            <Text style={styles.statsLabel}>已评分</Text>
-            <Text style={styles.statsValue}>{hotelsWithRating}</Text>
-          </View>
-        </View>
-
-        {/* 右上角：控制按钮 */}
-        <View style={styles.topControls}>
-          <TouchableOpacity
-            style={[styles.controlButton, showHeatmap && styles.controlButtonActive]}
-            onPress={() => setShowHeatmap(!showHeatmap)}
-          >
-            <Text style={[styles.controlButtonText, showHeatmap && styles.controlButtonActiveText]}>
-              热力图
-            </Text>
-          </TouchableOpacity>
-          
-          <TouchableOpacity
-            style={styles.controlButton}
-            onPress={() => setShowFilterModal(true)}
-          >
-            <Text style={styles.controlButtonText}>筛选</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={styles.controlButton}
-            onPress={() => setShowProfile(true)}
-          >
-            <Text style={styles.controlButtonText}>个人</Text>
-          </TouchableOpacity>
-        </View>
-
-        {/* 底部图例 */}
-        <View style={styles.legend}>
-          <Text style={styles.legendTitle}>安全评分图例</Text>
-          <View style={styles.legendItems}>
-            <View style={styles.legendItem}>
-              <View style={[styles.legendColor, { backgroundColor: '#4ade80' }]} />
-              <Text style={styles.legendText}>4.5-5.0</Text>
-            </View>
-            <View style={styles.legendItem}>
-              <View style={[styles.legendColor, { backgroundColor: '#fbbf24' }]} />
-              <Text style={styles.legendText}>4.0-4.5</Text>
-            </View>
-            <View style={styles.legendItem}>
-              <View style={[styles.legendColor, { backgroundColor: '#f87171' }]} />
-              <Text style={styles.legendText}>3.5-4.0</Text>
-            </View>
-          </View>
+      {/* 统计信息 */}
+      <View style={styles.statsContainer}>
+        <View style={styles.statsCard}>
+          <Text style={styles.statsLabel}>酒店总数</Text>
+          <Text style={styles.statsValue}>{hotels.length}</Text>
         </View>
       </View>
 
-      {/* 右侧：个人中心面板 */}
-      {showProfile && (
-        <ProfilePanel
-          favorites={favorites}
-          onFavoritePress={(hotel) => {
-            setSelectedHotel(hotel);
-            setShowProfile(false);
-          }}
-          onClose={() => setShowProfile(false)}
-        />
-      )}
-
-      {/* 酒店详情/评价弹窗 */}
-      <HotelDetailModal
-        visible={!!selectedHotel}
-        hotel={selectedHotel}
-        onClose={() => setSelectedHotel(null)}
-        onAddReview={handleAddReview}
-        onToggleFavorite={() => selectedHotel && handleToggleFavorite(selectedHotel)}
-        isFavorite={isFavorite}
-      />
-
-      {/* 筛选弹窗 */}
-      <Modal
-        visible={showFilterModal}
-        transparent={true}
-        animationType="fade"
-        onRequestClose={() => setShowFilterModal(false)}
+      {/* 热力图开关 */}
+      <TouchableOpacity
+        style={[styles.heatmapButton, showHeatmap && styles.heatmapButtonActive]}
+        onPress={() => setShowHeatmap(!showHeatmap)}
       >
-        <View style={styles.modalOverlay}>
-          <View style={styles.filterModal}>
-            <Text style={styles.filterTitle}>筛选功能</Text>
-            <Text style={styles.filterLabel}>筛选功能暂时禁用，显示所有酒店</Text>
-            <TouchableOpacity
-              style={[styles.filterButton, styles.filterButtonApply]}
-              onPress={() => setShowFilterModal(false)}
-            >
-              <Text style={[styles.filterButtonText, styles.filterButtonTextApply]}>确定</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </Modal>
+        <Text style={[styles.buttonText, showHeatmap && styles.buttonTextActive]}>
+          热力图
+        </Text>
+      </TouchableOpacity>
     </View>
   );
 };
 
-const getMarkerColor = (safetyScore) => {
-  if (safetyScore >= 4.5) return 'green';
-  if (safetyScore >= 4.0) return 'orange';
-  return 'red';
-};
-
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    flexDirection: 'row',
-  },
-  mapContainer: {
     flex: 1,
   },
   map: {
@@ -419,23 +157,15 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 16,
     left: 16,
-    zIndex: 1,
-    flexDirection: 'row',
-    gap: 8,
   },
   statsCard: {
     backgroundColor: 'rgba(255, 255, 255, 0.95)',
-    padding: 12,
+    padding: 16,
     borderRadius: 8,
-    minWidth: 80,
-    alignItems: 'center',
     shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
-    shadowRadius: 3.84,
+    shadowRadius: 4,
     elevation: 5,
   },
   statsLabel: {
@@ -444,140 +174,33 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   statsValue: {
-    fontSize: 20,
+    fontSize: 24,
     fontWeight: 'bold',
     color: '#6366f1',
   },
-  topControls: {
+  heatmapButton: {
     position: 'absolute',
     top: 16,
     right: 16,
-    zIndex: 1,
-    flexDirection: 'column',
-    gap: 8,
-  },
-  controlButton: {
     backgroundColor: '#fff',
     paddingVertical: 10,
     paddingHorizontal: 16,
     borderRadius: 8,
     shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
-    shadowRadius: 3.84,
+    shadowRadius: 4,
     elevation: 5,
   },
-  controlButtonActive: {
+  heatmapButtonActive: {
     backgroundColor: '#6366f1',
   },
-  controlButtonText: {
+  buttonText: {
     color: '#333',
     fontWeight: '500',
     fontSize: 14,
   },
-  controlButtonActiveText: {
-    color: '#fff',
-  },
-  legend: {
-    position: 'absolute',
-    bottom: 16,
-    left: 16,
-    right: 16,
-    backgroundColor: '#fff',
-    padding: 12,
-    borderRadius: 8,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
-  },
-  legendTitle: {
-    fontSize: 14,
-    fontWeight: '600',
-    marginBottom: 8,
-    color: '#333',
-  },
-  legendItems: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 12,
-  },
-  legendItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginRight: 12,
-  },
-  legendColor: {
-    width: 16,
-    height: 16,
-    borderRadius: 8,
-    marginRight: 6,
-  },
-  legendText: {
-    fontSize: 12,
-    color: '#666',
-  },
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  filterModal: {
-    backgroundColor: '#fff',
-    padding: 24,
-    borderRadius: 12,
-    width: '80%',
-    maxWidth: 300,
-  },
-  filterTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#333',
-    marginBottom: 16,
-  },
-  filterLabel: {
-    fontSize: 14,
-    color: '#666',
-    marginBottom: 8,
-  },
-  filterInput: {
-    borderWidth: 1,
-    borderColor: '#e0e0e0',
-    borderRadius: 8,
-    padding: 12,
-    fontSize: 16,
-    marginBottom: 16,
-  },
-  filterButtons: {
-    flexDirection: 'row',
-    gap: 12,
-  },
-  filterButton: {
-    flex: 1,
-    paddingVertical: 12,
-    borderRadius: 8,
-    alignItems: 'center',
-  },
-  filterButtonCancel: {
-    backgroundColor: '#f5f5f5',
-  },
-  filterButtonApply: {
-    backgroundColor: '#6366f1',
-  },
-  filterButtonText: {
-    fontSize: 16,
-    fontWeight: '500',
-    color: '#333',
-  },
-  filterButtonTextApply: {
+  buttonTextActive: {
     color: '#fff',
   },
 });
