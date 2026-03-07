@@ -19,6 +19,8 @@ import {
   getHotelStats,
   generateHeatmapData,
   transformHotelsData,
+  getCities,
+  transformCitiesData,
 } from '../services/hotelService';
 
 /**
@@ -43,11 +45,14 @@ const MapScreen = ({ route, navigation }) => {
   const [favorites, setFavorites] = useState([]); // 收藏列表（本地存储）
   const [showFilterModal, setShowFilterModal] = useState(false);
   const [filterRating, setFilterRating] = useState('0');
+  const [showCityModal, setShowCityModal] = useState(false); // 城市切换弹窗
+  const [availableCities, setAvailableCities] = useState([]); // 可用城市列表
 
   // 加载城市数据
   useEffect(() => {
     loadCityData();
     loadFavorites();
+    loadAvailableCities();
   }, [city]);
 
   // 使用 useMemo 优化筛选逻辑，避免重复计算
@@ -144,6 +149,54 @@ const MapScreen = ({ route, navigation }) => {
       }
     } catch (error) {
       console.error('加载收藏失败:', error);
+    }
+  };
+
+  /**
+   * 加载可用城市列表
+   */
+  const loadAvailableCities = async () => {
+    try {
+      const dbCities = await getCities();
+      if (dbCities && dbCities.length > 0) {
+        const transformedCities = transformCitiesData(dbCities);
+        
+        // 按国家分组
+        const grouped = transformedCities.reduce((acc, city) => {
+          if (!acc[city.country]) {
+            acc[city.country] = [];
+          }
+          acc[city.country].push(city);
+          return acc;
+        }, {});
+        
+        setAvailableCities(grouped);
+      }
+    } catch (error) {
+      console.error('加载城市列表失败:', error);
+    }
+  };
+
+  /**
+   * 切换城市
+   */
+  const handleCitySwitch = async (newCity) => {
+    try {
+      console.log('✅ 切换到城市:', newCity.name, 'ID:', newCity.id);
+      
+      // 保存选中的城市
+      await AsyncStorage.setItem('selectedCity', JSON.stringify(newCity));
+      
+      // 更新当前城市
+      setCity(newCity);
+      
+      // 关闭弹窗
+      setShowCityModal(false);
+      
+      // 重新加载数据会由 useEffect 自动触发
+    } catch (error) {
+      console.error('切换城市失败:', error);
+      Alert.alert('错误', '切换城市失败，请重试');
     }
   };
 
@@ -311,6 +364,15 @@ const MapScreen = ({ route, navigation }) => {
         {/* 右上角：控制按钮 */}
         <View style={styles.topControls}>
           <TouchableOpacity
+            style={styles.controlButton}
+            onPress={() => setShowCityModal(true)}
+          >
+            <Text style={styles.controlButtonText}>
+              {city?.name || '切换城市'}
+            </Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
             style={[styles.controlButton, showHeatmap && styles.controlButtonActive]}
             onPress={() => setShowHeatmap(!showHeatmap)}
           >
@@ -414,6 +476,62 @@ const MapScreen = ({ route, navigation }) => {
                 <Text style={[styles.filterButtonText, styles.filterButtonTextApply]}>应用</Text>
               </TouchableOpacity>
             </View>
+          </View>
+        </View>
+      </Modal>
+
+      {/* 城市切换弹窗 */}
+      <Modal
+        visible={showCityModal}
+        transparent={true}
+        animationType="slide"
+        onRequestClose={() => setShowCityModal(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.cityModal}>
+            <View style={styles.cityModalHeader}>
+              <Text style={styles.cityModalTitle}>切换城市</Text>
+              <TouchableOpacity
+                onPress={() => setShowCityModal(false)}
+                style={styles.closeButton}
+              >
+                <Text style={styles.closeButtonText}>✕</Text>
+              </TouchableOpacity>
+            </View>
+            
+            <ScrollView style={styles.cityModalScroll}>
+              {Object.entries(availableCities).map(([country, cities]) => (
+                <View key={country} style={styles.countrySection}>
+                  <Text style={styles.countryTitle}>{country}</Text>
+                  <View style={styles.citiesContainer}>
+                    {cities.map((cityItem) => (
+                      <TouchableOpacity
+                        key={cityItem.id}
+                        style={[
+                          styles.cityButton,
+                          city?.id === cityItem.id && styles.cityButtonActive
+                        ]}
+                        onPress={() => handleCitySwitch(cityItem)}
+                        activeOpacity={0.7}
+                      >
+                        <Text style={[
+                          styles.cityButtonText,
+                          city?.id === cityItem.id && styles.cityButtonTextActive
+                        ]}>
+                          {cityItem.name}
+                        </Text>
+                        <Text style={[
+                          styles.cityCode,
+                          city?.id === cityItem.id && styles.cityCodeActive
+                        ]}>
+                          {cityItem.code}
+                        </Text>
+                      </TouchableOpacity>
+                    ))}
+                  </View>
+                </View>
+              ))}
+            </ScrollView>
           </View>
         </View>
       </Modal>
@@ -616,6 +734,81 @@ const styles = StyleSheet.create({
   },
   filterButtonTextApply: {
     color: '#fff',
+  },
+  cityModal: {
+    backgroundColor: '#fff',
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    maxHeight: '80%',
+    width: '100%',
+  },
+  cityModalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: '#e0e0e0',
+  },
+  cityModalTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#333',
+  },
+  closeButton: {
+    width: 32,
+    height: 32,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  closeButtonText: {
+    fontSize: 24,
+    color: '#666',
+  },
+  cityModalScroll: {
+    flex: 1,
+    padding: 16,
+  },
+  countrySection: {
+    marginBottom: 24,
+  },
+  countryTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#6366f1',
+    marginBottom: 12,
+  },
+  citiesContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 12,
+  },
+  cityButton: {
+    backgroundColor: '#f5f5f5',
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    borderRadius: 8,
+    minWidth: 100,
+    alignItems: 'center',
+  },
+  cityButtonActive: {
+    backgroundColor: '#6366f1',
+  },
+  cityButtonText: {
+    fontSize: 15,
+    fontWeight: '500',
+    color: '#333',
+    marginBottom: 4,
+  },
+  cityButtonTextActive: {
+    color: '#fff',
+  },
+  cityCode: {
+    fontSize: 12,
+    color: '#999',
+  },
+  cityCodeActive: {
+    color: '#e0e7ff',
   },
 });
 
