@@ -2727,6 +2727,16 @@
                 console.log('点击切换城市按钮');
                 const cityModal = document.getElementById('cityModal');
                 if (cityModal) {
+                    // 🔥 修复：打开模态框前，确保城市列表存在
+                    const cityModalContent = document.getElementById('cityModalContent');
+                    if (cityModalContent) {
+                        const cityButtons = cityModalContent.querySelectorAll('.city-button');
+                        console.log('模态框中的城市按钮数量:', cityButtons.length);
+                        if (cityButtons.length === 0) {
+                            console.log('⚠️ 模态框中没有城市按钮，重新生成');
+                            generateFallbackCityList();
+                        }
+                    }
                     cityModal.classList.add('active');
                 } else {
                     console.error('城市选择模态框不存在');
