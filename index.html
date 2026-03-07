@@ -159,6 +159,52 @@
             font-weight: bold;
             z-index: 1000;
         }
+
+        /* 地图顶部按钮 */
+        .map-top-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px;
+            z-index: 1000;
+            pointer-events: none;
+        }
+
+        .map-top-bar > * {
+            pointer-events: auto;
+        }
+
+        .city-count {
+            background: white;
+            padding: 12px 16px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .switch-city-btn {
+            background: #6366f1;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .switch-city-btn:hover {
+            background: #4f46e5;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
     </style>
 </head>
 <body>
@@ -207,11 +253,16 @@
 
     <!-- 地图容器 -->
     <div class="map-container" id="mapContainer" style="display: none;">
+        <!-- 顶部栏 -->
+        <div class="map-top-bar">
+            <div class="city-count" id="cityCount">酒店总数: 0</div>
+            <div class="switch-city-btn" onclick="openCityModal()">切换城市</div>
+        </div>
         <div id="map"></div>
     </div>
 
     <!-- 版本号 -->
-    <div class="version">v6.0 全新简化版</div>
+    <div class="version">v6.1</div>
 
     <!-- Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -227,6 +278,7 @@
 
         let map = null;
         let currentCity = null;
+        let hotelCount = 0;
 
         // 城市坐标
         const cityCoords = {
@@ -235,6 +287,11 @@
             'shanghai': { lat: 31.2304, lng: 121.4737, zoom: 13 },
             'bangkok': { lat: 13.7563, lng: 100.5018, zoom: 13 }
         };
+
+        // 打开城市选择模态框
+        function openCityModal() {
+            document.getElementById('cityModal').classList.add('active');
+        }
 
         // 选择城市
         function selectCity(cityId, cityName) {
@@ -296,6 +353,10 @@
                 }
 
                 console.log('成功加载', data.length, '个酒店');
+                
+                // 更新酒店总数
+                hotelCount = data.length;
+                document.getElementById('cityCount').textContent = `酒店总数: ${hotelCount}`;
 
                 // 添加标记
                 data.forEach(hotel => {
