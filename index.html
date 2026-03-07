@@ -2733,29 +2733,47 @@
 
         // 开屏页处理
         window.addEventListener('load', () => {
+            console.log('🚀 页面加载完成，准备处理开屏页');
             setTimeout(() => {
                 const splash = document.getElementById('splash-screen');
                 if (splash) {
+                    console.log('🎬 开始隐藏开屏页');
                     splash.style.opacity = '0';
                     setTimeout(() => {
                         splash.remove();
+                        console.log('✅ 开屏页已移除');
                         document.body.style.overflow = 'auto'; // 恢复页面滚动
                         // 开屏页消失后，如果没有选择城市，显示城市选择页面
                         if (!currentCity) {
+                            console.log('📍 没有选择城市，显示城市选择页面');
                             const citySelection = document.getElementById('citySelection');
                             if (citySelection) {
                                 citySelection.style.display = 'block';
+                                citySelection.style.visibility = 'visible';
+                                citySelection.style.opacity = '1';
+                                console.log('✅ 城市选择页面已显示');
+                                console.log('   display:', citySelection.style.display);
+                                console.log('   visibility:', citySelection.style.visibility);
+                                console.log('   子元素数量:', citySelection.children.length);
+                                console.log('   城市按钮数量:', citySelection.querySelectorAll('.city-button').length);
+                            } else {
+                                console.error('❌ 找不到城市选择页面元素');
                             }
                         } else {
+                            console.log('📍 已选择城市，切换到地图页面');
                             switchPage('mapPage');
                         }
                     }, 800);
                 } else {
+                    console.log('⚠️ 没有开屏页元素');
                     // 如果没有开屏页，检查是否已选择城市
                     if (!currentCity) {
                         const citySelection = document.getElementById('citySelection');
                         if (citySelection) {
                             citySelection.style.display = 'block';
+                            citySelection.style.visibility = 'visible';
+                            citySelection.style.opacity = '1';
+                            console.log('✅ 城市选择页面已显示（无开屏页）');
                         }
                     } else {
                         switchPage('mapPage');
