@@ -1111,9 +1111,9 @@
             </div>
 
             <!-- 🔥 版本标识 - 确认代码是否更新 -->
-            <div style="position: absolute; bottom: 90px; right: 16px; background: #ff6b00; color: white; padding: 12px; border-radius: 8px; font-weight: bold; z-index: 1000; box-shadow: 0 4px 8px rgba(0,0,0,0.3);">
-                <div style="font-size: 18px;">v4.3 启动修复</div>
-                <div style="font-size: 12px; margin-top: 4px;">🎯 显示城市选择</div>
+            <div style="position: absolute; bottom: 90px; right: 16px; background: #00d4ff; color: black; padding: 12px; border-radius: 8px; font-weight: bold; z-index: 1000; box-shadow: 0 4px 8px rgba(0,0,0,0.3);">
+                <div style="font-size: 18px;">v4.4 保留按钮</div>
+                <div style="font-size: 12px; margin-top: 4px;">✅ 不清空页面</div>
             </div>
 
             <!-- 底部图例 -->
@@ -1551,15 +1551,22 @@
             // 更新主页面的城市选择
             const citySelection = document.getElementById('citySelection');
             if (citySelection) {
-                // 添加标题
-                const header = document.createElement('div');
-                header.className = 'header';
-                header.innerHTML = `
-                    <div class="title">欢迎使用女性安全地图</div>
-                    <div class="subtitle">请选择您要查看的城市</div>
-                `;
-                citySelection.innerHTML = '';
-                citySelection.appendChild(header);
+                // 🔥 关键修复：不清空整个页面，只更新城市列表部分
+                // 查找或创建标题
+                let header = citySelection.querySelector('.header');
+                if (!header) {
+                    header = document.createElement('div');
+                    header.className = 'header';
+                    header.innerHTML = `
+                        <div class="title">欢迎使用女性安全地图</div>
+                        <div class="subtitle">请选择您要查看的城市</div>
+                    `;
+                    citySelection.insertBefore(header, citySelection.firstChild);
+                }
+                
+                // 移除旧的城市分组（保留标题）
+                const oldSections = citySelection.querySelectorAll('.country-section');
+                oldSections.forEach(section => section.remove());
                 
                 // 添加城市列表
                 createCityElements(citySelection);
