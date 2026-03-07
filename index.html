@@ -1491,50 +1491,73 @@
                 citiesByCountry[country].push(cityData);
             });
             
-            // 生成城市列表 HTML 的函数
-            function generateCityHTML() {
-                let html = '';
+            // 🔥 修复：直接创建 DOM 元素，不使用 innerHTML
+            function createCityElements(container) {
+                // 清空容器
+                container.innerHTML = '';
+                
                 Object.entries(citiesByCountry).forEach(([country, cities]) => {
-                    html += `<div class="country-section">`;
-                    html += `<div class="country-title">${country}</div>`;
-                    html += `<div class="cities-container">`;
+                    const countrySection = document.createElement('div');
+                    countrySection.className = 'country-section';
+                    
+                    const countryTitle = document.createElement('div');
+                    countryTitle.className = 'country-title';
+                    countryTitle.textContent = country;
+                    countrySection.appendChild(countryTitle);
+                    
+                    const citiesContainer = document.createElement('div');
+                    citiesContainer.className = 'cities-container';
                     
                     cities.forEach(cityData => {
-                        const cityJson = JSON.stringify({
+                        const cityButton = document.createElement('div');
+                        cityButton.className = 'city-button';
+                        
+                        // 🔥 关键：直接设置 JSON 字符串，不使用 HTML 实体编码
+                        cityButton.setAttribute('data-city', JSON.stringify({
                             id: cityData.id,  // UUID
                             name: cityData.name,
                             country: country
-                        }).replace(/"/g, '&quot;');
+                        }));
                         
-                        html += `
-                            <div class="city-button" data-city="${cityJson}">
-                                <div class="city-button-text">${cityData.name}</div>
-                                <div class="city-button-count">${cityData.count} 家酒店</div>
-                            </div>
-                        `;
+                        const cityButtonText = document.createElement('div');
+                        cityButtonText.className = 'city-button-text';
+                        cityButtonText.textContent = cityData.name;
+                        
+                        const cityButtonCount = document.createElement('div');
+                        cityButtonCount.className = 'city-button-count';
+                        cityButtonCount.textContent = `${cityData.count} 家酒店`;
+                        
+                        cityButton.appendChild(cityButtonText);
+                        cityButton.appendChild(cityButtonCount);
+                        citiesContainer.appendChild(cityButton);
                     });
                     
-                    html += `</div></div>`;
+                    countrySection.appendChild(citiesContainer);
+                    container.appendChild(countrySection);
                 });
-                return html;
             }
             
             // 更新主页面的城市选择
             const citySelection = document.getElementById('citySelection');
             if (citySelection) {
-                citySelection.innerHTML = `
-                    <div class="header">
-                        <div class="title">欢迎使用女性安全地图</div>
-                        <div class="subtitle">请选择您要查看的城市</div>
-                    </div>
-                    ${generateCityHTML()}
+                // 添加标题
+                const header = document.createElement('div');
+                header.className = 'header';
+                header.innerHTML = `
+                    <div class="title">欢迎使用女性安全地图</div>
+                    <div class="subtitle">请选择您要查看的城市</div>
                 `;
+                citySelection.innerHTML = '';
+                citySelection.appendChild(header);
+                
+                // 添加城市列表
+                createCityElements(citySelection);
             }
             
             // 更新模态框中的城市列表
             const cityModalContent = document.getElementById('cityModalContent');
             if (cityModalContent) {
-                cityModalContent.innerHTML = generateCityHTML();
+                createCityElements(cityModalContent);
             }
             
             console.log('✅ 城市列表生成完成（主页面 + 模态框）！');
