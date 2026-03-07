@@ -1111,9 +1111,9 @@
             </div>
 
             <!-- 🔥 版本标识 - 确认代码是否更新 -->
-            <div style="position: absolute; bottom: 90px; right: 16px; background: #ff0000; color: white; padding: 12px; border-radius: 8px; font-weight: bold; z-index: 1000; box-shadow: 0 4px 8px rgba(0,0,0,0.3);">
-                <div style="font-size: 16px;">v3.0 最新版</div>
-                <div style="font-size: 12px; margin-top: 4px;">🔥 2025-02-21</div>
+            <div style="position: absolute; bottom: 90px; right: 16px; background: #00ff00; color: black; padding: 12px; border-radius: 8px; font-weight: bold; z-index: 1000; box-shadow: 0 4px 8px rgba(0,0,0,0.3);">
+                <div style="font-size: 18px;">v4.2 DOM修复版</div>
+                <div style="font-size: 12px; margin-top: 4px;">🔥 2025-03-07 22:30</div>
             </div>
 
             <!-- 底部图例 -->
@@ -1496,7 +1496,11 @@
                 // 清空容器
                 container.innerHTML = '';
                 
+                console.log('🏗️ 开始创建城市元素，国家数量:', Object.keys(citiesByCountry).length);
+                
                 Object.entries(citiesByCountry).forEach(([country, cities]) => {
+                    console.log(`  创建国家分组: ${country}, 城市数量: ${cities.length}`);
+                    
                     const countrySection = document.createElement('div');
                     countrySection.className = 'country-section';
                     
@@ -1508,16 +1512,17 @@
                     const citiesContainer = document.createElement('div');
                     citiesContainer.className = 'cities-container';
                     
-                    cities.forEach(cityData => {
+                    cities.forEach((cityData, index) => {
                         const cityButton = document.createElement('div');
                         cityButton.className = 'city-button';
                         
                         // 🔥 关键：直接设置 JSON 字符串，不使用 HTML 实体编码
-                        cityButton.setAttribute('data-city', JSON.stringify({
+                        const cityDataObj = {
                             id: cityData.id,  // UUID
                             name: cityData.name,
                             country: country
-                        }));
+                        };
+                        cityButton.setAttribute('data-city', JSON.stringify(cityDataObj));
                         
                         const cityButtonText = document.createElement('div');
                         cityButtonText.className = 'city-button-text';
@@ -1530,11 +1535,17 @@
                         cityButton.appendChild(cityButtonText);
                         cityButton.appendChild(cityButtonCount);
                         citiesContainer.appendChild(cityButton);
+                        
+                        if (index === 0) {
+                            console.log(`    示例城市按钮: ${cityData.name}, data-city:`, cityDataObj);
+                        }
                     });
                     
                     countrySection.appendChild(citiesContainer);
                     container.appendChild(countrySection);
                 });
+                
+                console.log('✅ 城市元素创建完成，容器子元素数量:', container.children.length);
             }
             
             // 更新主页面的城市选择
