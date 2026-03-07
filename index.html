@@ -369,6 +369,8 @@
             setTimeout(() => {
                 const splash = document.getElementById('splash-screen');
                 if (splash) {
+                    // 立即降低 z-index，让模态框显示在上面
+                    splash.style.zIndex = '1000';
                     splash.style.opacity = '0';
                     setTimeout(() => {
                         splash.remove();
