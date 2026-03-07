@@ -47,7 +47,7 @@
             width: 100%;
             height: 100%;
             background: rgba(0, 0, 0, 0.5);
-            z-index: 2000;
+            z-index: 10000;
             justify-content: center;
             align-items: center;
         }
@@ -76,16 +76,6 @@
         .modal-title {
             font-size: 20px;
             font-weight: bold;
-        }
-
-        .close-button {
-            font-size: 24px;
-            cursor: pointer;
-            color: #999;
-        }
-
-        .close-button:hover {
-            color: #333;
         }
 
         /* 城市选择 */
@@ -117,6 +107,7 @@
             cursor: pointer;
             transition: all 0.3s;
             border: 2px solid transparent;
+            color: #333;
         }
 
         .city-button:hover {
@@ -129,11 +120,12 @@
             font-size: 16px;
             font-weight: 500;
             margin-bottom: 4px;
+            color: #333;
         }
 
         .city-button-count {
             font-size: 12px;
-            color: #999;
+            color: #666;
         }
 
         /* 地图页面 */
@@ -218,7 +210,6 @@
         <div class="modal-content">
             <div class="modal-header">
                 <div class="modal-title">选择城市</div>
-                <div class="close-button" id="closeCityModal">×</div>
             </div>
             <div class="city-selection">
                 <div class="country-section">
@@ -372,10 +363,7 @@
             }
         }
 
-        // 关闭模态框
-        document.getElementById('closeCityModal').addEventListener('click', () => {
-            document.getElementById('cityModal').classList.remove('active');
-        });
+
 
         // 开屏页处理
         window.addEventListener('load', () => {
