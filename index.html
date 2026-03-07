@@ -1176,36 +1176,10 @@
                 <div class="modal-title">选择城市</div>
                 <div class="close-button" id="closeCityModal">✕</div>
             </div>
-            <div class="city-selection" style="padding: 16px;">
-                <div class="country-section">
-                    <div class="country-title">中国</div>
-                    <div class="cities-container">
-                        <div class="city-button" data-city='{"id":"xishuangbanna","name":"西双版纳","country":"中国"}'>
-                            <div class="city-button-text">西双版纳</div>
-                        </div>
-                        <div class="city-button" data-city='{"id":"guiyang","name":"贵阳","country":"中国"}'>
-                            <div class="city-button-text">贵阳</div>
-                        </div>
-                        <div class="city-button" data-city='{"id":"shanghai","name":"上海","country":"中国"}'>
-                            <div class="city-button-text">上海</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="country-section">
-                    <div class="country-title">泰国</div>
-                    <div class="cities-container">
-                        <div class="city-button" data-city='{"id":"bangkok","name":"曼谷","country":"泰国"}'>
-                            <div class="city-button-text">曼谷</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="country-section">
-                    <div class="country-title">意大利</div>
-                    <div class="cities-container">
-                        <div class="city-button" data-city='{"id":"naples","name":"那不勒斯","country":"意大利"}'>
-                            <div class="city-button-text">那不勒斯</div>
-                        </div>
-                    </div>
+            <div class="city-selection" id="cityModalContent" style="padding: 16px;">
+                <!-- 城市列表将由 JavaScript 动态生成 -->
+                <div style="text-align: center; padding: 40px; color: #999;">
+                    加载城市列表中...
                 </div>
             </div>
         </div>
@@ -1375,9 +1349,41 @@
             if (dbHotelsData && dbHotelsData.length > 0) {
                 console.log('  数据库中总酒店数:', dbHotelsData.length);
                 
-                // 🔥 关键修复：直接返回所有酒店，不按城市筛选
-                console.log('  ✅ 返回所有酒店（不筛选城市）');
-                const cityHotels = dbHotelsData;
+                // 🔥 修复：按城市ID筛选酒店
+                // 注意：cityId 可能是 code（如 'xishuangbanna'）或 UUID
+                let cityHotels;
+                
+                // 首先尝试按 city_id (UUID) 筛选
+                cityHotels = dbHotelsData.filter(h => h.city_id === cityId);
+                
+                // 如果没找到，可能传入的是城市 code，需要先查找对应的 UUID
+                if (cityHotels.length === 0) {
+                    console.log('  ⚠️ 按 UUID 未找到酒店，尝试按城市名称匹配...');
+                    // 根据 cityId (code) 推断城市名称
+                    const cityNameMap = {
+                        'xishuangbanna': '西双版纳',
+                        'guiyang': '贵阳',
+                        'shanghai': '上海',
+                        'bangkok': '曼谷',
+                        'naples': '那不勒斯'
+                    };
+                    const cityName = cityNameMap[cityId];
+                    if (cityName) {
+                        // 按城市名称筛选（模糊匹配）
+                        cityHotels = dbHotelsData.filter(h => {
+                            const hotelCity = h.city || '';
+                            return hotelCity.includes(cityName) || cityName.includes(hotelCity);
+                        });
+                        console.log(`  ✅ 按城市名称 "${cityName}" 筛选到 ${cityHotels.length} 个酒店`);
+                    }
+                }
+                
+                console.log(`  ✅ 筛选结果: ${cityHotels.length} 个酒店`);
+                
+                if (cityHotels.length === 0) {
+                    console.warn('  ⚠️ 该城市没有酒店数据');
+                    return [];
+                }
                 
                 console.log(`  找到 ${cityHotels.length} 个酒店`);
                 
@@ -1443,97 +1449,95 @@
             // 统计每个城市的酒店数量
             const cityStats = {};
             hotels.forEach(hotel => {
-                const city = hotel.city || '未知';
-                if (!cityStats[city]) {
-                    cityStats[city] = {
+                const cityId = hotel.city_id;  // 使用 UUID
+                const cityName = hotel.city || '未知';
+                
+                if (!cityStats[cityId]) {
+                    cityStats[cityId] = {
+                        id: cityId,  // UUID
+                        name: cityName,
                         count: 0,
                         hotels: []
                     };
                 }
-                cityStats[city].count++;
-                cityStats[city].hotels.push(hotel);
+                cityStats[cityId].count++;
+                cityStats[cityId].hotels.push(hotel);
             });
             
             console.log('城市统计:', cityStats);
             
             // 按酒店数量排序
-            const sortedCities = Object.entries(cityStats)
-                .sort((a, b) => b[1].count - a[1].count)
-                .filter(([city]) => city !== '未知');
+            const sortedCities = Object.values(cityStats)
+                .sort((a, b) => b.count - a.count)
+                .filter(city => city.name !== '未知');
             
             console.log(`找到 ${sortedCities.length} 个城市`);
             
-            // 生成城市列表HTML
-            const citySelection = document.getElementById('citySelection');
-            if (!citySelection) {
-                console.error('找不到城市选择容器');
-                return;
-            }
-            
-            // 清空现有内容
-            citySelection.innerHTML = `
-                <div class="header">
-                    <div class="title">欢迎使用女性安全地图</div>
-                    <div class="subtitle">请选择您要查看的城市</div>
-                </div>
-            `;
-            
             // 按国家分组
             const citiesByCountry = {};
-            sortedCities.forEach(([city, data]) => {
+            sortedCities.forEach(cityData => {
                 // 简单的国家判断（可以根据实际数据调整）
                 let country = '中国'; // 默认中国
-                if (city.includes('曼谷') || city.includes('清迈') || city.includes('普吉')) {
+                const cityName = cityData.name;
+                if (cityName.includes('曼谷') || cityName.includes('清迈') || cityName.includes('普吉')) {
                     country = '泰国';
-                } else if (city.includes('巴厘岛')) {
+                } else if (cityName.includes('巴厘岛')) {
                     country = '印度尼西亚';
                 }
                 
                 if (!citiesByCountry[country]) {
                     citiesByCountry[country] = [];
                 }
-                citiesByCountry[country].push([city, data]);
+                citiesByCountry[country].push(cityData);
             });
             
-            // 渲染每个国家的城市
-            Object.entries(citiesByCountry).forEach(([country, cities]) => {
-                const countrySection = document.createElement('div');
-                countrySection.className = 'country-section';
-                
-                const countryTitle = document.createElement('div');
-                countryTitle.className = 'country-title';
-                countryTitle.textContent = country;
-                countrySection.appendChild(countryTitle);
-                
-                const citiesContainer = document.createElement('div');
-                citiesContainer.className = 'cities-container';
-                
-                cities.forEach(([city, data]) => {
-                    const cityButton = document.createElement('div');
-                    cityButton.className = 'city-button';
+            // 生成城市列表 HTML 的函数
+            function generateCityHTML() {
+                let html = '';
+                Object.entries(citiesByCountry).forEach(([country, cities]) => {
+                    html += `<div class="country-section">`;
+                    html += `<div class="country-title">${country}</div>`;
+                    html += `<div class="cities-container">`;
                     
-                    // 生成城市ID（拼音或英文）
-                    const cityId = city.toLowerCase().replace(/\s+/g, '');
+                    cities.forEach(cityData => {
+                        const cityJson = JSON.stringify({
+                            id: cityData.id,  // UUID
+                            name: cityData.name,
+                            country: country
+                        }).replace(/"/g, '&quot;');
+                        
+                        html += `
+                            <div class="city-button" data-city="${cityJson}">
+                                <div class="city-button-text">${cityData.name}</div>
+                                <div class="city-button-count">${cityData.count} 家酒店</div>
+                            </div>
+                        `;
+                    });
                     
-                    cityButton.setAttribute('data-city', JSON.stringify({
-                        id: cityId,
-                        name: city,
-                        country: country
-                    }));
-                    
-                    cityButton.innerHTML = `
-                        <div class="city-button-text">${city}</div>
-                        <div class="city-button-count">${data.count} 家酒店</div>
-                    `;
-                    
-                    citiesContainer.appendChild(cityButton);
+                    html += `</div></div>`;
                 });
-                
-                countrySection.appendChild(citiesContainer);
-                citySelection.appendChild(countrySection);
-            });
+                return html;
+            }
             
-            console.log('✅ 城市列表生成完成！');
+            // 更新主页面的城市选择
+            const citySelection = document.getElementById('citySelection');
+            if (citySelection) {
+                citySelection.innerHTML = `
+                    <div class="header">
+                        <div class="title">欢迎使用女性安全地图</div>
+                        <div class="subtitle">请选择您要查看的城市</div>
+                    </div>
+                    ${generateCityHTML()}
+                `;
+            }
+            
+            // 更新模态框中的城市列表
+            const cityModalContent = document.getElementById('cityModalContent');
+            if (cityModalContent) {
+                cityModalContent.innerHTML = generateCityHTML();
+            }
+            
+            console.log('✅ 城市列表生成完成（主页面 + 模态框）！');
         }
         
         // 立即开始加载数据库数据
