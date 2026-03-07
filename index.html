@@ -1229,7 +1229,7 @@
             <div class="modal-header">
                 <div class="modal-title" id="hotelName">酒店名称</div>
                 <div class="close-button" id="closeHotelModal">✕</div>
-            </div>
+        </div>
             <div class="hotel-modal-content">
                 <div class="hotel-info-section">
                     <div class="info-label">安全评分</div>
@@ -1303,7 +1303,7 @@
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhtbXJ1b2Fua2hvaG93bHphamxsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA1MjQxNjgsImV4cCI6MjA4NjEwMDE2OH0.nGVgFlrTPQh86Ba0doT_mmeHvCnF0NjJ6MUJEvQKV3g';
         
         const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-        
+
         console.log('✅ Supabase 客户端已初始化');
         console.log('数据库 URL:', SUPABASE_URL);
         
@@ -1965,7 +1965,7 @@
                 };
                 coords = cityCoordMap[cityName];
                 
-                if (!coords) {
+            if (!coords) {
                     console.warn('⚠️ 未找到城市坐标，使用默认坐标');
                     coords = { lat: 22.0084, lng: 100.7979, zoom: 13 };
                 }
@@ -1978,7 +1978,7 @@
                 }
                 return;
             }
-            
+
             // 如果数据库还在加载，等待加载完成
             if (isLoadingFromDatabase) {
                 console.log('⏳ 等待数据库数据加载...');
@@ -2023,7 +2023,7 @@
                         map.removeLayer(layer);
                     });
                     // 移除地图实例
-                    map.remove();
+                map.remove();
                     map.off(); // 移除所有事件监听器
                 } catch (e) {
                     console.log('移除旧地图时出错:', e);
@@ -2103,8 +2103,8 @@
                     });
                     
                     const tileLayer2 = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                        attribution: '© OpenStreetMap contributors',
-                        maxZoom: 19
+                attribution: '© OpenStreetMap contributors',
+                maxZoom: 19
                     });
                     
                     // 尝试加载第一个瓦片源，失败则使用第二个
@@ -2177,6 +2177,24 @@
             console.log('热力图状态:', showHeatmap ? '开启' : '关闭');
             console.log('========================================');
             
+            // 🔥 新增：如果没有酒店数据，显示提示
+            if (hotels.length === 0) {
+                console.log('⚠️ 该城市暂无酒店数据');
+                const placeholder = document.getElementById('mapPlaceholder');
+                if (placeholder) {
+                    placeholder.classList.remove('hidden');
+                    const cityNameDisplay = document.getElementById('cityNameDisplay');
+                    if (cityNameDisplay) {
+                        cityNameDisplay.textContent = `${currentCity.name} 暂无酒店数据`;
+                    }
+                    const mapSubtext = placeholder.querySelector('.map-subtext');
+                    if (mapSubtext) {
+                        mapSubtext.textContent = '该城市暂时没有收录酒店信息';
+                    }
+                }
+                return;
+            }
+            
             // 🔥 第一步：先添加所有热力图圆圈（这样它们会在底层）
             if (showHeatmap) {
                 console.log('🔥 开始创建热力图圆圈...');
@@ -2191,8 +2209,8 @@
                         weight: 0,
                         interactive: false,  // 关键：热力图不拦截点击事件
                         bubblingMouseEvents: false
-                    }).addTo(map);
-                    
+            }).addTo(map);
+
                     // 确保热力图不拦截鼠标事件
                     const heatElement = heatCircle.getElement();
                     if (heatElement) {
@@ -2416,9 +2434,9 @@
             console.log('openHotelModal 被调用，酒店:', hotel);
             if (!hotel) {
                 console.error('酒店数据无效');
-                return;
-            }
-            
+                    return;
+                }
+
             currentHotel = hotel;
             const hotelNameEl = document.getElementById('hotelName');
             const hotelScoreEl = document.getElementById('hotelScore');
