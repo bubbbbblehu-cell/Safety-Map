@@ -1769,8 +1769,32 @@
         }
 
         async function initMap(cityId) {
-            if (!cityId || !cityCoordinates[cityId]) {
-                console.error('无效的城市ID:', cityId);
+            console.log('========================================');
+            console.log('🗺️ initMap 被调用');
+            console.log('城市ID:', cityId);
+            console.log('城市名称:', currentCity ? currentCity.name : '未知');
+            console.log('========================================');
+            
+            // 🔥 修复：根据城市名称获取坐标，而不是使用 cityId
+            let coords = null;
+            if (currentCity && currentCity.name) {
+                // 根据城市名称查找坐标
+                const cityName = currentCity.name;
+                const cityCoordMap = {
+                    '西双版纳': { lat: 22.0084, lng: 100.7979, zoom: 13 },
+                    '贵阳': { lat: 26.6470, lng: 106.6302, zoom: 13 },
+                    '曼谷': { lat: 13.7563, lng: 100.5018, zoom: 13 },
+                    '上海': { lat: 31.2304, lng: 121.4737, zoom: 13 },
+                    '那不勒斯': { lat: 40.8518, lng: 14.2681, zoom: 13 },
+                };
+                coords = cityCoordMap[cityName];
+                
+                if (!coords) {
+                    console.warn('⚠️ 未找到城市坐标，使用默认坐标');
+                    coords = { lat: 22.0084, lng: 100.7979, zoom: 13 };
+                }
+            } else {
+                console.error('❌ 无效的城市数据');
                 const placeholder = document.getElementById('mapPlaceholder');
                 if (placeholder) {
                     placeholder.classList.remove('hidden');
@@ -1778,14 +1802,6 @@
                 }
                 return;
             }
-            
-            console.log('========================================');
-            console.log('🗺️ initMap 被调用');
-            console.log('城市ID:', cityId);
-            console.log('城市名称:', currentCity ? currentCity.name : '未知');
-            console.log('========================================');
-            
-            const coords = cityCoordinates[cityId];
             
             // 如果数据库还在加载，等待加载完成
             if (isLoadingFromDatabase) {
