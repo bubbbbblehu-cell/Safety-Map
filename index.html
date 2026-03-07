@@ -1111,9 +1111,9 @@
             </div>
 
             <!-- 🔥 版本标识 - 确认代码是否更新 -->
-            <div style="position: absolute; bottom: 90px; right: 16px; background: #00ff00; color: black; padding: 12px; border-radius: 8px; font-weight: bold; z-index: 1000; box-shadow: 0 4px 8px rgba(0,0,0,0.3);">
-                <div style="font-size: 18px;">v5.0 模态框</div>
-                <div style="font-size: 12px; margin-top: 4px;">✅ 弹窗选城市</div>
+            <div style="position: absolute; bottom: 90px; right: 16px; background: #ff9900; color: white; padding: 12px; border-radius: 8px; font-weight: bold; z-index: 1000; box-shadow: 0 4px 8px rgba(0,0,0,0.3);">
+                <div style="font-size: 18px;">v5.1 写死城市</div>
+                <div style="font-size: 12px; margin-top: 4px;">🎯 必定显示</div>
             </div>
 
             <!-- 底部图例 -->
@@ -1177,9 +1177,41 @@
                 <div class="close-button" id="closeCityModal">✕</div>
             </div>
             <div class="city-selection" id="cityModalContent" style="padding: 16px;">
-                <!-- 城市列表将由 JavaScript 动态生成 -->
-                <div style="text-align: center; padding: 40px; color: #999;">
-                    加载城市列表中...
+                <!-- 🔥 写死的城市列表，确保一定能显示 -->
+                <div class="country-section">
+                    <div class="country-title">中国</div>
+                    <div class="cities-container">
+                        <div class="city-button" data-city='{"id":"xishuangbanna","name":"西双版纳","country":"中国"}'>
+                            <div class="city-button-text">西双版纳</div>
+                            <div class="city-button-count">点击选择</div>
+                        </div>
+                        <div class="city-button" data-city='{"id":"guiyang","name":"贵阳","country":"中国"}'>
+                            <div class="city-button-text">贵阳</div>
+                            <div class="city-button-count">点击选择</div>
+                        </div>
+                        <div class="city-button" data-city='{"id":"shanghai","name":"上海","country":"中国"}'>
+                            <div class="city-button-text">上海</div>
+                            <div class="city-button-count">点击选择</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="country-section">
+                    <div class="country-title">泰国</div>
+                    <div class="cities-container">
+                        <div class="city-button" data-city='{"id":"bangkok","name":"曼谷","country":"泰国"}'>
+                            <div class="city-button-text">曼谷</div>
+                            <div class="city-button-count">点击选择</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="country-section">
+                    <div class="country-title">意大利</div>
+                    <div class="cities-container">
+                        <div class="city-button" data-city='{"id":"naples","name":"那不勒斯","country":"意大利"}'>
+                            <div class="city-button-text">那不勒斯</div>
+                            <div class="city-button-count">点击选择</div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
