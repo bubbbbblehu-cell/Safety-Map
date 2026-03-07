@@ -1704,7 +1704,20 @@
         }
         
         // 立即开始加载数据库数据
-        loadHotelsFromDatabase();
+        loadHotelsFromDatabase().catch(err => {
+            console.error('数据库加载失败:', err);
+            generateFallbackCityList();
+        });
+        
+        // 🔥 额外保险：2秒后检查是否有城市按钮，如果没有就生成备用列表
+        setTimeout(() => {
+            const cityButtons = document.querySelectorAll('.city-button');
+            console.log('🔍 检查城市按钮数量:', cityButtons.length);
+            if (cityButtons.length === 0) {
+                console.log('⚠️ 没有城市按钮，生成备用列表');
+                generateFallbackCityList();
+            }
+        }, 2000);
         
         // 城市坐标数据
         const cityCoordinates = {
