@@ -1311,6 +1311,88 @@
         let dbHotelsData = [];
         let isLoadingFromDatabase = true;
         
+        // 生成备用城市列表（当数据库加载失败时使用）
+        function generateFallbackCityList() {
+            console.log('🔧 生成备用城市列表...');
+            
+            const fallbackCities = [
+                { id: 'xishuangbanna', name: '西双版纳', country: '中国', count: 5 },
+                { id: 'guiyang', name: '贵阳', country: '中国', count: 3 },
+                { id: 'shanghai', name: '上海', country: '中国', count: 4 },
+                { id: 'bangkok', name: '曼谷', country: '泰国', count: 2 },
+                { id: 'naples', name: '那不勒斯', country: '意大利', count: 1 }
+            ];
+            
+            // 按国家分组
+            const citiesByCountry = {};
+            fallbackCities.forEach(cityData => {
+                const country = cityData.country;
+                if (!citiesByCountry[country]) {
+                    citiesByCountry[country] = [];
+                }
+                citiesByCountry[country].push(cityData);
+            });
+            
+            // 创建城市元素的函数
+            function createCityElements(container) {
+                container.innerHTML = '';
+                
+                Object.entries(citiesByCountry).forEach(([country, cities]) => {
+                    const countrySection = document.createElement('div');
+                    countrySection.className = 'country-section';
+                    
+                    const countryTitle = document.createElement('div');
+                    countryTitle.className = 'country-title';
+                    countryTitle.textContent = country;
+                    countrySection.appendChild(countryTitle);
+                    
+                    const citiesContainer = document.createElement('div');
+                    citiesContainer.className = 'cities-container';
+                    
+                    cities.forEach(cityData => {
+                        const cityButton = document.createElement('div');
+                        cityButton.className = 'city-button';
+                        
+                        const cityDataObj = {
+                            id: cityData.id,
+                            name: cityData.name,
+                            country: country
+                        };
+                        cityButton.setAttribute('data-city', JSON.stringify(cityDataObj));
+                        
+                        const cityButtonText = document.createElement('div');
+                        cityButtonText.className = 'city-button-text';
+                        cityButtonText.textContent = cityData.name;
+                        
+                        const cityButtonCount = document.createElement('div');
+                        cityButtonCount.className = 'city-button-count';
+                        cityButtonCount.textContent = `${cityData.count} 家酒店`;
+                        
+                        cityButton.appendChild(cityButtonText);
+                        cityButton.appendChild(cityButtonCount);
+                        citiesContainer.appendChild(cityButton);
+                    });
+                    
+                    countrySection.appendChild(citiesContainer);
+                    container.appendChild(countrySection);
+                });
+            }
+            
+            // 更新主页面的城市选择
+            const citySelection = document.getElementById('citySelection');
+            if (citySelection) {
+                createCityElements(citySelection);
+            }
+            
+            // 更新模态框的城市选择
+            const cityModalContent = document.getElementById('cityModalContent');
+            if (cityModalContent) {
+                createCityElements(cityModalContent);
+            }
+            
+            console.log('✅ 备用城市列表生成完成！');
+        }
+
         async function loadHotelsFromDatabase() {
             try {
                 console.log('========================================');
@@ -1324,8 +1406,9 @@
                 
                 if (error) {
                     console.warn('⚠️ 数据库查询错误:', error.message);
-                    console.log('使用模拟数据作为后备');
+                    console.log('使用备用城市列表');
                     isLoadingFromDatabase = false;
+                    generateFallbackCityList();
                     return [];
                 }
                 
@@ -1373,9 +1456,10 @@
             } catch (error) {
                 console.warn('========================================');
                 console.warn('⚠️ 从数据库加载失败:', error.message);
-                console.log('将使用模拟数据作为后备');
+                console.log('将使用备用城市列表');
                 console.warn('========================================');
                 isLoadingFromDatabase = false;
+                generateFallbackCityList();
                 return [];
             }
         }
