@@ -91,6 +91,8 @@
             transition: all 0.3s;
             border: 2px solid transparent;
             color: #333;
+            display: block !important;
+            visibility: visible !important;
         }
 
         .city-button:hover {
@@ -104,11 +106,13 @@
             font-weight: 600;
             color: #333;
             margin-bottom: 4px;
+            display: block !important;
+            visibility: visible !important;
         }
 
         .city-button-count {
             font-size: 12px;
-            color: #6366f1;
+            color: #666;
             font-weight: 500;
         }
 
@@ -735,7 +739,8 @@
         .modal-content {
             background: white;
             border-radius: 12px;
-            max-height: 80%;
+            max-height: 90%;
+            min-height: 400px;
             width: 90%;
             max-width: 400px;
             overflow-y: auto;
