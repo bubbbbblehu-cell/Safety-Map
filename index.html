@@ -1988,7 +1988,15 @@
             // 使用新的函数获取该城市的酒店
             let hotels = getHotelsForCity(cityId);
             
-            console.log(`🏨 最终使用的酒店数量: ${hotels.length}`);
+            console.log('========================================');
+            console.log('🏨 获取酒店数据结果:');
+            console.log('  城市ID:', cityId);
+            console.log('  城市名称:', currentCity ? currentCity.name : '未知');
+            console.log('  酒店数量:', hotels.length);
+            if (hotels.length > 0) {
+                console.log('  前3个酒店:', hotels.slice(0, 3).map(h => h.name));
+            }
+            console.log('========================================');
             
             const placeholder = document.getElementById('mapPlaceholder');
             if (placeholder) {
