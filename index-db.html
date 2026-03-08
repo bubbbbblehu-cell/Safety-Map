@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>女性安全地图</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #f5f5f5;
+        }
+
+        /* 开屏页 */
+        #splash-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.8s ease;
+        }
+
+        #splash-screen h1 {
+            color: white;
+            font-size: 32px;
+        }
+
+        /* 加载提示 */
+        .loading {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 20px 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 10001;
+            display: none;
+        }
+
+        .loading.active {
+            display: block;
+        }
+
+        /* 模态框 */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 10000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            max-height: 90%;
+            min-height: 400px;
+            width: 90%;
+            max-width: 400px;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            padding: 20px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .modal-title {
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        /* 城市选择 */
+        .city-selection {
+            padding: 20px;
+        }
+
+        .country-section {
+            margin-bottom: 20px;
+        }
+
+        .country-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #6366f1;
+            margin-bottom: 12px;
+        }
+
+        .cities-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .city-button {
+            background: #f5f5f5;
+            padding: 16px 24px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+            color: #333;
+        }
+
+        .city-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+            border-color: #6366f1;
+        }
+
+        .city-button-text {
+            font-size: 16px;
+            font-weight: 500;
+            color: #333;
+        }
+
+        /* 地图页面 */
+        .map-container {
+            width: 100%;
+            height: 100vh;
+        }
+
+        #map {
+            width: 100%;
+            height: 100%;
+        }
+
+        /* 地图顶部按钮 */
+        .map-top-bar {
+            position: fixed;
+            top: 16px;
+            right: 16px;
+            z-index: 1000;
+        }
+
+        .switch-city-btn {
+            background: #6366f1;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .switch-city-btn:hover {
+            background: #4f46e5;
+            transform: translateY(-2px);
+        }
+
+        /* 酒店标记弹窗 */
+        .hotel-popup {
+            min-width: 200px;
+        }
+
+        .hotel-name {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .hotel-info {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 4px;
+        }
+
+        .hotel-score {
+            font-size: 14px;
+            color: #6366f1;
+            font-weight: 600;
+        }
+
+        /* 版本号 */
+        .version {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #00ff00;
+            color: black;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-weight: bold;
+            z-index: 1000;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <!-- 开屏页 -->
+    <div id="splash-screen">
+        <h1>女性安全地图</h1>
+    </div>
+
+    <!-- 加载提示 -->
+    <div class="loading" id="loading">
+        <div>加载中...</div>
+    </div>
+
+    <!-- 城市选择模态框 -->
+    <div class="modal-overlay active" id="cityModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">选择城市</div>
+            </div>
+            <div class="city-selection" id="citySelection">
+                <!-- 城市列表将从数据库动态加载 -->
+            </div>
+        </div>
+    </div>
+
+    <!-- 地图容器 -->
+    <div class="map-container" id="mapContainer" style="display: none;">
+        <div class="map-top-bar">
+            <div class="switch-city-btn" onclick="openCityModal()">切换城市</div>
+        </div>
+        <div id="map"></div>
+    </div>
+
+    <!-- 版本号 -->
+    <div class="version">v8.0 数据库版</div>
+
+    <script>
+        console.log('🚀 页面加载开始');
+
+        // ========================================
+        // 配置 Supabase
+        // ========================================
+        const SUPABASE_URL = 'https://hmmruoankhohowlzajll.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhtbXJ1b2Fua2hvaG93bHphamxsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA1MjQxNjgsImV4cCI6MjA4NjEwMDE2OH0.nGVgFlrTPQh86Ba0doT_mmeHvCnF0NjJ6MUJEvQKV3g';
+        
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        let map = null;
+        let currentCity = null;
+        let hotelMarkers = [];
+
+        // 显示/隐藏加载提示
+        function showLoading() {
+            document.getElementById('loading').classList.add('active');
+        }
+
+        function hideLoading() {
+            document.getElementById('loading').classList.remove('active');
+        }
+
+        // 从数据库加载城市列表
+        async function loadCities() {
+            try {
+                console.log('📡 从数据库加载城市列表...');
+                showLoading();
+
+                const { data, error } = await supabase
+                    .from('cities')
+                    .select('*')
+                    .order('name');
+
+                if (error) throw error;
+
+                console.log('✅ 加载到', data.length, '个城市');
+                renderCities(data);
+                hideLoading();
+            } catch (error) {
+                console.error('❌ 加载城市失败:', error);
+                hideLoading();
+                alert('加载城市列表失败，请检查网络连接');
+            }
+        }
+
+        // 渲染城市列表
+        function renderCities(cities) {
+            const citySelection = document.getElementById('citySelection');
+            
+            // 按国家分组
+            const citiesByCountry = {};
+            cities.forEach(city => {
+                const country = city.country || '其他';
+                if (!citiesByCountry[country]) {
+                    citiesByCountry[country] = [];
+                }
+                citiesByCountry[country].push(city);
+            });
+
+            // 生成 HTML
+            let html = '';
+            for (const [country, citiesInCountry] of Object.entries(citiesByCountry)) {
+                html += `
+                    <div class="country-section">
+                        <div class="country-title">${country}</div>
+                        <div class="cities-container">
+                            ${citiesInCountry.map(city => `
+                                <div class="city-button" data-city='${JSON.stringify(city)}'>
+                                    <div class="city-button-text">${city.name}</div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+
+            citySelection.innerHTML = html;
+        }
+
+        // 从数据库加载酒店数据
+        async function loadHotels(cityId) {
+            try {
+                console.log('📡 从数据库加载酒店数据，城市ID:', cityId);
+                showLoading();
+
+                const { data, error } = await supabase
+                    .from('hotels')
+                    .select('*')
+                    .eq('city_id', cityId);
+
+                if (error) throw error;
+
+                console.log('✅ 加载到', data.length, '家酒店');
+                hideLoading();
+                return data;
+            } catch (error) {
+                console.error('❌ 加载酒店失败:', error);
+                hideLoading();
+                return [];
+            }
+        }
+
+        // 打开城市选择模态框
+        function openCityModal() {
+            document.getElementById('cityModal').classList.add('active');
+        }
+
+        // 城市按钮点击事件（事件委托）
+        document.addEventListener('click', function(e) {
+            const cityButton = e.target.closest('.city-button');
+            if (cityButton) {
+                const cityDataStr = cityButton.getAttribute('data-city');
+                if (cityDataStr) {
+                    try {
+                        const cityData = JSON.parse(cityDataStr);
+                        selectCity(cityData);
+                    } catch (error) {
+                        console.error('解析城市数据失败:', error);
+                    }
+                }
+            }
+        });
+
+        // 选择城市
+        async function selectCity(city) {
+            console.log('========================================');
+            console.log('🏙️ 选择城市:', city.name);
+            console.log('========================================');
+            
+            currentCity = city;
+            
+            // 关闭模态框
+            document.getElementById('cityModal').classList.remove('active');
+            
+            // 显示地图容器
+            document.getElementById('mapContainer').style.display = 'block';
+            
+            // 初始化地图
+            await initMap(city);
+        }
+
+        // 初始化地图
+        async function initMap(city) {
+            console.log('🗺️ 初始化地图，城市:', city.name);
+
+            // 清除旧地图
+            if (map) {
+                console.log('🗑️ 清除旧地图和标记');
+                hotelMarkers.forEach(marker => marker.remove());
+                hotelMarkers = [];
+                map.remove();
+                map = null;
+            }
+
+            // 创建新地图
+            console.log('🆕 创建新地图');
+            map = L.map('map').setView([city.latitude, city.longitude], 13);
+
+            // 添加地图瓦片
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors',
+                maxZoom: 19
+            }).addTo(map);
+
+            console.log('✅ 地图创建成功');
+
+            // 加载并显示酒店标记
+            const hotels = await loadHotels(city.id);
+            addHotelMarkers(hotels);
+        }
+
+        // 添加酒店标记
+        function addHotelMarkers(hotels) {
+            console.log('📍 添加', hotels.length, '个酒店标记');
+
+            hotels.forEach(hotel => {
+                // 根据安全评分选择标记颜色
+                let markerColor = '#6366f1'; // 默认蓝色
+                if (hotel.safety_score >= 4.5) {
+                    markerColor = '#10b981'; // 绿色 - 安全
+                } else if (hotel.safety_score >= 3.5) {
+                    markerColor = '#f59e0b'; // 橙色 - 一般
+                } else {
+                    markerColor = '#ef4444'; // 红色 - 需注意
+                }
+
+                // 创建自定义图标
+                const icon = L.divIcon({
+                    className: 'custom-marker',
+                    html: `<div style="background: ${markerColor}; width: 12px; height: 12px; border-radius: 50%; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.3);"></div>`,
+                    iconSize: [12, 12],
+                    iconAnchor: [6, 6]
+                });
+
+                // 创建标记
+                const marker = L.marker([hotel.latitude, hotel.longitude], { icon })
+                    .addTo(map)
+                    .bindPopup(`
+                        <div class="hotel-popup">
+                            <div class="hotel-name">${hotel.name}</div>
+                            <div class="hotel-info">📍 ${hotel.address || '地址未知'}</div>
+                            <div class="hotel-score">安全评分: ${hotel.safety_score ? hotel.safety_score.toFixed(1) : 'N/A'} ⭐</div>
+                        </div>
+                    `);
+
+                hotelMarkers.push(marker);
+            });
+
+            console.log('✅ 酒店标记添加完成');
+        }
+
+        // 开屏页处理
+        window.addEventListener('load', async () => {
+            console.log('页面加载完成');
+            
+            // 加载城市列表
+            await loadCities();
+            
+            // 移除开屏页
+            setTimeout(() => {
+                const splash = document.getElementById('splash-screen');
+                if (splash) {
+                    splash.style.opacity = '0';
+                    setTimeout(() => {
+                        splash.remove();
+                        console.log('开屏页已移除');
+                    }, 800);
+                }
+            }, 2000);
+        });
+    </script>
+</body>
+</html>
+
