@@ -430,7 +430,7 @@
         const SUPABASE_URL = 'https://hmmruoankhohowlzajll.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhtbXJ1b2Fua2hvaG93bHphamxsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA1MjQxNjgsImV4cCI6MjA4NjEwMDE2OH0.nGVgFlrTPQh86Ba0doT_mmeHvCnF0NjJ6MUJEvQKV3g';
         
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         let map = null;
         let currentCity = null;
@@ -452,7 +452,7 @@
                 console.log('📡 从数据库加载城市列表...');
                 showLoading();
 
-                const { data, error } = await supabase
+                const { data, error } = await supabaseClient
                     .from('cities')
                     .select('*')
                     .order('name');
@@ -509,7 +509,7 @@
                 console.log('📡 从数据库加载酒店数据，城市ID:', cityId);
                 showLoading();
 
-                const { data, error } = await supabase
+                const { data, error } = await supabaseClient
                     .from('hotels')
                     .select('*')
                     .eq('city_id', cityId);
