@@ -344,7 +344,7 @@
     </div>
 
     <!-- 拍照检测页面 -->
-    <div class="page photo-page active" id="photoPage">
+    <div class="page photo-page" id="photoPage">
         <div class="photo-icon">📷</div>
         <div class="photo-title">拍照检测</div>
         <div class="photo-subtitle">使用AI技术检测酒店安全环境</div>
@@ -352,7 +352,7 @@
     </div>
 
     <!-- 地图页面 -->
-    <div class="page map-page" id="mapPage">
+    <div class="page map-page active" id="mapPage">
         <div class="map-container">
             <div class="map-top-bar">
                 <div class="switch-city-btn" onclick="openCityModal()">切换城市</div>
@@ -375,11 +375,11 @@
 
     <!-- 底部导航栏 -->
     <div class="bottom-nav">
-        <div class="nav-item active" data-page="photoPage">
+        <div class="nav-item" data-page="photoPage">
             <div class="nav-icon">📷</div>
             <div class="nav-label">拍照检测</div>
         </div>
-        <div class="nav-item" data-page="mapPage">
+        <div class="nav-item active" data-page="mapPage">
             <div class="nav-icon">🗺️</div>
             <div class="nav-label">地图</div>
         </div>
@@ -397,7 +397,7 @@
 
         let map = null;
         let currentCity = null;
-        let currentPage = 'photoPage';
+        let currentPage = 'mapPage';
 
         // 城市坐标
         const cityCoords = {
