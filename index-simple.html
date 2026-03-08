@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>女性安全地图 - 简化版</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #f5f5f5;
+        }
+
+        /* 开屏页 */
+        #splash-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.8s ease;
+        }
+
+        #splash-screen h1 {
+            color: white;
+            font-size: 32px;
+        }
+
+        /* 模态框 */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 10000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            max-height: 90%;
+            min-height: 400px;
+            width: 90%;
+            max-width: 400px;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            padding: 20px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .modal-title {
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        /* 城市选择 */
+        .city-selection {
+            padding: 20px;
+        }
+
+        .country-section {
+            margin-bottom: 20px;
+        }
+
+        .country-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #6366f1;
+            margin-bottom: 12px;
+        }
+
+        .cities-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .city-button {
+            background: #f5f5f5;
+            padding: 16px 24px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+            color: #333;
+        }
+
+        .city-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+            border-color: #6366f1;
+        }
+
+        .city-button-text {
+            font-size: 16px;
+            font-weight: 500;
+            color: #333;
+        }
+
+        /* 地图页面 */
+        .map-container {
+            width: 100%;
+            height: 100vh;
+        }
+
+        #map {
+            width: 100%;
+            height: 100%;
+        }
+
+        /* 地图顶部按钮 */
+        .map-top-bar {
+            position: fixed;
+            top: 16px;
+            right: 16px;
+            z-index: 1000;
+        }
+
+        .switch-city-btn {
+            background: #6366f1;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .switch-city-btn:hover {
+            background: #4f46e5;
+            transform: translateY(-2px);
+        }
+
+        /* 版本号 */
+        .version {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #00ff00;
+            color: black;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-weight: bold;
+            z-index: 1000;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <!-- 开屏页 -->
+    <div id="splash-screen">
+        <h1>女性安全地图</h1>
+    </div>
+
+    <!-- 城市选择模态框 -->
+    <div class="modal-overlay active" id="cityModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">选择城市</div>
+            </div>
+            <div class="city-selection">
+                <div class="country-section">
+                    <div class="country-title">中国</div>
+                    <div class="cities-container">
+                        <div class="city-button" data-city='{"id":"xishuangbanna","name":"西双版纳"}'>
+                            <div class="city-button-text">西双版纳</div>
+                        </div>
+                        <div class="city-button" data-city='{"id":"guiyang","name":"贵阳"}'>
+                            <div class="city-button-text">贵阳</div>
+                        </div>
+                        <div class="city-button" data-city='{"id":"shanghai","name":"上海"}'>
+                            <div class="city-button-text">上海</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="country-section">
+                    <div class="country-title">泰国</div>
+                    <div class="cities-container">
+                        <div class="city-button" data-city='{"id":"bangkok","name":"曼谷"}'>
+                            <div class="city-button-text">曼谷</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 地图容器 -->
+    <div class="map-container" id="mapContainer" style="display: none;">
+        <div class="map-top-bar">
+            <div class="switch-city-btn" onclick="openCityModal()">切换城市</div>
+        </div>
+        <div id="map"></div>
+    </div>
+
+    <!-- 版本号 -->
+    <div class="version">v7.0 简化版</div>
+
+    <script>
+        console.log('🚀 页面加载开始');
+
+        let map = null;
+        let currentCity = null;
+
+        // 城市坐标
+        const cityCoords = {
+            'xishuangbanna': { lat: 22.0084, lng: 100.7979, zoom: 13 },
+            'guiyang': { lat: 26.6470, lng: 106.6302, zoom: 13 },
+            'shanghai': { lat: 31.2304, lng: 121.4737, zoom: 13 },
+            'bangkok': { lat: 13.7563, lng: 100.5018, zoom: 13 }
+        };
+
+        // 打开城市选择模态框
+        function openCityModal() {
+            document.getElementById('cityModal').classList.add('active');
+        }
+
+        // 城市按钮点击事件（事件委托）
+        document.addEventListener('click', function(e) {
+            const cityButton = e.target.closest('.city-button');
+            if (cityButton) {
+                const cityDataStr = cityButton.getAttribute('data-city');
+                if (cityDataStr) {
+                    try {
+                        const cityData = JSON.parse(cityDataStr);
+                        selectCity(cityData);
+                    } catch (error) {
+                        console.error('解析城市数据失败:', error);
+                    }
+                }
+            }
+        });
+
+        // 选择城市
+        function selectCity(city) {
+            console.log('========================================');
+            console.log('🏙️ 选择城市:', city.name);
+            console.log('========================================');
+            
+            currentCity = city;
+            
+            // 关闭模态框
+            document.getElementById('cityModal').classList.remove('active');
+            
+            // 显示地图容器
+            document.getElementById('mapContainer').style.display = 'block';
+            
+            // 初始化地图
+            initMap(city.id);
+        }
+
+        // 初始化地图
+        function initMap(cityId) {
+            console.log('🗺️ 初始化地图，城市ID:', cityId);
+            
+            const coords = cityCoords[cityId];
+            if (!coords) {
+                console.error('找不到城市坐标');
+                return;
+            }
+
+            console.log('📍 城市坐标:', coords);
+
+            // 清除旧地图
+            if (map) {
+                console.log('🗑️ 清除旧地图');
+                map.remove();
+                map = null;
+            }
+
+            // 创建新地图
+            console.log('🆕 创建新地图');
+            map = L.map('map').setView([coords.lat, coords.lng], coords.zoom);
+
+            // 添加地图瓦片
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors',
+                maxZoom: 19
+            }).addTo(map);
+
+            console.log('✅ 地图创建成功');
+        }
+
+        // 开屏页处理
+        window.addEventListener('load', () => {
+            console.log('页面加载完成');
+            setTimeout(() => {
+                const splash = document.getElementById('splash-screen');
+                if (splash) {
+                    splash.style.zIndex = '1000';
+                    splash.style.opacity = '0';
+                    setTimeout(() => {
+                        splash.remove();
+                        console.log('开屏页已移除');
+                    }, 800);
+                }
+            }, 2000);
+        });
+    </script>
+</body>
+</html>
+
