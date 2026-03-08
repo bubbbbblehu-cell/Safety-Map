@@ -1709,7 +1709,10 @@
             generateFallbackCityList();
         });
         
-        // 🔥 额外保险：2秒后检查是否有城市按钮，如果没有就生成备用列表
+        // 🔥 额外保险：立即生成备用城市列表，确保一定有城市可选
+        generateFallbackCityList();
+        
+        // 🔥 再加一层保险：2秒后检查是否有城市按钮，如果没有就生成备用列表
         setTimeout(() => {
             const cityButtons = document.querySelectorAll('.city-button');
             console.log('🔍 检查城市按钮数量:', cityButtons.length);
@@ -1956,6 +1959,8 @@
             if (currentCity && currentCity.name) {
                 // 根据城市名称查找坐标
                 const cityName = currentCity.name;
+                console.log('🔍 查找城市坐标，城市名称:', cityName);
+                
                 const cityCoordMap = {
                     '西双版纳': { lat: 22.0084, lng: 100.7979, zoom: 13 },
                     '贵阳': { lat: 26.6470, lng: 106.6302, zoom: 13 },
@@ -1965,7 +1970,9 @@
                 };
                 coords = cityCoordMap[cityName];
                 
-            if (!coords) {
+                console.log('📍 找到的坐标:', coords);
+                
+                if (!coords) {
                     console.warn('⚠️ 未找到城市坐标，使用默认坐标');
                     coords = { lat: 22.0084, lng: 100.7979, zoom: 13 };
                 }
