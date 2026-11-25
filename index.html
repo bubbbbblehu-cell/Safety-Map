@@ -1182,9 +1182,11 @@ svg.leaflet-image-layer.leaflet-interactive path {
         /* 桌面端的手机预览 */
         @media (min-width: 480px) and (hover: hover) {
             html {
-                display: grid;
-                place-items: center;
+                display: flex;
+                align-items: center;
+                justify-content: center;
                 min-height: 100%;
+                overflow: hidden;
                 background: #e7ebf2;
             }
 
